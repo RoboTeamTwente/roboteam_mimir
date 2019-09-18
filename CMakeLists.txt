@@ -6,3 +6,4 @@ find_package(Protobuf REQUIRED)
 find_package(Qt5 COMPONENTS Core Network REQUIRED)
 
 add_subdirectory(src)
+add_subdirectory(test)

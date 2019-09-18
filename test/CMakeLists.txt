@@ -1,0 +1,11 @@
+find_package(GTest REQUIRED)
+
+add_executable(mimir_tests
+        main.cpp
+        net/PublisherTest.cpp)
+
+target_link_libraries(mimir_tests
+        PRIVATE gtest
+        PRIVATE gtest_main
+        #GTest needs pthread for some reason...
+        PRIVATE pthread)

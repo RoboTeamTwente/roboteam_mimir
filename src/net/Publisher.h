@@ -6,7 +6,7 @@
 #define ROBOTEAM_MIMIR_PUBLISHER_H
 
 #include <QUdpSocket>
-
+#include "proto/messages_robocup_ssl_wrapper.pb.h"
 namespace net {
     class Publisher : public QObject {
     Q_OBJECT
@@ -18,6 +18,9 @@ namespace net {
 
         std::string getIP() const;
         unsigned int getPort() const;
+        bool send(const SSL_WrapperPacket& packet);
+        bool send(const SSL_DetectionFrame& frame);
+        bool send(const SSL_GeometryData& data);
     public slots:
         void setIP(const QHostAddress &_address);
         void setPort(unsigned int _port);

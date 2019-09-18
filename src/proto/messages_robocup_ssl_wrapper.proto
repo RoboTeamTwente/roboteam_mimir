@@ -1,5 +1,4 @@
 syntax = "proto3";
-package mimir;
 
 import "messages_robocup_ssl_detection.proto";
 import "messages_robocup_ssl_geometry.proto";

@@ -13,3 +13,6 @@ add_library(mimir_proto SHARED
 target_link_libraries(mimir_proto
         PUBLIC ${PROTOBUF_LIBRARIES}
 )
+target_include_directories(mimir_proto
+        PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/..
+)

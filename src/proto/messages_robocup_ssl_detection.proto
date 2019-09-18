@@ -1,7 +1,5 @@
 syntax = "proto3";
 
-package mimir;
-
 message SSL_DetectionBall {
   float  confidence = 1;
   uint32 area       = 2;

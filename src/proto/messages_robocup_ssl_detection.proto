@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package roboteam_mimir;
+package mimir;
 
 message SSL_DetectionBall {
   float  confidence = 1;

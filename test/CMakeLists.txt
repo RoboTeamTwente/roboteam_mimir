@@ -7,5 +7,5 @@ add_executable(mimir_tests
 target_link_libraries(mimir_tests
         PRIVATE gtest
         PRIVATE gtest_main
-        #GTest needs pthread for some reason...
-        PRIVATE pthread)
+        PRIVATE pthread #GTest needs pthread for some reason.
+        )

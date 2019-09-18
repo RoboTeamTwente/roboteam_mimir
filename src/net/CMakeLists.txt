@@ -1,11 +1,15 @@
 add_library(net STATIC
         Publisher.cpp
-        Publisher.h
+        include/net/Publisher.h
         Receiver.cpp
-        Receiver.h
+        include/net/Receiver.h
         )
 
 target_link_libraries(net
-        PRIVATE Qt5::Network
+        PUBLIC Qt5::Network
         PUBLIC mimir_proto
 )
+target_include_directories(net
+        PRIVATE include/net
+        PUBLIC include
+        )

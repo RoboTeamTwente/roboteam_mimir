@@ -5,6 +5,7 @@ add_executable(mimir_tests
         net/PublisherTest.cpp)
 
 target_link_libraries(mimir_tests
+        PRIVATE net
         PRIVATE gtest
         PRIVATE gtest_main
         PRIVATE pthread #GTest needs pthread for some reason.

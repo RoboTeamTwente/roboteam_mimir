@@ -46,5 +46,8 @@ namespace net {
     std::string Receiver::getIP() const {
         return IP.toString().toStdString();
     }
+    void Receiver::readData() {
+
+    }
 
 }

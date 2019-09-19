@@ -17,11 +17,12 @@ namespace net {
         Receiver &operator=(const Receiver &) = delete;
         std::string getIP() const;
         unsigned int getPort() const;
+        void start();
+        void stop();
     public slots:
         void setIP(const QHostAddress &_address);
         void setPort(unsigned int _port);
-        void start();
-        void stop();
+
         std::vector<mimir_robotcommand> readMessages();
     private:
         unsigned int port;

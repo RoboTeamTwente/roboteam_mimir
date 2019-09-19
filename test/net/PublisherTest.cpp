@@ -83,3 +83,19 @@ TEST(PublisherTest, sendingTest) {
     ASSERT_EQ(geom.has_field(),true);
     EXPECT_EQ(geom.field().goal_depth(),goalDepth);
 }
+TEST(PublisherTest,settersGetters){
+    QHostAddress address("127.0.0.1");
+    unsigned int port = 10006;
+    net::Publisher publisher(address, port);
+    EXPECT_EQ(publisher.getPort(), port);
+    EXPECT_EQ(publisher.getIP(), "127.0.0.1");
+
+    int newPort=10005;
+    publisher.setIP(QHostAddress("127.0.0.2"));
+    publisher.setPort(newPort);
+    EXPECT_NE(publisher.getPort(), port);
+    EXPECT_NE(publisher.getIP(), "127.0.0.1");
+    EXPECT_EQ(publisher.getPort(), newPort);
+    EXPECT_EQ(publisher.getIP(), "127.0.0.2");
+
+}

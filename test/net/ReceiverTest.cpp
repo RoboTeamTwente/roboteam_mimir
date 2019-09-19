@@ -71,3 +71,18 @@ TEST(ReceiverTest,receiveTest){
     EXPECT_FLOAT_EQ(msg.kicker().kickchippower(),kickpower);
 
 }
+TEST(ReceiverTest,setterGetters){
+    QHostAddress address("127.0.0.1");
+    unsigned int port = 10006;
+    net::Receiver receiver(address,port);
+    EXPECT_EQ(receiver.getPort(),port);
+    EXPECT_EQ(receiver.getIP(),"127.0.0.1");
+
+    int newPort=10005;
+    receiver.setIP(QHostAddress("127.0.0.2"));
+    receiver.setPort(newPort);
+    EXPECT_NE(receiver.getPort(),port);
+    EXPECT_NE(receiver.getIP(),"127.0.0.1");
+    EXPECT_EQ(receiver.getPort(),newPort);
+    EXPECT_EQ(receiver.getIP(),"127.0.0.2");
+}

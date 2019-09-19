@@ -3,6 +3,7 @@
 * [CMake 3.12+](https://cmake.org/) 
 * [Google Protobuf, version 3.0.0+](https://github.com/protocolbuffers/protobuf) 
 * [Qt5](https://www.qt.io/)
+* [Bullet3](https://github.com/bulletphysics/bullet3)
 
 To run the unit tests you also need the following:
 * [Google Test](https://github.com/google/googletest)
@@ -13,6 +14,7 @@ sudo apt-get install cmake
 ```
 ###Google Protobuf
 ###Qt5
+###Bullet3
 
 ### Google Test
 To obtain the library run:

@@ -37,7 +37,7 @@ SSL_GeometryData makeGeometry(unsigned int camID,int goalDepth){
     geometryData.mutable_field()->CopyFrom(field);
     return geometryData;
 }
-TEST(PublisherTest, sendDetection) {
+TEST(PublisherTest, sendingTest) {
     QHostAddress localIP("127.0.0.1");
     int port=10006;
     // set up a publisher and a subscriber at desired IP

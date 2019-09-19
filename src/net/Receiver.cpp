@@ -10,7 +10,7 @@ namespace net {
             IP(_address),
             port(_port),
             socket(nullptr) {
-        connect(socket,&QUdpSocket::readyRead,this,&Receiver::readData);
+        start();// on creation we immediately start receiving
     }
 
     Receiver::~Receiver() {
@@ -46,8 +46,21 @@ namespace net {
     std::string Receiver::getIP() const {
         return IP.toString().toStdString();
     }
-    void Receiver::readData() {
-
+    std::vector<mimir_robotcommand> Receiver::readMessages() {
+        std::vector<mimir_robotcommand> commands;
+        while(socket->state()==QAbstractSocket::BoundState&&socket->hasPendingDatagrams()){
+            QByteArray datagram;
+            datagram.resize(socket->pendingDatagramSize());
+            socket->readDatagram(datagram.data(),datagram.size());
+            mimir_robotcommand command;
+            if(command.ParseFromArray(datagram.data(),datagram.size())){
+                commands.push_back(command);
+            }
+            else{
+                //TODO: log errors
+            }
+        }
+        return commands;
     }
 
 }

@@ -4,6 +4,7 @@ protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS
         messages_robocup_ssl_detection.proto
         messages_robocup_ssl_geometry.proto
         messages_robocup_ssl_wrapper.proto
+        mimir_robotcommand.proto
         Vector2f.proto
 )
 add_library(mimir_proto SHARED

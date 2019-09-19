@@ -6,7 +6,7 @@
 #define ROBOTEAM_MIMIR_RECEIVER_H
 
 #include <QUdpSocket>
-
+#include "proto/mimir_robotcommand.pb.h"
 namespace net {
     class Receiver : public QObject {
     Q_OBJECT
@@ -22,8 +22,7 @@ namespace net {
         void setPort(unsigned int _port);
         void start();
         void stop();
-    private slots:
-        void readData();
+        std::vector<mimir_robotcommand> readMessages();
     private:
         unsigned int port;
         QHostAddress IP;

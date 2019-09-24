@@ -1,7 +1,7 @@
 add_library(simulator
         SimWorld.cpp
         SimWorld.h
-        )
+        DebugDrawer.cpp DebugDrawer.h)
 target_link_libraries(simulator
         ${BULLET_LIBRARIES}
 )

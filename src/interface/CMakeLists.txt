@@ -1,6 +1,6 @@
 add_library(interface
         MainWindow.cpp
-        include/interface/MainWindow.h)
+        include/interface/MainWindow.h DebugVisualization.cpp DebugVisualization.h)
 target_link_libraries(interface
         PUBLIC Qt5::Core
         PUBLIC Qt5::Widgets

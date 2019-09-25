@@ -21,7 +21,7 @@ namespace interface {
 
     }
     int DebugDrawer::getDebugMode() const {
-        return 3;
+        return 1;
     }
     void DebugDrawer::setDebugMode(int _debugMode) {
         debugMode = static_cast<DebugDrawModes>(_debugMode);

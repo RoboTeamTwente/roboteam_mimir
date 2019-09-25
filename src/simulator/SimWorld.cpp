@@ -25,6 +25,23 @@ SimWorld::SimWorld() {
     // the world in which all simulation happens
     dynamicsWorld= new btDiscreteDynamicsWorld(collisionDispatcher,overlappingPairCache,solver,collisionConfig);
 
+
+    ///TESTING
+    btAlignedObjectArray<btCollisionShape*> collisionShapes;
+    btCollisionShape* groundShape = new btBoxShape(btVector3(btScalar(1), btScalar(1.), btScalar(1.)));
+    collisionShapes.push_back(groundShape);
+
+    btTransform groundTransform;
+    groundTransform.setIdentity();
+    groundTransform.setOrigin(btVector3(0, 0, 0));
+    //using motionstate is optional, it provides interpolation capabilities, and only synchronizes 'active' objects
+    btDefaultMotionState* myMotionState = new btDefaultMotionState(groundTransform);
+    btRigidBody::btRigidBodyConstructionInfo rbInfo(0, myMotionState, groundShape, btVector3(0,0,0));
+    btRigidBody* body = new btRigidBody(rbInfo);
+
+    //add the body to the dynamics world
+    dynamicsWorld->addRigidBody(body);
+
 }
 SimWorld::~SimWorld() {
 

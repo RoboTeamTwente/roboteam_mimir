@@ -72,23 +72,11 @@ namespace interface {
     }
     // Draws the scene
     void DebugVisualization::paintGL() {
-
         //clear buffers so that throw out old visualizations
         QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
-
         f->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the buffers from previous iteration
-        btVector3 v1(0.0,0.0,0.0);
-        btVector3 v3(1.0,2.0, 0.0);
-        btVector3 v2(1.0,1.0,0.0);
-        btVector3 v4(0.5,-1.0,1.0);
-        btVector3 red(1.0,1.0,1.0);
-        addLine(v1,v2,red);
-        addLine(v1,v3,red);
-        addLine(v1,v4,red);
-        addLine(v2,v3,red);
-        addLine(v2,v4,red);
-        addLine(v3,v4,red);
-        world->debugDrawWorld();
+
+        world->debugDrawWorld();//this calls the drawer internally
         draw(f);
     }
     void DebugVisualization::setupShaders() {

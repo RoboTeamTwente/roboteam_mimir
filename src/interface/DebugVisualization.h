@@ -10,22 +10,23 @@
 #include <QtGui/QOpenGLShader>
 #include <QtGui/QOpenGLBuffer>
 #include <QOpenGLFunctions>
+#include <btBulletDynamicsCommon.h>
 namespace interface {
     struct VertexData{
-        QVector3D pos;
-        QVector4D color;// QColor does not go well with OpenGl so we use QVector4D to represent RGBa
+        btVector3 pos;
+        btVector3 color;// QColor does not go well with OpenGl so we use QVector4D to represent RGBa
     };
     class DebugVisualization : public QOpenGLWidget {
     Q_OBJECT
     public:
         explicit DebugVisualization(QWidget *parent = nullptr);
         ~DebugVisualization();
+        void addLine(const btVector3 &p1,const btVector3 &p2,const btVector3 &color);
     protected:
         void initializeGL() override;
         void resizeGL(int w, int h) override;
         void paintGL() override;
     private:
-        void addLine(const QVector3D &p1,QVector3D &p2,const QVector4D color);
         void draw(QOpenGLFunctions *f);
         void setupShaders();
         QString findShaderDir();

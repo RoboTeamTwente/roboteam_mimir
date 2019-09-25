@@ -2,9 +2,9 @@
 uniform mat4 mvp_matrix;
 
 attribute vec4 aPos;
-attribute vec4 color;
+attribute vec3 color;
 
-out vec4 f_color;
+out vec3 f_color;
 
 void main()
 {

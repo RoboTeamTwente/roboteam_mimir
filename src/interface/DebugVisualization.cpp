@@ -54,11 +54,11 @@ namespace interface {
         shaderProgram.setAttributeBuffer(vertexLocation, GL_FLOAT,offset, 3,
                                          sizeof(VertexData));// each position has 3 floats.
 
-        offset += sizeof(QVector3D);
+        offset += sizeof(btVector3);
 
         int colorLocation = shaderProgram.attributeLocation("color");
         shaderProgram.enableAttributeArray(colorLocation);
-        shaderProgram.setAttributeBuffer(colorLocation, GL_FLOAT, offset, 4, sizeof(VertexData));
+        shaderProgram.setAttributeBuffer(colorLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
 
     }
     // Called whenever window size is changed to detail how visualization should change.
@@ -72,11 +72,11 @@ namespace interface {
         QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
 
         f->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the buffers from previous iteration
-        QVector3D v1(0.0,0.0,0.0);
-        QVector3D v2(1.0,1.0,0.0);
-        QVector3D v3(1.0,2.0, 0.0);
-        QVector3D v4(0.5,-1.0,1.0);
-        QVector4D red(1.0,0.0,0.0,1.0);
+        btVector3 v1(0.0,0.0,0.0);
+        btVector3 v3(1.0,2.0, 0.0);
+        btVector3 v2(1.0,1.0,0.0);
+        btVector3 v4(0.5,-1.0,1.0);
+        btVector3 red(1.0,1.0,1.0);
         addLine(v1,v2,red);
         addLine(v1,v3,red);
         addLine(v1,v4,red);
@@ -116,7 +116,7 @@ namespace interface {
         std::cerr << "Could not find the shader directory!" << std::endl;
         return currentDir.absolutePath();
     }
-    void DebugVisualization::addLine(const QVector3D &p1, QVector3D &p2, const QVector4D color) {
+    void DebugVisualization::addLine(const btVector3 &p1, const btVector3 &p2, const btVector3 &color) {
         // we store the line, but do not draw or allocate them yet.
         lines.push_back({p1,color});
         lines.push_back({p2,color});

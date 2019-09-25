@@ -7,13 +7,18 @@
 #include <QCoreApplication>
 #include <QtCore/QDir>
 #include "iostream"
+#include "DebugDrawer.h"
 
 namespace interface {
 
-    DebugVisualization::DebugVisualization(QWidget *parent) : QOpenGLWidget(parent) {
-
+    DebugVisualization::DebugVisualization(btDiscreteDynamicsWorld *_world, QWidget *parent) : QOpenGLWidget(parent) {
+        //connect debug drawer to the world.
+        drawer=new DebugDrawer(this);
+        world=_world;
+        world->setDebugDrawer(drawer);
     }
     DebugVisualization::~DebugVisualization() {
+        delete drawer;
         // make sure OpenGL functions etc. are destroyed to prevent memory leaks (also in GPU)
         makeCurrent();
 
@@ -83,6 +88,7 @@ namespace interface {
         addLine(v2,v3,red);
         addLine(v2,v4,red);
         addLine(v3,v4,red);
+        world->debugDrawWorld();
         draw(f);
     }
     void DebugVisualization::setupShaders() {

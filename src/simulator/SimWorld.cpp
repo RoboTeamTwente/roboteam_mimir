@@ -34,3 +34,6 @@ SimWorld::~SimWorld() {
     delete collisionDispatcher;
     delete collisionConfig;
 }
+btDiscreteDynamicsWorld* SimWorld::getWorld() {
+    return dynamicsWorld;
+}

@@ -11,13 +11,14 @@ class SimWorld {
 public:
     SimWorld();
     ~SimWorld();
+    btDiscreteDynamicsWorld* getWorld();
 private:
     // these make up the total physics simulator together
     btDefaultCollisionConfiguration* collisionConfig;
     btCollisionDispatcher* collisionDispatcher;
     btBroadphaseInterface* overlappingPairCache;
     btSequentialImpulseConstraintSolver* solver;
-    btDiscreteDynamicsWorld* dynamicsWorld;
+    btDiscreteDynamicsWorld* dynamicsWorld; //public because the interface needs to call the debugDraw function
 };
 
 

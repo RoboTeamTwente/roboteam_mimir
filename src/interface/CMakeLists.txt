@@ -8,6 +8,7 @@ add_library(interface
 target_link_libraries(interface
         PUBLIC Qt5::Core
         PUBLIC Qt5::Widgets
+        PUBLIC simulator
         PRIVATE ${BULLET_LIBRARIES}
         )
 target_include_directories(interface

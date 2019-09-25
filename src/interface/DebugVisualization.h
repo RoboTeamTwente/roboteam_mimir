@@ -9,7 +9,7 @@
 #include <QtGui/QOpenGLVertexArrayObject>
 #include <QtGui/QOpenGLShader>
 #include <QtGui/QOpenGLBuffer>
-
+#include <QOpenGLFunctions>
 namespace interface {
     struct VertexData{
         QVector3D pos;
@@ -25,6 +25,8 @@ namespace interface {
         void resizeGL(int w, int h) override;
         void paintGL() override;
     private:
+        void addLine(const QVector3D &p1,QVector3D &p2,const QVector4D color);
+        void draw(QOpenGLFunctions *f);
         void setupShaders();
         QString findShaderDir();
         QOpenGLVertexArrayObject vao;
@@ -32,6 +34,7 @@ namespace interface {
         QOpenGLShader *shader;
         QOpenGLShaderProgram shaderProgram;
         std::vector<VertexData> lines;
+
     };
 }
 

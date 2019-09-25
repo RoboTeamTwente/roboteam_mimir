@@ -30,24 +30,13 @@ namespace interface {
         if (vao.isCreated()) {
             vao.bind();
         }
+        vbo.bind();
         //initialize shaders
         setupShaders();
         //create a black background
         f->glClearColor(0.0, 0.0, 0.0, 1.0);
         f->glEnable(GL_DEPTH_TEST);//enable depth buffer
         f->glEnable(GL_CULL_FACE); //enable backface culling
-    }
-    // Called whenever window size is changed to detail how visualization should change.
-    void DebugVisualization::resizeGL(int w, int h) {
-
-    }
-    // Draws the scene
-    void DebugVisualization::paintGL() {
-
-        //clear buffers so that throw out old visualizations
-        QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
-
-        f->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the buffers from previous iteration
         //set up the view
         QMatrix4x4 projection;
         projection.perspective(45.0, 4.0 / 3.0, 0.1, 100.0);
@@ -56,9 +45,8 @@ namespace interface {
         QMatrix4x4 model;
         model.setToIdentity();
         QMatrix4x4 mvp = projection * view * model;
+        shaderProgram.setUniformValue("mvp_matrix", mvp); //sets the projection matrix (from world to screen coordinates)
 
-        shaderProgram.setUniformValue("mvp_matrix", mvp);
-        vbo.bind();
         //tell the shaders where in the buffers to look for the position and colors
         quintptr offset = 0;
         int vertexLocation = shaderProgram.attributeLocation("aPos");
@@ -72,30 +60,30 @@ namespace interface {
         shaderProgram.enableAttributeArray(colorLocation);
         shaderProgram.setAttributeBuffer(colorLocation, GL_FLOAT, offset, 4, sizeof(VertexData));
 
+    }
+    // Called whenever window size is changed to detail how visualization should change.
+    void DebugVisualization::resizeGL(int w, int h) {
+
+    }
+    // Draws the scene
+    void DebugVisualization::paintGL() {
+
+        //clear buffers so that throw out old visualizations
+        QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
+
+        f->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the buffers from previous iteration
+        QVector3D v1(0.0,0.0,0.0);
+        QVector3D v2(1.0,1.0,0.0);
+        QVector3D v3(1.0,2.0, 0.0);
+        QVector3D v4(0.5,-1.0,1.0);
         QVector4D red(1.0,0.0,0.0,1.0);
-        QVector4D blue(0.0,0.0,1.0,1.0);
-        QVector4D green(0.0,1.0,0.0,1.0);
-        QVector4D yellow(1.0,1.0,0.0,1.0);
-        lines.push_back({QVector3D(-0.5f, -0.5f, 0.0f),red});
-        lines.push_back({QVector3D(0.5f, -0.5f, 0.0f), blue });
-        lines.push_back({QVector3D(0.5f, -0.5f, 0.0f), blue});
-        lines.push_back({QVector3D(0.0f, 0.5f, 0.0f), green});
-        lines.push_back({QVector3D(0.0f, 0.5f, 0.0f), green});
-        lines.push_back({QVector3D(-0.5f, -0.5f, 0.0f), red});
-        lines.push_back({QVector3D(0.0f, 0.0f, -0.5f), yellow});
-        lines.push_back({QVector3D(-0.5f, -0.5f, 0.0f), red});
-        lines.push_back({QVector3D(0.0f, 0.0f, -0.5f), yellow});
-        lines.push_back({QVector3D(0.5f, -0.5f, 0.0f), blue});
-        lines.push_back({QVector3D(0.0f, 0.0f, -0.5f), yellow});
-        lines.push_back({QVector3D(0.0f, 0.5f, 0.0f), green});
-
-        VertexData vertices[lines.size()];
-        std::copy(lines.begin(), lines.end(), vertices);
-        vbo.allocate(vertices, lines.size() * sizeof(VertexData));
-
-
-        f->glDrawArrays(GL_LINES, 0, lines.size());
-        lines.clear();
+        addLine(v1,v2,red);
+        addLine(v1,v3,red);
+        addLine(v1,v4,red);
+        addLine(v2,v3,red);
+        addLine(v2,v4,red);
+        addLine(v3,v4,red);
+        draw(f);
     }
     void DebugVisualization::setupShaders() {
         QString shaderDir = findShaderDir();
@@ -127,6 +115,17 @@ namespace interface {
         }
         std::cerr << "Could not find the shader directory!" << std::endl;
         return currentDir.absolutePath();
+    }
+    void DebugVisualization::addLine(const QVector3D &p1, QVector3D &p2, const QVector4D color) {
+        // we store the line, but do not draw or allocate them yet.
+        lines.push_back({p1,color});
+        lines.push_back({p2,color});
+    }
+    void DebugVisualization::draw(QOpenGLFunctions *f){
+        //draw all the points and clear them again
+        vbo.allocate(&lines.front(), lines.size() * sizeof(VertexData));
+        f->glDrawArrays(GL_LINES, 0, lines.size());
+        lines.clear();
     }
 
 }

@@ -11,6 +11,10 @@
 #include <QtGui/QOpenGLBuffer>
 
 namespace interface {
+    struct VertexData{
+        QVector3D pos;
+        QVector4D color;// QColor does not go well with OpenGl so we use QVector4D to represent RGBa
+    };
     class DebugVisualization : public QOpenGLWidget {
     Q_OBJECT
     public:
@@ -21,11 +25,13 @@ namespace interface {
         void resizeGL(int w, int h) override;
         void paintGL() override;
     private:
+        void setupShaders();
+        QString findShaderDir();
         QOpenGLVertexArrayObject vao;
         QOpenGLBuffer vbo;
         QOpenGLShader *shader;
         QOpenGLShaderProgram shaderProgram;
-
+        std::vector<VertexData> lines;
     };
 }
 

@@ -35,15 +35,17 @@ namespace interface {
     private:
         void draw(QOpenGLFunctions *f);
         void setupShaders();
+        void setupView();
         QString findShaderDir();
 
         QOpenGLVertexArrayObject vao;
-        QOpenGLBuffer vbo;
+        QOpenGLBuffer lineVbo;
         QOpenGLShader *shader;
         QOpenGLShaderProgram shaderProgram;
         std::vector<VertexData> lines;
         DebugDrawer *drawer;
         btDiscreteDynamicsWorld *world;
+
     };
 }
 

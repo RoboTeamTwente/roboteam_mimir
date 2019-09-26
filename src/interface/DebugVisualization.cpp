@@ -23,34 +23,26 @@ namespace interface {
         makeCurrent();
 
         delete shader;
-        vbo.destroy();
+        lineVbo.destroy();
         doneCurrent();
     }
     // This function initializes everything GL. Is only called once to start up everything to do with GL
     void DebugVisualization::initializeGL() {
         QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
         //initialize openGL buffers
-        bool vboCreate = vbo.create();
-        bool vaoCreate = vao.create();
+        lineVbo.create();
+        vao.create();
         if (vao.isCreated()) {
             vao.bind();
         }
-        vbo.bind();
+        lineVbo.bind();
         //initialize shaders
         setupShaders();
         //create a black background
         f->glClearColor(0.0, 0.0, 0.0, 1.0);
         f->glEnable(GL_DEPTH_TEST);//enable depth buffer
         f->glEnable(GL_CULL_FACE); //enable backface culling
-        //set up the view
-        QMatrix4x4 projection;
-        projection.perspective(45.0, 4.0 / 3.0, 0.1, 100.0);
-        QMatrix4x4 view;
-        view.lookAt({4.0, 4.0, 3.0}, {0.0, 0.0, 0.0}, {0.0, 1.0, 0.0});
-        QMatrix4x4 model;
-        model.setToIdentity();
-        QMatrix4x4 mvp = projection * view * model;
-        shaderProgram.setUniformValue("mvp_matrix", mvp); //sets the projection matrix (from world to screen coordinates)
+        setupView(); //setup camera view matrices
 
         //tell the shaders where in the buffers to look for the position and colors
         quintptr offset = 0;
@@ -60,10 +52,20 @@ namespace interface {
                                          sizeof(VertexData));// each position has 3 floats.
 
         offset += sizeof(btVector3);
-
         int colorLocation = shaderProgram.attributeLocation("color");
         shaderProgram.enableAttributeArray(colorLocation);
         shaderProgram.setAttributeBuffer(colorLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
+
+    }
+    void DebugVisualization::setupView()  {//set up the view
+        QMatrix4x4 projection;
+        projection.perspective(45.0, 4.0 / 3.0, 0.1, 100.0);
+        QMatrix4x4 view;
+        view.lookAt({4.0, 4.0, 3.0}, {0.0, 0.0, 0.0}, {0.0, 1.0, 0.0});
+        QMatrix4x4 model;
+        model.setToIdentity();
+        QMatrix4x4 mvp = projection * view * model;
+        shaderProgram.setUniformValue("mvp_matrix", mvp); //sets the projection matrix (from world to screen coordinates)
 
     }
     // Called whenever window size is changed to detail how visualization should change.
@@ -120,7 +122,7 @@ namespace interface {
     }
     void DebugVisualization::draw(QOpenGLFunctions *f){
         //draw all the points and clear them again
-        vbo.allocate(&lines.front(), lines.size() * sizeof(VertexData));
+        lineVbo.allocate(&lines.front(), lines.size() * sizeof(VertexData));
         f->glDrawArrays(GL_LINES, 0, lines.size());
         lines.clear();
     }

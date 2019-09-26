@@ -17,6 +17,7 @@ namespace interface{
         // virtual functions we need to override from btIDebugDraw in order to implement the interface
         // most of these are empty functions since we don't actually need them but we need to define them.
         void drawLine(const btVector3& from, const btVector3& to, const btVector3& color) override;
+        void drawLine(const btVector3& from, const btVector3& to, const btVector3& fromColor, const btVector3& toColor) override;
         void drawContactPoint(const btVector3& PointOnB, const btVector3& normalOnB, btScalar distance, int lifeTime, const btVector3& color) override;
         void reportErrorWarning(const char* warningString) override;
         void draw3dText(const btVector3& location, const char* textString) override;

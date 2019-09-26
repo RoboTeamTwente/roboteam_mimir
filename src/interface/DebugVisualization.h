@@ -26,7 +26,8 @@ namespace interface {
     public:
         explicit DebugVisualization(btDiscreteDynamicsWorld *world, QWidget *parent = nullptr);
         ~DebugVisualization();
-        void addLine(const btVector3 &p1, const btVector3 &p2, const btVector3 &color);
+        void addLine(const btVector3 &from, const btVector3 &to, const btVector3 &color);
+        void addLine(const btVector3 &from, const btVector3 &to, const btVector3 &fromColor,const btVector3 &toColor);
     protected:
         void initializeGL() override;
         void resizeGL(int w, int h) override;

@@ -110,10 +110,13 @@ namespace interface {
         std::cerr << "Could not find the shader directory!" << std::endl;
         return currentDir.absolutePath();
     }
-    void DebugVisualization::addLine(const btVector3 &p1, const btVector3 &p2, const btVector3 &color) {
-        // we store the line, but do not draw or allocate them yet.
-        lines.push_back({p1,color});
-        lines.push_back({p2,color});
+    void DebugVisualization::addLine(const btVector3 &from, const btVector3 &to, const btVector3 &color) {
+        lines.push_back({from,color});
+        lines.push_back({to,color});
+    }
+    void DebugVisualization::addLine(const btVector3 &from, const btVector3 &to, const btVector3 &fromColor, const btVector3&toColor) {
+        lines.push_back({from,fromColor});
+        lines.push_back({to,toColor});
     }
     void DebugVisualization::draw(QOpenGLFunctions *f){
         //draw all the points and clear them again

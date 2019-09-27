@@ -49,7 +49,24 @@ namespace interface {
         timer.start(10,this);
     }
     void DebugVisualization::timerEvent(QTimerEvent *event) {
+        moveCamera();// we do this with the timer only to keep cam speed constant
         update();//request an update
+    }
+
+    void DebugVisualization::moveCamera() {
+        float speed=0.1;
+        if (upOn){
+            cameraPos+=cameraFront*speed;
+        }
+        if (downOn){
+            cameraPos-=cameraFront*speed;
+        }
+        if (leftOn){
+            cameraPos-=QVector3D::crossProduct(cameraFront,cameraUp).normalized()*speed;
+        }
+        if (rightOn){
+            cameraPos+=QVector3D::crossProduct(cameraFront,cameraUp).normalized()*speed;
+        }
     }
     void DebugVisualization::setupView()  {//set up the view
         QMatrix4x4 view;
@@ -65,18 +82,34 @@ namespace interface {
 
     }
     void DebugVisualization::keyPressEvent(QKeyEvent *event) {
-        float speed=0.1;
-        if (event->key()==Qt::Key_Up||event->key()==Qt::Key_W){
-            cameraPos+=cameraFront*speed;
+
+        std::cout<<"Key pressed"<<std::endl;
+        if (event->key()==Qt::Key_W){
+            upOn=true;
         }
-        else if (event->key()==Qt::Key_Down||event->key()==Qt::Key_S){
-            cameraPos-=cameraFront*speed;
+        if (event->key()==Qt::Key_S){
+            downOn=true;
         }
-        else if (event->key()==Qt::Key_Left||event->key()==Qt::Key_A){
-            cameraPos-=QVector3D::crossProduct(cameraFront,cameraUp).normalized()*speed;
+        if (event->key()==Qt::Key_A){
+            leftOn=true;
         }
-        else if (event->key()==Qt::Key_Right||event->key()==Qt::Key_D){
-            cameraPos+=QVector3D::crossProduct(cameraFront,cameraUp).normalized()*speed;
+        if (event->key()==Qt::Key_D){
+            rightOn=true;
+        }
+    }
+    void DebugVisualization::keyReleaseEvent(QKeyEvent *event) {
+        std::cout<<"Key released"<<std::endl;
+        if (event->key()==Qt::Key_W){
+            upOn=false;
+        }
+        if (event->key()==Qt::Key_S){
+            downOn=false;
+        }
+        if (event->key()==Qt::Key_A){
+            leftOn=false;
+        }
+        if (event->key()==Qt::Key_D){
+            rightOn=false;
         }
     }
     // Draws the scene

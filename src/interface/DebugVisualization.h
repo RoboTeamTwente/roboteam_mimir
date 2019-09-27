@@ -34,11 +34,13 @@ namespace interface {
         void paintGL() override;
         void timerEvent(QTimerEvent *event) override;
         void keyPressEvent(QKeyEvent *event) override;
+        void keyReleaseEvent(QKeyEvent *event) override;
     private:
         void draw();
         void setupShaders();
         void setupView();
         QString findShaderDir();
+        void moveCamera();
 
         float viewAngle=45.0;
         float aspect=4.0/3.0;
@@ -46,6 +48,10 @@ namespace interface {
         QVector3D cameraPos={0.0,2.0,4.0};
         QVector3D cameraFront=QVector3D(-cameraPos).normalized();
         QVector3D cameraUp={0.0,1.0,0.0};
+        bool upOn= false;
+        bool leftOn= false;
+        bool rightOn= false;
+        bool downOn= false;
 
         QOpenGLVertexArrayObject vao;
         QOpenGLBuffer lineVbo;

@@ -8,7 +8,7 @@
 #include <QtCore/QDir>
 #include "iostream"
 #include "DebugDrawer.h"
-
+#include <QKeyEvent>
 namespace interface {
 
     DebugVisualization::DebugVisualization(btDiscreteDynamicsWorld *_world, QWidget *parent) : QOpenGLWidget(parent) {
@@ -16,6 +16,8 @@ namespace interface {
         drawer=new DebugDrawer(this);
         world=_world;
         world->setDebugDrawer(drawer);
+        setFocusPolicy(Qt::ClickFocus);
+        setFocus();
     }
     DebugVisualization::~DebugVisualization() {
         delete drawer;
@@ -44,39 +46,44 @@ namespace interface {
         glEnable(GL_CULL_FACE); //enable backface culling
         setupView(); //setup camera view matrices
 
-        //tell the shaders where in the buffers to look for the position and colors
-        quintptr offset = 0;
-        int vertexLocation = shaderProgram.attributeLocation("aPos");
-        shaderProgram.enableAttributeArray(vertexLocation);
-        shaderProgram.setAttributeBuffer(vertexLocation, GL_FLOAT,offset, 3,
-                                         sizeof(VertexData));// each position has 3 floats.
-
-        offset += sizeof(btVector3);
-        int colorLocation = shaderProgram.attributeLocation("color");
-        shaderProgram.enableAttributeArray(colorLocation);
-        shaderProgram.setAttributeBuffer(colorLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
-
+        timer.start(10,this);
+    }
+    void DebugVisualization::timerEvent(QTimerEvent *event) {
+        update();//request an update
     }
     void DebugVisualization::setupView()  {//set up the view
-        QMatrix4x4 projection;
-        projection.perspective(45.0, 4.0 / 3.0, 0.1, 100.0);
         QMatrix4x4 view;
-        view.lookAt({4.0, 4.0, 3.0}, {0.0, 0.0, 0.0}, {0.0, 1.0, 0.0});
-        QMatrix4x4 model;
-        model.setToIdentity();
-        QMatrix4x4 mvp = projection * view * model;
-        shaderProgram.setUniformValue("mvp_matrix", mvp); //sets the projection matrix (from world to screen coordinates)
+        view.lookAt(cameraPos,cameraPos+cameraFront,cameraUp);
+        shaderProgram.setUniformValue("mvp_matrix", projection * view ); //sets the projection matrix (from world to screen coordinates)
 
     }
     // Called whenever window size is changed to detail how visualization should change.
     void DebugVisualization::resizeGL(int w, int h) {
+        aspect=(float) w/(float) h;
+        projection.setToIdentity();
+        projection.perspective(viewAngle, aspect, 0.1, 100.0);
 
+    }
+    void DebugVisualization::keyPressEvent(QKeyEvent *event) {
+        float speed=0.1;
+        if (event->key()==Qt::Key_Up||event->key()==Qt::Key_W){
+            cameraPos+=cameraFront*speed;
+        }
+        else if (event->key()==Qt::Key_Down||event->key()==Qt::Key_S){
+            cameraPos-=cameraFront*speed;
+        }
+        else if (event->key()==Qt::Key_Left||event->key()==Qt::Key_A){
+            cameraPos-=QVector3D::crossProduct(cameraFront,cameraUp).normalized()*speed;
+        }
+        else if (event->key()==Qt::Key_Right||event->key()==Qt::Key_D){
+            cameraPos+=QVector3D::crossProduct(cameraFront,cameraUp).normalized()*speed;
+        }
     }
     // Draws the scene
     void DebugVisualization::paintGL() {
         //clear buffers so that throw out old visualizations
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the buffers from previous iteration
-
+        setupView();
         world->debugDrawWorld();//this calls the drawer internally
         draw();
     }
@@ -120,6 +127,18 @@ namespace interface {
         lines.push_back({to,toColor});
     }
     void DebugVisualization::draw(){
+        //tell the shaders where in the buffers to look for the position and colors
+        quintptr offset = 0;
+        int vertexLocation = shaderProgram.attributeLocation("aPos");
+        shaderProgram.enableAttributeArray(vertexLocation);
+        shaderProgram.setAttributeBuffer(vertexLocation, GL_FLOAT,offset, 3,
+                                         sizeof(VertexData));// each position has 3 floats.
+
+        offset += sizeof(btVector3);
+        int colorLocation = shaderProgram.attributeLocation("color");
+        shaderProgram.enableAttributeArray(colorLocation);
+        shaderProgram.setAttributeBuffer(colorLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
+
         //draw all the points and clear them again
         lineVbo.allocate(&lines.front(), lines.size() * sizeof(VertexData));
         glDrawArrays(GL_LINES, 0, lines.size());

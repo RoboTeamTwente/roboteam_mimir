@@ -11,7 +11,7 @@
 #include <QtGui/QOpenGLBuffer>
 #include <QOpenGLFunctions>
 #include <btBulletDynamicsCommon.h>
-
+#include <QBasicTimer>
 namespace interface {
     //helper struct
     struct VertexData {
@@ -32,11 +32,20 @@ namespace interface {
         void initializeGL() override;
         void resizeGL(int w, int h) override;
         void paintGL() override;
+        void timerEvent(QTimerEvent *event) override;
+        void keyPressEvent(QKeyEvent *event) override;
     private:
         void draw();
         void setupShaders();
         void setupView();
         QString findShaderDir();
+
+        float viewAngle=45.0;
+        float aspect=4.0/3.0;
+        QMatrix4x4 projection;
+        QVector3D cameraPos={0.0,2.0,4.0};
+        QVector3D cameraFront=QVector3D(-cameraPos).normalized();
+        QVector3D cameraUp={0.0,1.0,0.0};
 
         QOpenGLVertexArrayObject vao;
         QOpenGLBuffer lineVbo;
@@ -46,6 +55,7 @@ namespace interface {
         DebugDrawer *drawer;
         btDiscreteDynamicsWorld *world;
 
+        QBasicTimer timer;
     };
 }
 

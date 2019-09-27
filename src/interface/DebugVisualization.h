@@ -21,7 +21,7 @@ namespace interface {
 
     class DebugDrawer;
 
-    class DebugVisualization : public QOpenGLWidget {
+    class DebugVisualization : public QOpenGLWidget, QOpenGLFunctions {
     Q_OBJECT
     public:
         explicit DebugVisualization(btDiscreteDynamicsWorld *world, QWidget *parent = nullptr);
@@ -33,7 +33,7 @@ namespace interface {
         void resizeGL(int w, int h) override;
         void paintGL() override;
     private:
-        void draw(QOpenGLFunctions *f);
+        void draw();
         void setupShaders();
         void setupView();
         QString findShaderDir();

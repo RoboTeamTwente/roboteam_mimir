@@ -28,7 +28,7 @@ namespace interface {
     }
     // This function initializes everything GL. Is only called once to start up everything to do with GL
     void DebugVisualization::initializeGL() {
-        QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
+        initializeOpenGLFunctions();
         //initialize openGL buffers
         lineVbo.create();
         vao.create();
@@ -39,9 +39,9 @@ namespace interface {
         //initialize shaders
         setupShaders();
         //create a black background
-        f->glClearColor(0.0, 0.0, 0.0, 1.0);
-        f->glEnable(GL_DEPTH_TEST);//enable depth buffer
-        f->glEnable(GL_CULL_FACE); //enable backface culling
+        glClearColor(0.0, 0.0, 0.0, 1.0);
+        glEnable(GL_DEPTH_TEST);//enable depth buffer
+        glEnable(GL_CULL_FACE); //enable backface culling
         setupView(); //setup camera view matrices
 
         //tell the shaders where in the buffers to look for the position and colors
@@ -75,11 +75,10 @@ namespace interface {
     // Draws the scene
     void DebugVisualization::paintGL() {
         //clear buffers so that throw out old visualizations
-        QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
-        f->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the buffers from previous iteration
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the buffers from previous iteration
 
         world->debugDrawWorld();//this calls the drawer internally
-        draw(f);
+        draw();
     }
     void DebugVisualization::setupShaders() {
         QString shaderDir = findShaderDir();
@@ -120,10 +119,10 @@ namespace interface {
         lines.push_back({from,fromColor});
         lines.push_back({to,toColor});
     }
-    void DebugVisualization::draw(QOpenGLFunctions *f){
+    void DebugVisualization::draw(){
         //draw all the points and clear them again
         lineVbo.allocate(&lines.front(), lines.size() * sizeof(VertexData));
-        f->glDrawArrays(GL_LINES, 0, lines.size());
+        glDrawArrays(GL_LINES, 0, lines.size());
         lines.clear();
     }
 

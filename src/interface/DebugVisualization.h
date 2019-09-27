@@ -35,6 +35,7 @@ namespace interface {
         void timerEvent(QTimerEvent *event) override;
         void keyPressEvent(QKeyEvent *event) override;
         void keyReleaseEvent(QKeyEvent *event) override;
+        void wheelEvent(QWheelEvent *event) override;
     private:
         void draw();
         void setupShaders();

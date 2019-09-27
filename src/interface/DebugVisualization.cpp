@@ -72,7 +72,24 @@ namespace interface {
         QMatrix4x4 view;
         view.lookAt(cameraPos,cameraPos+cameraFront,cameraUp);
         shaderProgram.setUniformValue("mvp_matrix", projection * view ); //sets the projection matrix (from world to screen coordinates)
-
+    }
+    void DebugVisualization::wheelEvent(QWheelEvent *event) {
+        //zoom by scrolling
+        std::cout<<event->delta()<<std::endl;
+        const float minAngle=1.0;
+        const float maxAngle=60.0;
+        const float zoomScale=20.0;
+        if(viewAngle>=minAngle&&viewAngle<=maxAngle){
+            viewAngle-=(float)event->delta()/zoomScale;
+        }
+        if(viewAngle<minAngle){
+            viewAngle=minAngle;
+        }
+        if(viewAngle>maxAngle){
+            viewAngle=maxAngle;
+        }
+        projection.setToIdentity();
+        projection.perspective(viewAngle, aspect, 0.1, 100.0);
     }
     // Called whenever window size is changed to detail how visualization should change.
     void DebugVisualization::resizeGL(int w, int h) {

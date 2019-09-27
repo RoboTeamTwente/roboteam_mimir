@@ -9,6 +9,8 @@
 #include "iostream"
 #include "DebugDrawer.h"
 #include <QKeyEvent>
+#include <cmath>
+
 namespace interface {
 
     DebugVisualization::DebugVisualization(btDiscreteDynamicsWorld *_world, QWidget *parent) : QOpenGLWidget(parent) {
@@ -46,7 +48,7 @@ namespace interface {
         glEnable(GL_CULL_FACE); //enable backface culling
         setupView(); //setup camera view matrices
 
-        timer.start(10,this);
+        timer.start(20,this);
     }
     void DebugVisualization::timerEvent(QTimerEvent *event) {
         moveCamera();// we do this with the timer only to keep cam speed constant
@@ -75,7 +77,6 @@ namespace interface {
     }
     void DebugVisualization::wheelEvent(QWheelEvent *event) {
         //zoom by scrolling
-        std::cout<<event->delta()<<std::endl;
         const float minAngle=1.0;
         const float maxAngle=60.0;
         const float zoomScale=20.0;
@@ -99,8 +100,6 @@ namespace interface {
 
     }
     void DebugVisualization::keyPressEvent(QKeyEvent *event) {
-
-        std::cout<<"Key pressed"<<std::endl;
         if (event->key()==Qt::Key_W){
             upOn=true;
         }
@@ -115,7 +114,6 @@ namespace interface {
         }
     }
     void DebugVisualization::keyReleaseEvent(QKeyEvent *event) {
-        std::cout<<"Key released"<<std::endl;
         if (event->key()==Qt::Key_W){
             upOn=false;
         }
@@ -128,6 +126,35 @@ namespace interface {
         if (event->key()==Qt::Key_D){
             rightOn=false;
         }
+    }
+    void DebugVisualization::mousePressEvent(QMouseEvent *event) {
+        mousePressed=true;
+        mousePos=event->pos();
+    }
+    void DebugVisualization::mouseReleaseEvent(QMouseEvent *event) {
+        mousePressed=false;
+    }
+    void DebugVisualization::mouseMoveEvent(QMouseEvent *event) {
+        if (!mousePressed) {return;}
+        QPoint delta=event->pos()-mousePos;
+        if (firstPress){
+            delta=QPoint(0,0);
+            firstPress=false;
+        }
+        mousePos=event->pos();
+        float speed=0.2;
+        yaw+=(float) delta.x() * speed;
+        pitch-=(float) delta.y() *speed;
+        if (pitch>=89.0){
+            pitch=89.0;
+        }
+        if (pitch<=-89.0){
+            pitch=-89.0;
+        }
+        float yawRad=yaw/180.0f*M_PI;
+        float pitchRad=pitch/180.0f*M_PI;
+        QVector3D front(cos(yawRad)*cos(pitchRad),sin(pitchRad),sin(yawRad)*cos(pitchRad));
+        cameraFront=front.normalized();
     }
     // Draws the scene
     void DebugVisualization::paintGL() {
@@ -194,5 +221,7 @@ namespace interface {
         glDrawArrays(GL_LINES, 0, lines.size());
         lines.clear();
     }
+
+
 
 }

@@ -36,6 +36,9 @@ namespace interface {
         void keyPressEvent(QKeyEvent *event) override;
         void keyReleaseEvent(QKeyEvent *event) override;
         void wheelEvent(QWheelEvent *event) override;
+        void mousePressEvent(QMouseEvent *event) override;
+        void mouseReleaseEvent(QMouseEvent *event) override;
+        void mouseMoveEvent(QMouseEvent *event) override;
     private:
         void draw();
         void setupShaders();
@@ -46,13 +49,19 @@ namespace interface {
         float viewAngle=45.0;
         float aspect=4.0/3.0;
         QMatrix4x4 projection;
-        QVector3D cameraPos={0.0,2.0,4.0};
-        QVector3D cameraFront=QVector3D(-cameraPos).normalized();
+        float yaw=0.0;
+        float pitch=0.0;
+        QVector3D cameraPos={-3.0,0.0,0.0};
+        QVector3D cameraFront=QVector3D(1.0,0.0,0.0);
         QVector3D cameraUp={0.0,1.0,0.0};
         bool upOn= false;
         bool leftOn= false;
         bool rightOn= false;
         bool downOn= false;
+        bool mousePressed=false;
+        QPoint mousePos;
+        bool firstPress=true;
+
 
         QOpenGLVertexArrayObject vao;
         QOpenGLBuffer lineVbo;

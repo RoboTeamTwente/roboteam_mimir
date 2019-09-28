@@ -8,6 +8,7 @@
 // https://docs.google.com/document/d/10sXEhzFRSnvFcl3XxNGhnD4N2SedqwdAvK3dsihxVUA/edit#heading=h.2ye70wns7io3
 
 #include "SimWorld.h"
+#include "SimField.h"
 
 SimWorld::SimWorld() {
     //Contains default setup for memory and how collisions between different types of objects are handled/calculated
@@ -20,12 +21,12 @@ SimWorld::SimWorld() {
     overlappingPairCache = new btDbvtBroadphase();
 
     //the default constraint solver. For parallel processing you can use a different solver (see Extras/BulletMultiThreaded)
-    solver = new btSequentialImpulseConstraintSolver;
+    solver = new btSequentialImpulseConstraintSolver();
 
     // the world in which all simulation happens
     dynamicsWorld= new btDiscreteDynamicsWorld(collisionDispatcher,overlappingPairCache,solver,collisionConfig);
 
-
+    dynamicsWorld->setGravity(btVector3(0.0f,0.0f,-9.81f));
     ///TESTING
     btAlignedObjectArray<btCollisionShape*> collisionShapes;
     btCollisionShape* groundShape = new btBoxShape(btVector3(btScalar(1), btScalar(1.), btScalar(1.)));
@@ -33,7 +34,7 @@ SimWorld::SimWorld() {
 
     btTransform groundTransform;
     groundTransform.setIdentity();
-    groundTransform.setOrigin(btVector3(0, 0, 0));
+    groundTransform.setOrigin(btVector3(0, 0, 3));
     //using motionstate is optional, it provides interpolation capabilities, and only synchronizes 'active' objects
     btDefaultMotionState* myMotionState = new btDefaultMotionState(groundTransform);
     btRigidBody::btRigidBodyConstructionInfo rbInfo(0, myMotionState, groundShape, btVector3(0,0,0));
@@ -41,7 +42,7 @@ SimWorld::SimWorld() {
 
     //add the body to the dynamics world
     dynamicsWorld->addRigidBody(body);
-
+    field=new SimField(dynamicsWorld);
 }
 SimWorld::~SimWorld() {
 

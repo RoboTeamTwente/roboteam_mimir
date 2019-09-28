@@ -2,7 +2,6 @@
 // Created by rolf on 19-09-19.
 //
 
-#include "simulator/include/simulator/SimWorld.h"
 #include <QApplication>
 #include "interface/MainWindow.h"
 int main(int argc, char **argv) {

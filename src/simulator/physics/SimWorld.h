@@ -6,6 +6,7 @@
 #define ROBOTEAM_MIMIR_SIMWORLD_H
 
 #include <bullet/btBulletDynamicsCommon.h>
+class SimField;
 
 class SimWorld {
 public:
@@ -13,6 +14,7 @@ public:
     ~SimWorld();
     btDiscreteDynamicsWorld* getWorld();
 private:
+    SimField * field;
     // these make up the total physics simulator together
     btDefaultCollisionConfiguration* collisionConfig;
     btCollisionDispatcher* collisionDispatcher;

@@ -1,11 +1,14 @@
 add_library(simulator
-        SimWorld.cpp
-        include/simulator/SimWorld.h
+        physics/SimField.cpp
+        physics/SimField.h
+        physics/SimWorld.cpp
+        physics/SimWorld.h
         Simulator.cpp
         Simulator.h
         RobotConfigWidget.cpp
         RobotConfigWidget.h
-        RobotSettings.h)
+        RobotSettings.h
+)
 target_link_libraries(simulator
         PRIVATE Qt5::Core
         PRIVATE ${BULLET_LIBRARIES}

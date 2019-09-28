@@ -143,7 +143,7 @@ namespace interface {
         }
         mousePos=event->pos();
         float speed=0.2;
-        yaw+=(float) delta.x() * speed;
+        yaw-=(float) delta.x() * speed;
         pitch-=(float) delta.y() *speed;
         if (pitch>=89.0){
             pitch=89.0;
@@ -153,7 +153,7 @@ namespace interface {
         }
         float yawRad=yaw/180.0f*M_PI;
         float pitchRad=pitch/180.0f*M_PI;
-        QVector3D front(cos(yawRad)*cos(pitchRad),sin(pitchRad),sin(yawRad)*cos(pitchRad));
+        QVector3D front(cos(yawRad)*cos(pitchRad),sin(yawRad)*cos(pitchRad),sin(pitchRad));
         cameraFront=front.normalized();
     }
     // Draws the scene

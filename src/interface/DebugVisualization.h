@@ -53,7 +53,7 @@ namespace interface {
         float pitch=0.0;
         QVector3D cameraPos={-3.0,0.0,0.0};
         QVector3D cameraFront=QVector3D(1.0,0.0,0.0);
-        QVector3D cameraUp={0.0,1.0,0.0};
+        QVector3D cameraUp={0.0,0.0,1.0};
         bool upOn= false;
         bool leftOn= false;
         bool rightOn= false;

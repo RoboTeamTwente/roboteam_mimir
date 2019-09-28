@@ -29,7 +29,7 @@ SimWorld::SimWorld() {
     dynamicsWorld->setGravity(btVector3(0.0f,0.0f,-9.81f));
     ///TESTING
     btAlignedObjectArray<btCollisionShape*> collisionShapes;
-    btCollisionShape* groundShape = new btBoxShape(btVector3(btScalar(1), btScalar(1.), btScalar(1.)));
+    btCollisionShape* groundShape = new btBoxShape(btVector3(btScalar(6.3), btScalar(4.8), btScalar(0.5)));
     collisionShapes.push_back(groundShape);
 
     btTransform groundTransform;

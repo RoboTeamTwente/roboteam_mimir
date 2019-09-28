@@ -14,6 +14,8 @@ private:
     btDynamicsWorld * dynamicsWorld;
     btAlignedObjectArray<btCollisionObject*> objects;
     btStaticPlaneShape * ground;
+    btCollisionShape * goalBack;
+    btCollisionShape * goalSide;
     void addObject(btCollisionShape *shape, const btTransform &transform);
 
 };

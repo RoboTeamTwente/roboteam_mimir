@@ -11,7 +11,7 @@
 #include "SimField.h"
 
 SimWorld::SimWorld() {
-    widget= new ConfigWidget();
+    widget= new ConfigWidget(); //remove after testing
     //Contains default setup for memory and how collisions between different types of objects are handled/calculated
     collisionConfig = new btDefaultCollisionConfiguration();
 
@@ -44,10 +44,11 @@ SimWorld::SimWorld() {
     //add the body to the dynamics world
     dynamicsWorld->addRigidBody(body);
     //END Testing
-    field=new SimField(dynamicsWorld);//creates and manages all of the geometry related (static) physics objects
+    field=new SimField(dynamicsWorld,widget->getCurrentWorldConfig());//creates and manages all of the geometry related (static) physics objects
 
 }
 SimWorld::~SimWorld() {
+    delete widget;
     //delete everything in reverse order of creation!
     delete field;
     delete dynamicsWorld;

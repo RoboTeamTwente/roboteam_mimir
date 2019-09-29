@@ -8,20 +8,21 @@
 #include <QString>
 #include <QDir>
 #include <QSettings>
+class WorldConfig;
 class ConfigWidget {
 public:
     ConfigWidget();
     ~ConfigWidget();
+    WorldConfig const* getCurrentWorldConfig();
+
 private:
     static QDir findConfigDir();
     void readWorldConfigs(const QDir& worldDir);
-    void readWorldConfig(const QString& path);
     void readRobotConfigs(const QDir& robotDir);
-    void readRobotConfig(const QString& path);
 
-    QList<QSettings*> robotSettings;
-    QList<QSettings*> worldSettings;
-
+    //QList<QSettings*> robotSettings;
+    QList<WorldConfig*> worldConfigList;
+    WorldConfig* currentWorld=nullptr;
 };
 
 

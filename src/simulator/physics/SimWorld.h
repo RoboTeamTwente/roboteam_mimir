@@ -14,7 +14,7 @@ public:
     ~SimWorld();
     btDiscreteDynamicsWorld* getWorld();
 private:
-    ConfigWidget * widget;
+    ConfigWidget * widget; //TODO remove after testing and make proper infrastructure
     SimField * field;
     // these make up the total physics simulator together
     btDefaultCollisionConfiguration* collisionConfig;

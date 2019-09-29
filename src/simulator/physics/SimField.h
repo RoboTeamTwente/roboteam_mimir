@@ -6,9 +6,10 @@
 #define ROBOTEAM_MIMIR_SIMFIELD_H
 
 #include <bullet/btBulletDynamicsCommon.h>
+#include "../WorldConfig.h"
 class SimField {
 public:
-    explicit SimField(btDynamicsWorld *world);
+    explicit SimField(btDynamicsWorld *world, WorldConfig const* cfg);
     ~SimField();
 private:
     btDynamicsWorld * dynamicsWorld;

@@ -3,6 +3,7 @@
 //
 
 #include "ConfigWidget.h"
+#include "WorldConfig.h"
 #include <QCoreApplication>
 #include <iostream>
 ConfigWidget::ConfigWidget() {
@@ -22,7 +23,10 @@ ConfigWidget::ConfigWidget() {
     }
 }
 ConfigWidget::~ConfigWidget() {
-
+    while(!worldConfigList.empty()){
+        delete worldConfigList.first();
+    }
+    delete currentWorld;
 }
 
 QDir ConfigWidget::findConfigDir() {
@@ -49,19 +53,21 @@ QDir ConfigWidget::findConfigDir() {
 void ConfigWidget::readRobotConfigs(const QDir& robotDir) {
     QList<QString> files=robotDir.entryList(QDir::Filter::Files);
     for (const auto & fileName : files){
-        readRobotConfig(robotDir.absolutePath()+"/"+fileName);
+        QString path=robotDir.absolutePath()+"/"+fileName;
     }
 }
 void ConfigWidget::readWorldConfigs(const QDir& worldDir) {
+    //Read every file in the folder and try to turn it into a WorldConfig
     QList<QString> files=worldDir.entryList(QDir::Filter::Files);
     for (const auto & fileName : files){
-        readWorldConfig(worldDir.absolutePath()+"/"+fileName);
+        QString path=worldDir.absolutePath()+"/"+fileName;
+        WorldConfig *world=new WorldConfig(path);
+        worldConfigList.push_back(world);
+        if (!currentWorld){
+            currentWorld=world;
+        }
     }
 }
-void ConfigWidget::readRobotConfig(const QString& path) {
-    QSettings settings(path,QSettings::IniFormat);
-    settings.setValue("test",42);
-}
-void ConfigWidget::readWorldConfig(const QString &path) {
-    QSettings settings(path,QSettings::IniFormat);
+WorldConfig const* ConfigWidget::getCurrentWorldConfig() {
+    return currentWorld;
 }

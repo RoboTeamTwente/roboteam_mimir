@@ -6,21 +6,22 @@
 #define ROBOTEAM_MIMIR_SIMWORLD_H
 
 #include <bullet/btBulletDynamicsCommon.h>
+#include "../ConfigWidget.h"
 class SimField;
-
 class SimWorld {
 public:
     SimWorld();
     ~SimWorld();
     btDiscreteDynamicsWorld* getWorld();
 private:
+    ConfigWidget * widget;
     SimField * field;
     // these make up the total physics simulator together
     btDefaultCollisionConfiguration* collisionConfig;
     btCollisionDispatcher* collisionDispatcher;
     btBroadphaseInterface* overlappingPairCache;
     btSequentialImpulseConstraintSolver* solver;
-    btDiscreteDynamicsWorld* dynamicsWorld; //public because the interface needs to call the debugDraw function
+    btDiscreteDynamicsWorld* dynamicsWorld; // is publicly accessible through getWorld() for debugDrawing purposes
 };
 
 

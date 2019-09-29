@@ -11,6 +11,7 @@
 #include "SimField.h"
 
 SimWorld::SimWorld() {
+    widget= new ConfigWidget();
     //Contains default setup for memory and how collisions between different types of objects are handled/calculated
     collisionConfig = new btDefaultCollisionConfiguration();
 

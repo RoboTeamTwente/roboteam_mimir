@@ -8,7 +8,9 @@
 #include <QString>
 #include <QDir>
 #include <QSettings>
+
 class WorldConfig;
+class RobotConfig;
 class ConfigWidget {
 public:
     ConfigWidget();
@@ -23,9 +25,11 @@ private:
     void readWorldConfigs(const QDir& worldDir);
     void readRobotConfigs(const QDir& robotDir);
 
-    //QList<QSettings*> robotSettings;
+    QList<RobotConfig*> robotConfigList;
     QList<WorldConfig*> worldConfigList;
     WorldConfig* currentWorld=nullptr;
+    RobotConfig* blueRobot;
+    RobotConfig* yellowRobot;
 };
 
 

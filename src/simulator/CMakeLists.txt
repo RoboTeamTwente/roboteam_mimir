@@ -6,7 +6,7 @@ add_library(simulator
         Simulator.cpp
         Simulator.h
         RobotSettings.h
-        ConfigWidget.cpp ConfigWidget.h WorldConfig.h WorldConfig.cpp)
+        ConfigWidget.cpp ConfigWidget.h WorldConfig.h WorldConfig.cpp RobotConfig.cpp RobotConfig.h)
 target_link_libraries(simulator
         PRIVATE Qt5::Core
         PRIVATE ${BULLET_LIBRARIES}

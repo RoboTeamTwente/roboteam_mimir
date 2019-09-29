@@ -4,6 +4,7 @@
 
 #include "ConfigWidget.h"
 #include "WorldConfig.h"
+#include "RobotConfig.h"
 #include <QCoreApplication>
 #include <iostream>
 ConfigWidget::ConfigWidget() {
@@ -54,6 +55,14 @@ void ConfigWidget::readRobotConfigs(const QDir& robotDir) {
     QList<QString> files=robotDir.entryList(QDir::Filter::Files);
     for (const auto & fileName : files){
         QString path=robotDir.absolutePath()+"/"+fileName;
+        RobotConfig * robotConfig=new RobotConfig(path);
+        robotConfigList.push_back(robotConfig);
+        if(!blueRobot){
+            blueRobot=robotConfig;
+        }
+        if(!yellowRobot){
+            yellowRobot=robotConfig;
+        }
     }
 }
 void ConfigWidget::readWorldConfigs(const QDir& worldDir) {
@@ -63,7 +72,7 @@ void ConfigWidget::readWorldConfigs(const QDir& worldDir) {
         QString path=worldDir.absolutePath()+"/"+fileName;
         WorldConfig *world=new WorldConfig(path);
         worldConfigList.push_back(world);
-        if (!currentWorld){
+        if(!currentWorld){
             currentWorld=world;
         }
     }

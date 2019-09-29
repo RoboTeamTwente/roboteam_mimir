@@ -14,7 +14,7 @@ const QString lineWidthStr("Geometry/lineWidth");
 const QString ceilingHeightStr("Geometry/ceilingHeight");
 const QString goalWidthStr("Geometry/goalWidth");
 const QString goalWallThicknessStr("Geometry/goalWallThickness");
-const QString goalDepthStr("goalDepth");
+const QString goalDepthStr("Geometry/goalDepth");
 const QString goalHeightStr("Geometry/goalHeight");
 const QString ballRadiusStr("Ball/ballRadius");
 const QString ballMassStr("Ball/ballMass");

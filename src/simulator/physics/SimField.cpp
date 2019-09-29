@@ -17,18 +17,19 @@ SimField::SimField(btDynamicsWorld *world) {
     const float halfFieldWidth = 4.5;
     const float halfLineWidth = 0.005;
     const float boundaryWidth = 0.3;
-    const float roomHeight = 5.0;
+    const float ceilingHeight = 5.0;
 
     //create ground
-    ground = new btStaticPlaneShape(btVector3(0.0f, 0.0f, 1.0f), 0.0f);
-    addObject(ground, btTransform(btQuaternion(btVector3(1, 0, 0), 0), btVector3(0, 0, 0)));
-    //addObject(ground, btTransform(btQuaternion(btVector3(1, 0, 0), M_PI), btVector3(0, 0, roomHeight)));
+    plane = new btStaticPlaneShape(btVector3(0.0f, 0.0f, 1.0f), 0.0f);
+    addObject(plane, btTransform(btQuaternion(btVector3(1, 0, 0), 0), btVector3(0, 0, 0)));
+    //ceiling
+    addObject(plane, btTransform(btQuaternion(btVector3(1, 0, 0), M_PI), btVector3(0, 0, ceilingHeight)));
 
-    addObject(ground,btTransform(btQuaternion(btVector3(0.0f, 1.0f, 0.0f), M_PI_2), btVector3(-(halfFieldLength+boundaryWidth), 0.0f, 0.0f)));
-    addObject(ground, btTransform(btQuaternion(btVector3(0.0f, 1.0f, 0.0f), -M_PI_2), btVector3(halfFieldLength+boundaryWidth, 0.0f, 0.0f)));
+    addObject(plane, btTransform(btQuaternion(btVector3(0.0f, 1.0f, 0.0f), M_PI_2), btVector3(-(halfFieldLength + boundaryWidth), 0.0f, 0.0f)));
+    addObject(plane, btTransform(btQuaternion(btVector3(0.0f, 1.0f, 0.0f), -M_PI_2), btVector3(halfFieldLength + boundaryWidth, 0.0f, 0.0f)));
 
-    addObject(ground, btTransform(btQuaternion(btVector3(1.0f, 0.0f, 0.0f), M_PI_2), btVector3(0.0f, -(halfFieldWidth+boundaryWidth), 0)));
-    addObject(ground, btTransform(btQuaternion(btVector3(1.0f, 0.0f, 0.0f), -M_PI_2), btVector3(0.0f, halfFieldWidth+boundaryWidth, 0)));
+    addObject(plane, btTransform(btQuaternion(btVector3(1.0f, 0.0f, 0.0f), M_PI_2), btVector3(0.0f, -(halfFieldWidth + boundaryWidth), 0)));
+    addObject(plane, btTransform(btQuaternion(btVector3(1.0f, 0.0f, 0.0f), -M_PI_2), btVector3(0.0f, halfFieldWidth + boundaryWidth, 0)));
 
 
     //Create back of goal box
@@ -56,7 +57,7 @@ SimField::~SimField() {
     }
     delete goalSide;
     delete goalBack;
-    delete ground;
+    delete plane;
 }
 void SimField::addObject(btCollisionShape *shape, const btTransform &transform) {
     //create a new object for collisions

@@ -25,7 +25,7 @@ namespace interface {
     }
     //sets the debug mode; what is drawn by the drawer
     int DebugDrawer::getDebugMode() const {
-        return DBG_DrawWireframe | DBG_DrawAabb;
+        return DBG_DrawWireframe;
     }
     void DebugDrawer::setDebugMode(int _debugMode) {
         debugMode = static_cast<DebugDrawModes>(_debugMode);

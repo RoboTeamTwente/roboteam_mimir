@@ -42,10 +42,13 @@ SimWorld::SimWorld() {
 
     //add the body to the dynamics world
     dynamicsWorld->addRigidBody(body);
-    field=new SimField(dynamicsWorld);
+    //END Testing
+    field=new SimField(dynamicsWorld);//creates and manages all of the geometry related (static) physics objects
+
 }
 SimWorld::~SimWorld() {
-
+    //delete everything in reverse order of creation!
+    delete field;
     delete dynamicsWorld;
     delete solver;
     delete overlappingPairCache;

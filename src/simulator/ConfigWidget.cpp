@@ -68,6 +68,22 @@ void ConfigWidget::readWorldConfigs(const QDir& worldDir) {
         }
     }
 }
+void ConfigWidget::setCurrentWorld(QString &name) {
+    for (const auto& config : worldConfigList) {
+        if(config->name()==name){
+            currentWorld=config;
+            return;
+        }
+    }
+    std::cerr<<"Could not find world config: " <<name.toStdString()<<std::endl;
+}
+QList<QString> ConfigWidget::getWorldNames() {
+    QList<QString> names;
+    for (const auto& config:worldConfigList) {
+        names.push_back(config->name());
+    }
+    return names;
+}
 WorldConfig const* ConfigWidget::getCurrentWorldConfig() {
     return currentWorld;
 }

@@ -13,6 +13,9 @@ class ConfigWidget {
 public:
     ConfigWidget();
     ~ConfigWidget();
+
+    QList<QString> getWorldNames();
+    void setCurrentWorld(QString& name);
     WorldConfig const* getCurrentWorldConfig();
 
 private:

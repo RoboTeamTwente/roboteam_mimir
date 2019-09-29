@@ -19,12 +19,11 @@ public:
     QList<QString> getWorldNames();
     void setCurrentWorld(QString& name);
     WorldConfig const* getCurrentWorldConfig();
-
+    RobotConfig const* getRobotConfig(bool isYellow);
 private:
     static QDir findConfigDir();
     void readWorldConfigs(const QDir& worldDir);
     void readRobotConfigs(const QDir& robotDir);
-
     QList<RobotConfig*> robotConfigList;
     QList<WorldConfig*> worldConfigList;
     WorldConfig* currentWorld=nullptr;

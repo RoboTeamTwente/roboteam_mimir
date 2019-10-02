@@ -4,20 +4,19 @@
 
 #include "SimField.h"
 
-SimField::SimField(btDynamicsWorld *world, WorldConfig const* cfg) {
+SimField::SimField(btDynamicsWorld *world, WorldSettings * cfg) {
     dynamicsWorld = world;
 
     //measurements (in meters) as by the SSL rulebook as of 29 september 2019
-    const float halfGoalHeight = cfg->get(goalHeightStr)*0.5f;
-    const float halfGoalWidth = cfg->get(goalWidthStr)*0.5f;
-    const float halfGoalDepth = cfg->get(goalDepthStr)*0.5f;
-    const float halfGoalWallThickness = cfg->get(goalWallThicknessStr)*0.5f;
-
-    const float halfFieldLength = cfg->get(fieldLengthStr)*0.5f;
-    const float halfFieldWidth = cfg->get(fieldWidthStr)*0.5f;
-    const float halfLineWidth = cfg->get(lineWidthStr)*0.5f;
-    const float boundaryWidth =cfg->get(boundaryWidthStr);
-    const float ceilingHeight = cfg->get(ceilingHeightStr);
+    const float halfGoalHeight = cfg->goalHeight*0.5f;
+    const float halfGoalWidth = cfg->goalWidth*0.5f;
+    const float halfGoalDepth = cfg->goalDepth*0.5f;
+    const float halfGoalWallThickness = cfg->goalWallThickness*0.5f;
+    const float halfFieldLength = cfg->fieldLength*0.5f;
+    const float halfFieldWidth = cfg->fieldWidth*0.5f;
+    const float halfLineWidth = cfg->lineWidth*0.5f;
+    const float boundaryWidth =cfg->boundaryWidth;
+    const float ceilingHeight = cfg->ceilingHeight;
 
     //create ground
     plane = new btStaticPlaneShape(btVector3(0.0f, 0.0f, 1.0f), 0.0f);

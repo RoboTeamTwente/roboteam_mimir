@@ -6,29 +6,49 @@
 #define ROBOTEAM_MIMIR_ROBOTSETTINGS_H
 
 
-struct RobotSettings {
-
-    float radius;
-    float startAngle;
-    float endAngle;
-    float height;
-    float wheelAngle0;
-    float wheelAngle1;
-    float wheelAngle2;
-    float wheelAngle3;
-    float wheelCenterRadius;
-    float wheelCenterHeight;
-    float wheelRadius;
-    float wheelThickness;
-    float bottomPlateHeight;
-    float kickerWidth;
-    float kickerThickness;
-    float kickerHeight;
-    float kickerGroundDist;
+class RobotSettings {
+public:
+    RobotSettings(float _radius,
+                  float _startAngle,
+                  float _endAngle,
+                  float _height,
+                  float _wheelAngle0,
+                  float _wheelAngle1,
+                  float _wheelAngle2,
+                  float _wheelAngle3,
+                  float _wheelCenterRadius,
+                  float _wheelCenterHeight,
+                  float _wheelRadius,
+                  float _wheelThickness,
+                  float _bottomPlateHeight,
+                  float _kickerWidth,
+                  float _kickerThickness,
+                  float _kickerHeight,
+                  float _kickerGroundDist,
+                  float _bodyMass,
+                  float _wheelMass
+                  );
+    const float radius;
+    const float startAngle;
+    const float endAngle;
+    const float height;
+    const float wheelAngle0;
+    const float wheelAngle1;
+    const float wheelAngle2;
+    const float wheelAngle3;
+    const float wheelCenterRadius;
+    const float wheelCenterHeight;
+    const float wheelRadius;
+    const float wheelThickness;
+    const float bottomPlateHeight;
+    const float kickerWidth;
+    const float kickerThickness;
+    const float kickerHeight;
+    const float kickerGroundDist;
 
     //physics
-    float bodyMass;//(kg) mass of the robot not counting wheels
-    float wheelMass;//(kg) mass of a single wheel
+    const float bodyMass;//(kg) mass of the robot not counting wheels
+    const float wheelMass;//(kg) mass of a single wheel
     //TODO:add more physics parameters such as various frictions and restitutions
 };
 

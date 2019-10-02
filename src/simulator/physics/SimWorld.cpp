@@ -9,6 +9,7 @@
 
 #include "SimWorld.h"
 #include "SimField.h"
+#include "../WorldConfig.h"
 
 SimWorld::SimWorld() {
     widget= new ConfigWidget(); //remove after testing
@@ -44,7 +45,7 @@ SimWorld::SimWorld() {
     //add the body to the dynamics world
     dynamicsWorld->addRigidBody(body);
     //END Testing
-    field=new SimField(dynamicsWorld,widget->getCurrentWorldConfig());//creates and manages all of the geometry related (static) physics objects
+    field=new SimField(dynamicsWorld,widget->getCurrentWorldConfig()->settings);//creates and manages all of the geometry related (static) physics objects
 
 }
 SimWorld::~SimWorld() {

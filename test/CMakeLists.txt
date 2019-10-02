@@ -4,7 +4,8 @@ add_executable(mimir_tests
         main.cpp
         net/PublisherTest.cpp
         net/mockReceiver.h
-        net/ReceiverTest.cpp)
+        net/ReceiverTest.cpp
+        simulator/ConfigWidgetTest.cpp)
 
 target_link_libraries(mimir_tests
         PRIVATE net

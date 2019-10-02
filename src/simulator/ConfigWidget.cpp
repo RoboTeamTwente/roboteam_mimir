@@ -93,9 +93,9 @@ QList<QString> ConfigWidget::getWorldNames() {
     }
     return names;
 }
-WorldConfig const* ConfigWidget::getCurrentWorldConfig() {
+WorldConfig* ConfigWidget::getCurrentWorldConfig() {
     return currentWorld;
 }
-RobotConfig const* ConfigWidget::getRobotConfig(bool isYellow) {
+RobotConfig * ConfigWidget::getRobotConfig(bool isYellow) {
     return isYellow?  yellowRobot : blueRobot;
 }

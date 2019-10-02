@@ -18,8 +18,8 @@ public:
 
     QList<QString> getWorldNames();
     void setCurrentWorld(QString& name);
-    WorldConfig const* getCurrentWorldConfig();
-    RobotConfig const* getRobotConfig(bool isYellow);
+    WorldConfig * getCurrentWorldConfig();
+    RobotConfig * getRobotConfig(bool isYellow);
 private:
     static QDir findConfigDir();
     void readWorldConfigs(const QDir& worldDir);

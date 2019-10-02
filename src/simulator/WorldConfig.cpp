@@ -4,8 +4,22 @@
 #include "WorldConfig.h"
 #include <QFileInfo>
 #include <iostream>
-// everything is in SI units (meters, kg's etc.)
+//anonymous namespace to keep these variables out of global scope
 namespace {
+    const QString fieldLengthStr("Geometry/fieldLength");
+    const QString fieldWidthStr("Geometry/fieldWidth");
+    const QString boundaryWidthStr("Geometry/boundaryWidth");
+    const QString lineWidthStr("Geometry/lineWidth");
+    const QString ceilingHeightStr("Geometry/ceilingHeight");
+    const QString goalWidthStr("Geometry/goalWidth");
+    const QString goalWallThicknessStr("Geometry/goalWallThickness");
+    const QString goalDepthStr("Geometry/goalDepth");
+    const QString goalHeightStr("Geometry/goalHeight");
+    const QString ballRadiusStr("Ball/ballRadius");
+    const QString ballMassStr("Ball/ballMass");
+    const QString gravityXStr("Physics/gravityX");
+    const QString gravityYStr("Physics/gravityY");
+    const QString gravityZStr("Physics/gravityZ");
     const QMap<QString, float> defaultWorldValue = {
             {fieldLengthStr,       12.0f},
             {fieldWidthStr,        9.0f},
@@ -25,20 +39,55 @@ namespace {
 }
 
 WorldConfig::WorldConfig(const QString& path) {
-    settings= new QSettings(path,QSettings::IniFormat);
+    settingsFile= new QSettings(path, QSettings::IniFormat);
+    settings = new WorldSettings(
+            get(fieldLengthStr),
+            get(fieldWidthStr),
+            get(boundaryWidthStr),
+            get(lineWidthStr),
+            get(ceilingHeightStr),
+            get(goalWidthStr),
+            get(goalWallThicknessStr),
+            get(goalDepthStr),
+            get(goalHeightStr),
+            get(ballRadiusStr),
+            get(ballMassStr),
+            get(gravityXStr),
+            get(gravityYStr),
+            get(gravityZStr)
+            );
+}
+void WorldConfig::reloadSettings() {
+    delete settings;
+    settings = new WorldSettings(
+            get(fieldLengthStr),
+            get(fieldWidthStr),
+            get(boundaryWidthStr),
+            get(lineWidthStr),
+            get(ceilingHeightStr),
+            get(goalWidthStr),
+            get(goalWallThicknessStr),
+            get(goalDepthStr),
+            get(goalHeightStr),
+            get(ballRadiusStr),
+            get(ballMassStr),
+            get(gravityXStr),
+            get(gravityYStr),
+            get(gravityZStr)
+    );
 }
 WorldConfig::~WorldConfig() {
-    delete settings;
+    delete settingsFile;
 }
 QString WorldConfig::name() const {
-    if(settings){
-        return QFileInfo(settings->fileName()).baseName(); //return name without path or extensions
+    if(settingsFile){
+        return QFileInfo(settingsFile->fileName()).baseName(); //return name without path or extensions
     }
     return "";
 }
 float WorldConfig::get(const QString &valueString) const {
-    if (settings->contains(valueString)){
-        return settings->value(valueString).toFloat();
+    if (settingsFile->contains(valueString)){
+        return settingsFile->value(valueString).toFloat();
     }
     std::cerr<<"Could not find " <<valueString.toStdString()<<" in WorldConfig "<<name().toStdString() <<", returning default" <<std::endl;
     return defaultWorldValue[valueString];

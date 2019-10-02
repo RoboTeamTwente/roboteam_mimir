@@ -50,6 +50,7 @@ SimWorld::SimWorld() {
     //field creates and manages all of the geometry related (static) physics objects in the world
     field=new SimField(dynamicsWorld,widget->getCurrentWorldConfig()->settings);
     //create a ball
+    ball=new SimBall(dynamicsWorld,widget->getCurrentWorldConfig()->settings);
 
 }
 SimWorld::~SimWorld() {

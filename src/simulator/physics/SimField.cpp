@@ -65,6 +65,7 @@ void SimField::addObject(btCollisionShape *shape, const btTransform &transform) 
     // put it into the world
     object->setWorldTransform(transform);
 
+    //TODO: fix friction and restitution
     object->setRestitution(0.0);
     object->setFriction(0.0);
     object->setRollingFriction(0.0);

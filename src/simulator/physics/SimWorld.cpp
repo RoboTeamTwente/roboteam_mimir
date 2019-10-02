@@ -35,7 +35,7 @@ SimWorld::SimWorld() {
     //field creates and manages all of the geometry related (static) physics objects in the world
     field=new SimField(dynamicsWorld,settings);
     //create a ball
-    ball=new SimBall(dynamicsWorld,settings,btVector3(0,0,2.5));
+    ball=new SimBall(dynamicsWorld,settings);
     timer= new QTimer();
     timer->setTimerType(Qt::PreciseTimer);
     connect(timer,&QTimer::timeout,this,&SimWorld::stepSimulation);
@@ -56,6 +56,4 @@ btDiscreteDynamicsWorld* SimWorld::getWorld() {
 }
 void SimWorld::stepSimulation() {
     dynamicsWorld->stepSimulation(1/60.0);
-    std::cout<<"pos: "<<ball->position().x()<<" : "<<ball->position().y()<<" : "<<ball->position().z()<<std::endl;
-    std::cout<<"vel: "<<ball->velocity().x()<<" : "<<ball->velocity().y()<<" : "<<ball->velocity().z()<<std::endl;
 }

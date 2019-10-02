@@ -46,7 +46,7 @@ namespace interface {
         QString findShaderDir();
         void moveCamera();
 
-        float viewAngle=45.0;
+        float viewAngle=60.0;
         float aspect=4.0/3.0;
         QMatrix4x4 projection;
         float yaw=90.0;

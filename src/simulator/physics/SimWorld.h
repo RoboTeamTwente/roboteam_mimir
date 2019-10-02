@@ -4,17 +4,27 @@
 
 #ifndef ROBOTEAM_MIMIR_SIMWORLD_H
 #define ROBOTEAM_MIMIR_SIMWORLD_H
+//remove later
+#include <QTimer>
+#include <QObject>
+#include "iostream"
+//end
 
 #include <bullet/btBulletDynamicsCommon.h>
-#include "../ConfigWidget.h"
 class SimField;
 class SimBall;
-class SimWorld {
+class ConfigWidget;
+
+class SimWorld : public QObject {
+    Q_OBJECT
+public slots:
+    void stepSimulation();
 public:
     SimWorld();
     ~SimWorld();
     btDiscreteDynamicsWorld* getWorld();
 private:
+    QTimer * timer; //TODO create better timer
     ConfigWidget * widget; //TODO remove after testing and make proper infrastructure
     SimField * field;
     SimBall * ball;

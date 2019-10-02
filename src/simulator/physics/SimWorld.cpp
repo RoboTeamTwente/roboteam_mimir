@@ -10,10 +10,12 @@
 #include "SimWorld.h"
 #include "SimField.h"
 #include "SimBall.h"
-#include "../config/WorldConfig.h"
+#include "../ConfigWidget.h"
 
 SimWorld::SimWorld() {
     widget= new ConfigWidget(); //remove after testing
+    auto settings=widget->getCurrentWorldConfig()->settings;
+
     //Contains default setup for memory and how collisions between different types of objects are handled/calculated
     collisionConfig = new btDefaultCollisionConfiguration();
 
@@ -28,30 +30,16 @@ SimWorld::SimWorld() {
 
     // the world in which all simulation happens
     dynamicsWorld= new btDiscreteDynamicsWorld(collisionDispatcher,overlappingPairCache,solver,collisionConfig);
-
-    dynamicsWorld->setGravity(btVector3(0.0f,0.0f,-9.81f));
-    ///TESTING
-    btAlignedObjectArray<btCollisionShape*> collisionShapes;
-    btCollisionShape* groundShape = new btBoxShape(btVector3(btScalar(6.3), btScalar(4.8), btScalar(0.5)));
-    collisionShapes.push_back(groundShape);
-
-    btTransform groundTransform;
-    groundTransform.setIdentity();
-    groundTransform.setOrigin(btVector3(0, 0, 3));
-    //using motionstate is optional, it provides interpolation capabilities, and only synchronizes 'active' objects
-    btDefaultMotionState* myMotionState = new btDefaultMotionState(groundTransform);
-    btRigidBody::btRigidBodyConstructionInfo rbInfo(0, myMotionState, groundShape, btVector3(0,0,0));
-    btRigidBody* body = new btRigidBody(rbInfo);
-
-    //add the body to the dynamics world
-    dynamicsWorld->addRigidBody(body);
-    //END Testing
+    dynamicsWorld->setGravity(btVector3(settings->gravityX,settings->gravityY,settings->gravityZ));
 
     //field creates and manages all of the geometry related (static) physics objects in the world
-    field=new SimField(dynamicsWorld,widget->getCurrentWorldConfig()->settings);
+    field=new SimField(dynamicsWorld,settings);
     //create a ball
-    ball=new SimBall(dynamicsWorld,widget->getCurrentWorldConfig()->settings);
-
+    ball=new SimBall(dynamicsWorld,settings,btVector3(0,0,2.5));
+    timer= new QTimer();
+    timer->setTimerType(Qt::PreciseTimer);
+    connect(timer,&QTimer::timeout,this,&SimWorld::stepSimulation);
+    timer->start(16);
 }
 SimWorld::~SimWorld() {
     delete widget;
@@ -65,4 +53,9 @@ SimWorld::~SimWorld() {
 }
 btDiscreteDynamicsWorld* SimWorld::getWorld() {
     return dynamicsWorld;
+}
+void SimWorld::stepSimulation() {
+    dynamicsWorld->stepSimulation(1/60.0);
+    std::cout<<"pos: "<<ball->position().x()<<" : "<<ball->position().y()<<" : "<<ball->position().z()<<std::endl;
+    std::cout<<"vel: "<<ball->velocity().x()<<" : "<<ball->velocity().y()<<" : "<<ball->velocity().z()<<std::endl;
 }

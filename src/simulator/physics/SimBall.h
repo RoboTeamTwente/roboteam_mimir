@@ -13,6 +13,8 @@ public:
     SimBall(btDynamicsWorld* _world,WorldSettings* settings);
     SimBall(btDynamicsWorld* _world,WorldSettings* settings,const btVector3& initialPos, const btVector3& initialVel = btVector3(0.0f,0.0f,0.0f));
     ~SimBall();
+    btVector3 position() const;
+    btVector3 velocity() const;
 private:
     btDynamicsWorld * world;
     btCollisionShape * physicsBall;

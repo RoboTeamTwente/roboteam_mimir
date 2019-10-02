@@ -3,8 +3,8 @@
 //
 
 #include "ConfigWidget.h"
-#include "WorldConfig.h"
-#include "RobotConfig.h"
+#include "config/WorldConfig.h"
+#include "config/RobotConfig.h"
 #include <QCoreApplication>
 #include <iostream>
 ConfigWidget::ConfigWidget() {

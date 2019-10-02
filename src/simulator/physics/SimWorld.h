@@ -8,6 +8,7 @@
 #include <bullet/btBulletDynamicsCommon.h>
 #include "../ConfigWidget.h"
 class SimField;
+class SimBall;
 class SimWorld {
 public:
     SimWorld();
@@ -16,6 +17,7 @@ public:
 private:
     ConfigWidget * widget; //TODO remove after testing and make proper infrastructure
     SimField * field;
+    SimBall * ball;
     // these make up the total physics simulator together
     btDefaultCollisionConfiguration* collisionConfig;
     btCollisionDispatcher* collisionDispatcher;

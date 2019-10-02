@@ -21,7 +21,7 @@ SimBall::SimBall(btDynamicsWorld *_world, WorldSettings *settings, const btVecto
     btRigidBody::btRigidBodyConstructionInfo rbInfo(settings->ballMass, motionState, physicsBall, inertia);
     body = new btRigidBody(rbInfo);
     // TODO: set restitution/friction
-    body->setLinearVelocity(btVector3(0,0,0));//TODO test if this works and maybe add ang vel option
+    body->setLinearVelocity(initialVel);//TODO test if this works and maybe add ang vel option
     body->setRestitution(1.0f);
     body->setFriction(1.0f);
     //add the constructed rigid Body to the world

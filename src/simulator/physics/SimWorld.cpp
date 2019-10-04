@@ -10,12 +10,10 @@
 #include "SimWorld.h"
 #include "SimField.h"
 #include "SimBall.h"
-#include "../ConfigWidget.h"
+#include "../config/WorldSettings.h"
+#include "../config/RobotSettings.h"
 
-SimWorld::SimWorld() {
-    widget= new ConfigWidget(); //remove after testing
-    auto settings=widget->getCurrentWorldConfig()->settings;
-
+SimWorld::SimWorld(WorldSettings* worldSettings,RobotSettings* blueSettings,RobotSettings* yellowSettings) {
     //Contains default setup for memory and how collisions between different types of objects are handled/calculated
     collisionConfig = new btDefaultCollisionConfiguration();
 
@@ -30,19 +28,20 @@ SimWorld::SimWorld() {
 
     // the world in which all simulation happens
     dynamicsWorld= new btDiscreteDynamicsWorld(collisionDispatcher,overlappingPairCache,solver,collisionConfig);
-    dynamicsWorld->setGravity(btVector3(settings->gravityX,settings->gravityY,settings->gravityZ));
+    dynamicsWorld->setGravity(btVector3(worldSettings->gravityX,worldSettings->gravityY,worldSettings->gravityZ));
 
     //field creates and manages all of the geometry related (static) physics objects in the world
-    field=new SimField(dynamicsWorld,settings);
+    field=new SimField(dynamicsWorld,worldSettings);
     //create a ball
-    ball=new SimBall(dynamicsWorld,settings);
+    ball=new SimBall(dynamicsWorld,worldSettings);
+
+    //start ticking the world
     timer= new QTimer();
     timer->setTimerType(Qt::PreciseTimer);
     connect(timer,&QTimer::timeout,this,&SimWorld::stepSimulation);
     timer->start(16);
 }
 SimWorld::~SimWorld() {
-    delete widget;
     //delete everything in reverse order of creation!
     delete field;
     delete dynamicsWorld;

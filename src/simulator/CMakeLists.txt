@@ -6,9 +6,20 @@ add_library(simulator
         physics/SimWorld.cpp
         physics/SimWorld.h
         Simulator.cpp
-        Simulator.h
+        include/simulator/Simulator.h
         config/RobotSettings.h
-        ConfigWidget.cpp ConfigWidget.h config/WorldConfig.h config/WorldConfig.cpp config/RobotConfig.cpp config/RobotConfig.h config/RobotSettings.cpp config/WorldSettings.cpp config/WorldSettings.h physics/SimBall.cpp physics/SimBall.h)
+        ConfigWidget.cpp
+        ConfigWidget.h
+        config/WorldConfig.h
+        config/WorldConfig.cpp
+        config/RobotConfig.cpp
+        config/RobotConfig.h
+        config/RobotSettings.cpp
+        config/WorldSettings.cpp
+        config/WorldSettings.h
+        physics/SimBall.cpp
+        physics/SimBall.h
+        )
 target_link_libraries(simulator
         PRIVATE net
         PRIVATE Qt5::Core

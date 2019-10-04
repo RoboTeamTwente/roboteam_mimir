@@ -7,7 +7,7 @@
 
 
 #include <QMainWindow>
-class SimWorld;
+class Simulator;
 namespace interface {
     class DebugVisualization;
     class MainWindow : public QMainWindow {
@@ -16,7 +16,7 @@ namespace interface {
         explicit MainWindow(QWidget* parent = nullptr);
     private:
         DebugVisualization* debugVisualization;
-        SimWorld * simulator;
+         Simulator* simulator;
     };
 }
 

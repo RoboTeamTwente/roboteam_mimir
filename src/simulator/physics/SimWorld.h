@@ -13,19 +13,19 @@
 #include <bullet/btBulletDynamicsCommon.h>
 class SimField;
 class SimBall;
-class ConfigWidget;
+class RobotSettings;
+class WorldSettings;
 
 class SimWorld : public QObject {
     Q_OBJECT
 public slots:
     void stepSimulation();
 public:
-    SimWorld();
+    SimWorld(WorldSettings* worldSettings,RobotSettings* blueSettings,RobotSettings* yellowSettings);
     ~SimWorld();
     btDiscreteDynamicsWorld* getWorld();
 private:
     QTimer * timer; //TODO create better timer
-    ConfigWidget * widget; //TODO remove after testing and make proper infrastructure
     SimField * field;
     SimBall * ball;
     // these make up the total physics simulator together

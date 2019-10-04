@@ -4,11 +4,11 @@
 
 #include "MainWindow.h"
 #include "DebugVisualization.h"
-#include "../simulator/physics/SimWorld.h" //TODO: fix path
+#include "simulator/Simulator.h"
 namespace interface {
     MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
-        simulator= new SimWorld();
-        debugVisualization = new DebugVisualization(simulator->getWorld(),this);
+        simulator=new Simulator();
+        debugVisualization = new DebugVisualization(simulator->getPhysicsWorld(),this);
         setCentralWidget(debugVisualization);
         showMaximized();
     }

@@ -57,6 +57,7 @@ void ConfigWidget::readRobotConfigs(const QDir& robotDir) {
         QString path=robotDir.absolutePath()+"/"+fileName;
         RobotConfig * robotConfig=new RobotConfig(path);
         robotConfigList.push_back(robotConfig);
+        //we put the configs on the first file by default.
         if(!blueRobot){
             blueRobot=robotConfig;
         }

@@ -1,3 +1,5 @@
+add_subdirectory(net)
+
 add_library(simulator
         physics/SimField.cpp
         physics/SimField.h
@@ -8,6 +10,7 @@ add_library(simulator
         config/RobotSettings.h
         ConfigWidget.cpp ConfigWidget.h config/WorldConfig.h config/WorldConfig.cpp config/RobotConfig.cpp config/RobotConfig.h config/RobotSettings.cpp config/WorldSettings.cpp config/WorldSettings.h physics/SimBall.cpp physics/SimBall.h)
 target_link_libraries(simulator
+        PRIVATE net
         PRIVATE Qt5::Core
         PRIVATE ${BULLET_LIBRARIES}
         )

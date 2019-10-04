@@ -8,6 +8,10 @@
 class SimWorld;
 class ConfigWidget;
 class btDiscreteDynamicsWorld;
+namespace net{
+    class Publisher;
+    class Receiver;
+}
 class Simulator {
 public:
     Simulator();
@@ -16,7 +20,8 @@ public:
 private:
     SimWorld* simWorld;
     ConfigWidget* configWidget;
-
+    net::Publisher* publisher;
+    net::Receiver* receiver;
 };
 
 

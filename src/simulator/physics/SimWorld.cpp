@@ -41,7 +41,10 @@ SimWorld::SimWorld(WorldSettings* _worldSettings,RobotSettings* _blueSettings,Ro
 
 }
 SimWorld::~SimWorld() {
-    //delete everything in reverse order of creation!
+    delete worldSettings;
+    delete blueSettings;
+    delete yellowSettings;
+    //delete bullet related in reverse order of creation!
     delete field;
     delete dynamicsWorld;
     delete solver;

@@ -44,7 +44,7 @@ SimWorld::~SimWorld() {
     delete worldSettings;
     delete blueSettings;
     delete yellowSettings;
-    //delete bullet related in reverse order of creation!
+    //delete bullet related objects in reverse order of creation!
     delete field;
     delete dynamicsWorld;
     delete solver;
@@ -78,12 +78,13 @@ void addArc(const std::string& name, float centerx, float centery, float radius,
     arc.mutable_center()->set_x(scale(centerx));
     arc.mutable_center()->set_y(scale(centery));
     arc.set_radius(scale(radius));
-    arc.set_a1(angle1); //TODO: check if angles from SSL-vision are in degrees or radians
+    arc.set_a1(angle1); //TODO: check if arc angles from SSL-vision are in degrees or radians
     arc.set_a2(angle2);
     arc.set_thickness(scale(lineThickness));
     field->add_field_arcs()->CopyFrom(arc);
 }
 SSL_GeometryData SimWorld::getGeometryData() {
+    //TODO: add camera calibration info
     SSL_GeometryData data;
     SSL_GeometryFieldSize* geomField=data.mutable_field();
     //SSL geometry is sent in mm not in m
@@ -114,4 +115,51 @@ SSL_GeometryData SimWorld::getGeometryData() {
 
     addArc("CenterCircle",0.0f,0.0f,worldSettings->centerCircleRadius,0.0f,2*M_PI,geomField,worldSettings->lineWidth);
     return data;
+}
+std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
+    //pseudocode
+    //make a detectionFrame for each camera
+    // for each robot
+    //find x,y+orientation
+    //put info into relevant detectionFrames/camera's
+    // for ball
+    // find position
+    // for each camera
+    // check if center of ball visible from camPoint (raycast) by intersections with robots
+    // compute area in pixels as a function from distance to Camera. TODO: figure out if area computation takes into account the skew/distortion or if it's literally the raw pixel area
+    // if so add it to relevant detectionFrame
+    //for later; add motionState interpolation
+
+    std::vector<SSL_DetectionFrame> frames;
+    SSL_DetectionFrame detFrame;
+    SSL_DetectionBall detBall;
+    btVector3 position=ball->position();
+    detBall.set_x(position.x());
+    detBall.set_y(position.y());
+    detBall.set_area(0.0);//TODO: fix below 4
+    detBall.set_confidence(1.0);
+    detBall.set_pixel_x(0);
+    detBall.set_pixel_y(0);
+    detBall.set_z(worldSettings->ballRadius);//TODO: figure out what's actually being sent by SSL-vision
+    detFrame.add_balls()->CopyFrom(detBall);
+    frames.push_back(detFrame);
+    return frames;
+}
+std::vector<SSL_WrapperPacket> SimWorld::getPackets() {
+    std::vector<SSL_WrapperPacket> packets;
+    std::vector<SSL_DetectionFrame> frames=getDetectionFrames();
+    for (const auto& frame : frames) {
+        SSL_WrapperPacket wrapper;
+        wrapper.mutable_detection()->CopyFrom(frame);
+        packets.push_back(wrapper);
+    }
+    if(tickCount%120==0){
+        if(packets.empty()){
+            SSL_WrapperPacket wrapper;
+            packets.push_back(wrapper);
+        }
+        packets[0].mutable_geometry()->CopyFrom(getGeometryData());
+    }
+    tickCount++;
+    return packets;
 }

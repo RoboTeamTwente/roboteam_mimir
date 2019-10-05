@@ -45,6 +45,8 @@ btDiscreteDynamicsWorld* Simulator::getPhysicsWorld() {
 
 void Simulator::tick() {
     simWorld->stepSimulation();
-    SSL_GeometryData data=simWorld->getGeometryData();
-    publisher->send(data);
+    std::vector<SSL_WrapperPacket> packets=simWorld->getPackets();
+    for (const auto& packet: packets){
+        publisher->send(packet);
+    }
 }

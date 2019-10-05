@@ -13,11 +13,8 @@
 #include "proto/messages_robocup_ssl_wrapper.pb.h"
 
 class SimField;
-
 class SimBall;
-
 class RobotSettings;
-
 class WorldSettings;
 
 class SimWorld : public QObject {
@@ -28,9 +25,11 @@ public:
     SimWorld(WorldSettings *_worldSettings, RobotSettings *_blueSettings, RobotSettings *_yellowSettings);
     ~SimWorld() override;
     btDiscreteDynamicsWorld *getWorld();
-    SSL_GeometryData getGeometryData();
-    SSL_DetectionFrame getDetectionFrames();
+    std::vector<SSL_WrapperPacket> getPackets();
 private:
+    SSL_GeometryData getGeometryData();
+    std::vector<SSL_DetectionFrame> getDetectionFrames();
+
     SimField *field;
     SimBall *ball;
     // these make up the total physics simulator together
@@ -43,6 +42,9 @@ private:
     RobotSettings *blueSettings = nullptr;
     RobotSettings *yellowSettings = nullptr;
     WorldSettings *worldSettings = nullptr;
+
+    int tickCount=0;
+
 };
 
 

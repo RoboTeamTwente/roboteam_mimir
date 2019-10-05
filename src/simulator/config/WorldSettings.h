@@ -22,22 +22,30 @@ public:
             float _ballMass,
             float _gravityX,
             float _gravityY,
-            float _gravityZ
+            float _gravityZ,
+            float _centerCircleRadius
     );
     const float fieldLength;
     const float fieldWidth;
     const float boundaryWidth;
     const float lineWidth;
     const float ceilingHeight;
+
     const float goalWidth;
     const float goalWallThickness;
     const float goalDepth;
     const float goalHeight;
+
     const float ballRadius;
     const float ballMass;
+
     const float gravityX;
     const float gravityY;
     const float gravityZ;
+
+    const float centerCircleRadius;
+
+
 };
 
 

@@ -55,13 +55,35 @@ btDiscreteDynamicsWorld* SimWorld::getWorld() {
 void SimWorld::stepSimulation() {
     dynamicsWorld->stepSimulation(1/60.0);
 }
+//helper functions for creating geometry
+inline int scale(const float &meas){
+    return (int) (1000*meas);
+}
+void addLine(const std::string& name,float p1x,float p1y, float p2x,float p2y, SSL_GeometryFieldSize* field, float lineThickness){
+    SSL_FieldLineSegment segment;
+    segment.set_name(name);
+    segment.mutable_p1()->set_x(scale(p1x));
+    segment.mutable_p1()->set_y(scale(p1y));
+    segment.mutable_p2()->set_x(scale(p2x));
+    segment.mutable_p2()->set_y(scale(p2y));
+    segment.set_thickness(scale(lineThickness));
+    field->add_field_lines()->CopyFrom(segment);
+}
+void addArc(const std::string& name, float centerx, float centery, float radius,float angle1,float angle2,SSL_GeometryFieldSize* field,float lineThickness){
+    SSL_FieldCicularArc arc;
+    arc.set_name(name);
+    arc.mutable_center()->set_x(scale(centerx));
+    arc.mutable_center()->set_y(scale(centery));
+    arc.set_radius(scale(radius));
+    arc.set_a1(angle1); //TODO: check if angles from SSL-vision are in degrees or radians
+    arc.set_a2(angle2);
+    arc.set_thickness(scale(lineThickness));
+    field->add_field_arcs()->CopyFrom(arc);
+}
 SSL_GeometryData SimWorld::getGeometryData() {
     SSL_GeometryData data;
     SSL_GeometryFieldSize* geomField=data.mutable_field();
     //SSL geometry is sent in mm not in m
-    auto scale=[](float meas) -> int {
-        return (int) (1000*meas);
-    };
     //the names of the variables in the settings should correspond exactly with how the measurements from SSL-vision are done
     geomField->set_goal_depth(scale(worldSettings->goalDepth));
     geomField->set_field_length(scale(worldSettings->fieldLength));
@@ -69,5 +91,24 @@ SSL_GeometryData SimWorld::getGeometryData() {
     geomField->set_field_width(scale(worldSettings->fieldWidth));
     geomField->set_goal_width(scale(worldSettings->goalWidth));
 
+    const float hWidth=worldSettings->fieldWidth*0.5f;
+    const float hLength=worldSettings->fieldLength*0.5f;
+    const float defense=worldSettings->goalWidth;
+    addLine("TopTouchLine",-hLength,hWidth,hLength,hWidth,geomField,worldSettings->lineWidth);
+    addLine("BottomTouchLine",-hLength,-hWidth,hLength,-hWidth,geomField,worldSettings->lineWidth);
+    addLine("LeftGoalLine",-hLength,-hWidth,-hLength,hWidth,geomField,worldSettings->lineWidth);
+    addLine("RightGoalLine",hLength,-hWidth,hLength,hWidth,geomField,worldSettings->lineWidth);
+    addLine("HalfwayLine",0.0f,-hWidth,0.0f,hWidth,geomField,worldSettings->lineWidth);//TODO: check if HalfwayLine and CenterLine are not accidentally swapped
+    addLine("CenterLine",-hLength,0.0f,hLength,0.0f,geomField,worldSettings->lineWidth);
+
+    addLine("LeftPenaltyStretch",-hLength+defense,-defense,-hLength+defense,defense,geomField,worldSettings->lineWidth);
+    addLine("LeftFieldLeftPenaltyStretch",-hLength,defense,-hLength+defense,defense,geomField,worldSettings->lineWidth);
+    addLine("LeftFieldRightPenaltyStretch",-hLength,-defense,-hLength+defense,-defense,geomField,worldSettings->lineWidth);
+
+    addLine("RightPenaltyStretch",hLength-defense,-defense,hLength-defense,defense,geomField,worldSettings->lineWidth);
+    addLine("RightFieldLeftPenaltyStretch",hLength-defense,-defense,hLength,-defense,geomField,worldSettings->lineWidth);
+    addLine("RightFieldRightPenaltyStretch",hLength-defense,defense,hLength,defense,geomField,worldSettings->lineWidth);
+
+    addArc("CenterCircle",0.0f,0.0f,worldSettings->centerCircleRadius,0.0f,2*M_PI,geomField,worldSettings->lineWidth);
     return data;
 }

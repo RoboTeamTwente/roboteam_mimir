@@ -7,7 +7,7 @@
 WorldSettings::WorldSettings(float _fieldLength, float _fieldWidth, float _boundaryWidth, float _lineWidth,
                              float _ceilingHeight, float _goalWidth, float _goalWallThickness, float _goalDepth,
                              float _goalHeight, float _ballRadius, float _ballMass, float _gravityX, float _gravityY,
-                             float _gravityZ) :
+                             float _gravityZ, float _centerCircleRadius) :
                              fieldLength(_fieldLength),
                              fieldWidth(_fieldWidth),
                              boundaryWidth(_boundaryWidth),
@@ -21,5 +21,6 @@ WorldSettings::WorldSettings(float _fieldLength, float _fieldWidth, float _bound
                              ballMass(_ballMass),
                              gravityX(_gravityX),
                              gravityY(_gravityY),
-                             gravityZ(_gravityZ){
+                             gravityZ(_gravityZ),
+                             centerCircleRadius(_centerCircleRadius){
 }

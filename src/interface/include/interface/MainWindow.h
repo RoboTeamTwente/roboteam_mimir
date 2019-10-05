@@ -16,7 +16,7 @@ namespace interface {
         explicit MainWindow(QWidget* parent = nullptr);
     private:
         DebugVisualization* debugVisualization;
-         Simulator* simulator;
+        Simulator* simulator;
     };
 }
 

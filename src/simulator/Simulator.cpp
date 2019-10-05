@@ -9,9 +9,11 @@
 #include "config/RobotConfig.h"
 #include "net/Publisher.h"
 #include "net/Receiver.h"
+#include <QTimer>
 
 Simulator::Simulator() {
-    QHostAddress localIP("127.0.01");
+    //set up network connections
+    QHostAddress localIP("224.5.23.2");
     int sendPort=10006;
     int receiveBluePort=10004;
     publisher=new net::Publisher(localIP,sendPort);
@@ -24,6 +26,12 @@ Simulator::Simulator() {
     RobotSettings* yellowSettings=configWidget->getRobotConfig(true)->settings;
     simWorld=new SimWorld(worldSettings,blueSettings,yellowSettings);
 
+    //start simulator logic loop
+    timer= new QTimer();
+    timer->setTimerType(Qt::PreciseTimer);
+    connect(timer,&QTimer::timeout,this,&Simulator::tick);
+    timer->start(16);
+
 }
 Simulator::~Simulator() {
     delete simWorld;
@@ -33,4 +41,10 @@ Simulator::~Simulator() {
 //needed for 3d visualization
 btDiscreteDynamicsWorld* Simulator::getPhysicsWorld() {
     return simWorld->getWorld();
+}
+
+void Simulator::tick() {
+    simWorld->stepSimulation();
+    SSL_GeometryData data=simWorld->getGeometryData();
+    publisher->send(data);
 }

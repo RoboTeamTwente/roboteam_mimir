@@ -13,7 +13,11 @@
 #include "../config/WorldSettings.h"
 #include "../config/RobotSettings.h"
 
-SimWorld::SimWorld(WorldSettings* worldSettings,RobotSettings* blueSettings,RobotSettings* yellowSettings) {
+SimWorld::SimWorld(WorldSettings* _worldSettings,RobotSettings* _blueSettings,RobotSettings* _yellowSettings) {
+    //We create local copies of the settings to ensure we are always sending the data back as the simulator sees it
+    worldSettings = new WorldSettings(*_worldSettings);
+    blueSettings = new RobotSettings(*_blueSettings);
+    yellowSettings= new RobotSettings(*_yellowSettings);
     //Contains default setup for memory and how collisions between different types of objects are handled/calculated
     collisionConfig = new btDefaultCollisionConfiguration();
 
@@ -35,11 +39,6 @@ SimWorld::SimWorld(WorldSettings* worldSettings,RobotSettings* blueSettings,Robo
     //create a ball
     ball=new SimBall(dynamicsWorld,worldSettings);
 
-    //start ticking the world
-    timer= new QTimer();
-    timer->setTimerType(Qt::PreciseTimer);
-    connect(timer,&QTimer::timeout,this,&SimWorld::stepSimulation);
-    timer->start(16);
 }
 SimWorld::~SimWorld() {
     //delete everything in reverse order of creation!
@@ -55,4 +54,20 @@ btDiscreteDynamicsWorld* SimWorld::getWorld() {
 }
 void SimWorld::stepSimulation() {
     dynamicsWorld->stepSimulation(1/60.0);
+}
+SSL_GeometryData SimWorld::getGeometryData() {
+    SSL_GeometryData data;
+    SSL_GeometryFieldSize* geomField=data.mutable_field();
+    //SSL geometry is sent in mm not in m
+    auto scale=[](float meas) -> int {
+        return (int) (1000*meas);
+    };
+    //the names of the variables in the settings should correspond exactly with how the measurements from SSL-vision are done
+    geomField->set_goal_depth(scale(worldSettings->goalDepth));
+    geomField->set_field_length(scale(worldSettings->fieldLength));
+    geomField->set_boundary_width(scale(worldSettings->boundaryWidth));
+    geomField->set_field_width(scale(worldSettings->fieldWidth));
+    geomField->set_goal_width(scale(worldSettings->goalWidth));
+
+    return data;
 }

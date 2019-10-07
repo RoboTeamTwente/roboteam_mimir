@@ -18,7 +18,7 @@ sudo apt-get install cmake
 ### Qt5
 
 ### Bullet3
-Not yet relevant. Just install the library.
+Not yet relevant. Just install the library from https://github.com/bulletphysics/bullet3.
 ~~On linux: It's important to have the correct drivers installed. For Nvidia users; run
 ```sudo apt-get install nvidia-driver-430``` (as of writing the latest version) and reboot.
 Your application will compile and run without these but if you recompile after installation the physics simulator should utilise your GPU much better.~~

@@ -12,7 +12,7 @@
 #include "SimBall.h"
 #include "../config/WorldSettings.h"
 #include "../config/RobotSettings.h"
-
+const float SCALE=200;
 SimWorld::SimWorld(WorldSettings* _worldSettings,RobotSettings* _blueSettings,RobotSettings* _yellowSettings) {
     //We create local copies of the settings to ensure we are always sending the data back as the simulator sees it
     worldSettings = new WorldSettings(*_worldSettings);
@@ -32,12 +32,12 @@ SimWorld::SimWorld(WorldSettings* _worldSettings,RobotSettings* _blueSettings,Ro
 
     // the world in which all simulation happens
     dynamicsWorld= new btDiscreteDynamicsWorld(collisionDispatcher,overlappingPairCache,solver,collisionConfig);
-    dynamicsWorld->setGravity(btVector3(worldSettings->gravityX,worldSettings->gravityY,worldSettings->gravityZ));
+    dynamicsWorld->setGravity(btVector3(SCALE*worldSettings->gravityX,SCALE*worldSettings->gravityY,SCALE*worldSettings->gravityZ));
 
     //field creates and manages all of the geometry related (static) physics objects in the world
     field=new SimField(dynamicsWorld,worldSettings);
     //create a ball
-    ball=new SimBall(dynamicsWorld,worldSettings);
+    ball=new SimBall(dynamicsWorld,worldSettings,btVector3(0,0,SCALE*0.0215),btVector3(SCALE*1,0,0));
 
 }
 SimWorld::~SimWorld() {
@@ -56,7 +56,7 @@ btDiscreteDynamicsWorld* SimWorld::getWorld() {
     return dynamicsWorld;
 }
 void SimWorld::stepSimulation() {
-    dynamicsWorld->stepSimulation(1/60.0);
+    dynamicsWorld->stepSimulation(1/200.0,10,1/200.0);
 }
 //helper functions for creating geometry
 inline int scale(const float &meas){
@@ -136,13 +136,15 @@ std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
     btVector3 position=ball->position();
     detBall.set_x(position.x());
     detBall.set_y(position.y());
-    detBall.set_area(0.0);//TODO: fix below 4
+    detBall.set_area(0.0);//TODO: fix below 4 vars
     detBall.set_confidence(1.0);
     detBall.set_pixel_x(0);
     detBall.set_pixel_y(0);
     detBall.set_z(worldSettings->ballRadius);//TODO: figure out what's actually being sent by SSL-vision
     detFrame.add_balls()->CopyFrom(detBall);
     frames.push_back(detFrame);
+    std::cout<<ball->position().x()/SCALE<<":" <<ball->position().y()/SCALE<<std::endl;
+    //std::cout<<sqrt(ball->velocity().x()*ball->velocity().x()+ball->velocity().y()*ball->velocity().y())/SCALE<<std::endl;
     return frames;
 }
 std::vector<SSL_WrapperPacket> SimWorld::getPackets() {

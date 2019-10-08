@@ -3,19 +3,19 @@
 //
 
 #include "SimField.h"
-
+const float SCALE=200;
 SimField::SimField(btDynamicsWorld *world, WorldSettings * cfg) {
     dynamicsWorld = world;
 
-    const float halfGoalHeight = cfg->goalHeight*0.5f;
-    const float halfGoalWidth = cfg->goalWidth*0.5f;
-    const float halfGoalDepth = cfg->goalDepth*0.5f;
-    const float halfGoalWallThickness = cfg->goalWallThickness*0.5f;
-    const float halfFieldLength = cfg->fieldLength*0.5f;
-    const float halfFieldWidth = cfg->fieldWidth*0.5f;
-    const float halfLineWidth = cfg->lineWidth*0.5f;
-    const float boundaryWidth =cfg->boundaryWidth;
-    const float ceilingHeight = cfg->ceilingHeight;
+    const float halfGoalHeight = cfg->goalHeight*0.5f*SCALE;
+    const float halfGoalWidth = cfg->goalWidth*0.5f*SCALE;
+    const float halfGoalDepth = cfg->goalDepth*0.5f*SCALE;
+    const float halfGoalWallThickness = cfg->goalWallThickness*0.5f*SCALE;
+    const float halfFieldLength = cfg->fieldLength*0.5f*SCALE;
+    const float halfFieldWidth = cfg->fieldWidth*0.5f*SCALE;
+    const float halfLineWidth = cfg->lineWidth*0.5f*SCALE;
+    const float boundaryWidth =cfg->boundaryWidth*SCALE;
+    const float ceilingHeight = cfg->ceilingHeight*SCALE;
 
     //create ground
     plane = new btStaticPlaneShape(btVector3(0.0f, 0.0f, 1.0f), 0.0f);
@@ -65,9 +65,10 @@ void SimField::addObject(btCollisionShape *shape, const btTransform &transform) 
     object->setWorldTransform(transform);
 
     //TODO: fix friction and restitution
-    object->setRestitution(0.0);
-    object->setFriction(0.0);
-    object->setRollingFriction(0.0);
+    object->setRestitution(1.0);
+    object->setFriction(1.0);
+    //object->setRollingFriction(1.0);
+//    object->setSpinningFriction(1.0);
     dynamicsWorld->addCollisionObject(object);
     objects.push_back(object);
 

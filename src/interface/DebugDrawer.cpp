@@ -6,7 +6,7 @@
 #include <iostream>
 #include "DebugVisualization.h"
 namespace interface {
-
+    const float SCALE=200;
     DebugDrawer::DebugDrawer(DebugVisualization *_visualization) {
         visualization=_visualization;
     }
@@ -14,18 +14,18 @@ namespace interface {
 
     }
     void DebugDrawer::drawLine(const btVector3 &from, const btVector3 &to, const btVector3 &color) {
-        visualization->addLine(from,to,color);// magic!
+        visualization->addLine(from/SCALE,to/SCALE,color);// magic!
     }
     void DebugDrawer::drawLine(const btVector3 &from, const btVector3 &to, const btVector3 &fromColor, const btVector3 &toColor) {
-        visualization->addLine(from,to,fromColor,toColor);
+        visualization->addLine(from/SCALE,to/SCALE,fromColor,toColor);
     }
     void DebugDrawer::drawContactPoint(const btVector3 &PointOnB, const btVector3 &normalOnB, btScalar distance,
                                        int lifeTime, const btVector3 &color) {
-
+        drawLine(PointOnB,PointOnB+normalOnB*20.0,color);
     }
     //sets the debug mode; what is drawn by the drawer
     int DebugDrawer::getDebugMode() const {
-        return DBG_DrawWireframe;
+        return DBG_DrawWireframe | DBG_DrawContactPoints;
     }
     void DebugDrawer::setDebugMode(int _debugMode) {
         debugMode = static_cast<DebugDrawModes>(_debugMode);
@@ -33,7 +33,12 @@ namespace interface {
     void DebugDrawer::reportErrorWarning(const char *warningString) {
         std::cerr << "[Debug drawer]: " + std::string(warningString) << std::endl;
     }
-
+    void DebugDrawer::drawSphere(btScalar radius, const btTransform &transform, const btVector3 &color) {
+        btIDebugDraw::drawSphere(radius,transform,color);
+        drawLine(transform.getOrigin(),transform.getOrigin()+transform.getBasis().getColumn(1)*radius*3.0,color);
+        drawLine(transform.getOrigin(),transform.getOrigin()+transform.getBasis().getColumn(0)*radius*3.0,color);
+        drawLine(transform.getOrigin(),transform.getOrigin()+transform.getBasis().getColumn(2)*radius*3.0,color);
+    }
     void DebugDrawer::draw3dText(const btVector3 &location, const char *textString) {
 
     }

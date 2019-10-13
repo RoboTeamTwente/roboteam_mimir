@@ -11,10 +11,14 @@
 
 #include <bullet/btBulletDynamicsCommon.h>
 #include "proto/messages_robocup_ssl_wrapper.pb.h"
+#include "SimBot.h"
 
 class SimField;
+
 class SimBall;
+
 class RobotSettings;
+
 class WorldSettings;
 
 class SimWorld : public QObject {
@@ -32,6 +36,9 @@ private:
 
     SimField *field;
     SimBall *ball;
+    SimBot * test;//TODO: remove
+    std::vector<SimBot *> blueBots;
+    std::vector<SimBot *> yellowBots;
     // these make up the total physics simulator together
     btDefaultCollisionConfiguration *collisionConfig;
     btCollisionDispatcher *collisionDispatcher;
@@ -43,7 +50,7 @@ private:
     RobotSettings *yellowSettings = nullptr;
     WorldSettings *worldSettings = nullptr;
 
-    int tickCount=0;
+    int tickCount = 0;
 
 };
 

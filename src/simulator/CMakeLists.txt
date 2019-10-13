@@ -19,7 +19,8 @@ add_library(simulator
         config/WorldSettings.h
         physics/SimBall.cpp
         physics/SimBall.h
-        )
+        physics/SimBot.cpp
+        physics/SimBot.h physics/BaseSimBot.h physics/RobotMesh.cpp physics/RobotMesh.h)
 target_link_libraries(simulator
         PRIVATE net
         PRIVATE Qt5::Core

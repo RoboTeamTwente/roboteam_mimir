@@ -25,7 +25,7 @@ SimBall::SimBall(btDynamicsWorld *_world, WorldSettings *settings, const btVecto
     float rotS=initialVel.norm()/(SCALE*settings->ballRadius);
     body->setRestitution(0.0f);
     body->setFriction(0.35f);
-    body->setRollingFriction(0.0357f);
+    body->setRollingFriction(0.0357f);//TODO: fix rolling friction/two stage ball model/scaling problems (Possibly caused by inertia?)
     body->setSpinningFriction(0.00f);
     //add the constructed rigid Body to the world
     world->addRigidBody(body);

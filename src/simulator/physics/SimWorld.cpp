@@ -140,11 +140,11 @@ std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
     detBall.set_confidence(1.0);
     detBall.set_pixel_x(0);
     detBall.set_pixel_y(0);
-    detBall.set_z(worldSettings->ballRadius);//TODO: figure out what's actually being sent by SSL-vision
+    detBall.set_z(worldSettings->ballRadius);//TODO: figure out what's actually being sent by SSL-vision in this field
     detFrame.add_balls()->CopyFrom(detBall);
     frames.push_back(detFrame);
-    std::cout<<ball->position().x()/SCALE<<":" <<ball->position().y()/SCALE<<std::endl;
-    //std::cout<<sqrt(ball->velocity().x()*ball->velocity().x()+ball->velocity().y()*ball->velocity().y())/SCALE<<std::endl;
+    //std::cout<<ball->position().x()/SCALE<<":" <<ball->position().y()/SCALE<<std::endl;
+    std::cout<<sqrt(ball->velocity().x()*ball->velocity().x()+ball->velocity().y()*ball->velocity().y())/SCALE<<std::endl;
     return frames;
 }
 std::vector<SSL_WrapperPacket> SimWorld::getPackets() {
@@ -155,7 +155,7 @@ std::vector<SSL_WrapperPacket> SimWorld::getPackets() {
         wrapper.mutable_detection()->CopyFrom(frame);
         packets.push_back(wrapper);
     }
-    if(tickCount%120==0){
+    if(tickCount%120==0){ //TODO: make 120 not hardcoded
         if(packets.empty()){
             SSL_WrapperPacket wrapper;
             packets.push_back(wrapper);

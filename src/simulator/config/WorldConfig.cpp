@@ -21,6 +21,7 @@ namespace {
     const QString gravityYStr("Physics/gravityY");
     const QString gravityZStr("Physics/gravityZ");
     const QString centerCircleRadiusStr("Geometry/centerCircleRadius");
+    const QString scaleStr("Physics/scale");
 
     const QMap<QString, float> defaultWorldValue = {
             {fieldLengthStr,        12.0f},
@@ -37,7 +38,8 @@ namespace {
             {gravityXStr,           0.0f},
             {gravityYStr,           0.0f},
             {gravityZStr,           -9.81f},
-            {centerCircleRadiusStr, 1.0f}
+            {centerCircleRadiusStr, 1.0f},
+            {scaleStr,              1.0}
     };
 }
 
@@ -58,7 +60,8 @@ WorldConfig::WorldConfig(const QString &path) {
             get(gravityXStr),
             get(gravityYStr),
             get(gravityZStr),
-            get(centerCircleRadiusStr)
+            get(centerCircleRadiusStr),
+            get(scaleStr)
     );
 }
 void WorldConfig::reloadSettings() {
@@ -78,7 +81,8 @@ void WorldConfig::reloadSettings() {
             get(gravityXStr),
             get(gravityYStr),
             get(gravityZStr),
-            get(centerCircleRadiusStr)
+            get(centerCircleRadiusStr),
+            get(scaleStr)
     );
 }
 WorldConfig::~WorldConfig() {

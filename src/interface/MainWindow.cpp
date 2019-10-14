@@ -8,7 +8,7 @@
 namespace interface {
     MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
         simulator=new Simulator();
-        debugVisualization = new DebugVisualization(simulator->getPhysicsWorld(),this);
+        debugVisualization = new DebugVisualization(simulator->getWorldSettings(),simulator->getPhysicsWorld(),this);
         setCentralWidget(debugVisualization);
         showMaximized();
     }

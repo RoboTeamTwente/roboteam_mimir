@@ -3,12 +3,11 @@
 //
 
 #include "SimBall.h"
-const float SCALE=200;
 SimBall::SimBall(btDynamicsWorld *_world, WorldSettings *settings, const btVector3 &initialPos,
                  const btVector3 &initialVel) :
         world(_world) {
     //create the shape and inertia
-    physicsBall = new btSphereShape(SCALE*settings->ballRadius);
+    physicsBall = new btSphereShape(settings->scale*settings->ballRadius);
     btVector3 inertia(0.0f, 0.0f, 0.0f); // TODO check if inertia fits that of an actual sphere/the ball in our case
     physicsBall->calculateLocalInertia(settings->ballMass, inertia);
 
@@ -22,7 +21,6 @@ SimBall::SimBall(btDynamicsWorld *_world, WorldSettings *settings, const btVecto
     body = new btRigidBody(rbInfo);
     // TODO: set restitution/friction
     body->setLinearVelocity(initialVel);//TODO test if this works and maybe add ang vel option
-    float rotS=initialVel.norm()/(SCALE*settings->ballRadius);
     body->setRestitution(0.0f);
     body->setFriction(0.35f);
     body->setRollingFriction(0.0357f);//TODO: fix rolling friction/two stage ball model/scaling problems (Possibly caused by inertia?)
@@ -37,7 +35,7 @@ SimBall::~SimBall() {
 }
 
 SimBall::SimBall(btDynamicsWorld *_world, WorldSettings *settings) :
-        SimBall(_world, settings, btVector3(0.0f, 0.0f, SCALE*settings->ballRadius)) {
+        SimBall(_world, settings, btVector3(0.0f, 0.0f, settings->scale*settings->ballRadius)) {
 }
 
 btVector3 SimBall::velocity() const {

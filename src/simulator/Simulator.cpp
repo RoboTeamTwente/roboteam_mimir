@@ -30,7 +30,7 @@ Simulator::Simulator() {
     timer= new QTimer();
     timer->setTimerType(Qt::PreciseTimer);
     connect(timer,&QTimer::timeout,this,&Simulator::tick);
-    timer->start(2);
+    timer->start(5);
 
 }
 Simulator::~Simulator() {
@@ -49,4 +49,8 @@ void Simulator::tick() {
     for (const auto& packet: packets){
         publisher->send(packet);
     }
+}
+
+WorldSettings* Simulator::getWorldSettings() {
+    return configWidget->getCurrentWorldConfig()->settings;
 }

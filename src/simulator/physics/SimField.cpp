@@ -3,10 +3,9 @@
 //
 
 #include "SimField.h"
-const float SCALE=200;
 SimField::SimField(btDynamicsWorld *world, WorldSettings * cfg) {
     dynamicsWorld = world;
-
+    const float SCALE=cfg->scale;
     const float halfGoalHeight = cfg->goalHeight*0.5f*SCALE;
     const float halfGoalWidth = cfg->goalWidth*0.5f*SCALE;
     const float halfGoalDepth = cfg->goalDepth*0.5f*SCALE;

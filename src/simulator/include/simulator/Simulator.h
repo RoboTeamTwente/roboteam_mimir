@@ -10,6 +10,7 @@
 class SimWorld;
 class ConfigWidget;
 class btDiscreteDynamicsWorld;
+class WorldSettings;
 namespace net{
     class Publisher;
     class Receiver;
@@ -21,6 +22,7 @@ public:
     Simulator();
     ~Simulator();
     btDiscreteDynamicsWorld* getPhysicsWorld();
+    WorldSettings* getWorldSettings();
 public slots:
     void tick();
 private:

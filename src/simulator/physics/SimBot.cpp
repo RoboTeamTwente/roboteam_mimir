@@ -4,7 +4,6 @@
 
 #include "SimBot.h"
 
-const float SCALE = 200;
 btVector3 SimBot::position() const {
     btTransform transform;
     motionState->getWorldTransform(transform);
@@ -17,7 +16,7 @@ btScalar SimBot::orientation() const {
     return transform.getRotation().x();//TODO: actually test this function (is not working currently)
 }
 //TODO: add option of initializing with wheel velocities
-SimBot::SimBot(btDynamicsWorld *world, RobotSettings *settings, const btVector3 &initialPos, btScalar dir) {
+SimBot::SimBot(btDynamicsWorld *world, RobotSettings *settings, WorldSettings *worldSettings, const btVector3 &initialPos, btScalar dir) {
     dynamicsWorld = world;
     btCompoundShape *wholeShape = new btCompoundShape();
     btTransform shapeTransform;
@@ -29,7 +28,7 @@ SimBot::SimBot(btDynamicsWorld *world, RobotSettings *settings, const btVector3 
     shapes.append(convexHullShape);
     for (btVector3 point : mesh.hull()) {
         //note scaling is done here so we do not need to worry about it in mesh construction
-        convexHullShape->addPoint(point * SCALE);
+        convexHullShape->addPoint(point * worldSettings->scale);
     }
     wholeShape->addChildShape(shapeTransform, convexHullShape);
     shapes.append(wholeShape);
@@ -51,7 +50,7 @@ SimBot::SimBot(btDynamicsWorld *world, RobotSettings *settings, const btVector3 
     body->setRestitution(0.0);
     dynamicsWorld->addRigidBody(body);
 }
-SimBot::SimBot(btDynamicsWorld *world, RobotSettings *settings) : SimBot(world, settings,
+SimBot::SimBot(btDynamicsWorld *world, RobotSettings *settings, WorldSettings * worldSettings) : SimBot(world, settings,worldSettings,
                                                                          btVector3(0, 0, settings->height * 0.5), 0.0) {
 }
 SimBot::~SimBot() {

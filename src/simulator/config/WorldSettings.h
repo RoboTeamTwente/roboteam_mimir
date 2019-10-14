@@ -23,7 +23,8 @@ public:
             float _gravityX,
             float _gravityY,
             float _gravityZ,
-            float _centerCircleRadius
+            float _centerCircleRadius,
+            float scale
     );
     const float fieldLength;
     const float fieldWidth;
@@ -45,6 +46,7 @@ public:
 
     const float centerCircleRadius;
 
+    const float scale;
 
 };
 

@@ -7,12 +7,13 @@
 
 #include "BaseSimBot.h"
 #include "../config/RobotSettings.h"
+#include "../config/WorldSettings.h"
 #include "RobotMesh.h"
 
 class SimBot : public BaseSimBot {
 public:
-    SimBot(btDynamicsWorld * world, RobotSettings* settings);
-    SimBot(btDynamicsWorld * world, RobotSettings* settings,const btVector3& initialPos,btScalar dir);
+    SimBot(btDynamicsWorld * world, RobotSettings* settings, WorldSettings* worldSettings);
+    SimBot(btDynamicsWorld * world, RobotSettings* settings, WorldSettings* worldSettings, const btVector3& initialPos,btScalar dir);
     ~SimBot();
     btVector3 position() const override;
     btScalar orientation() const override;

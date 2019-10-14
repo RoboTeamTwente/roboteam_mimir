@@ -12,7 +12,6 @@
 #include "SimBall.h"
 #include "../config/WorldSettings.h"
 #include "../config/RobotSettings.h"
-const float SCALE=200;
 SimWorld::SimWorld(WorldSettings* _worldSettings,RobotSettings* _blueSettings,RobotSettings* _yellowSettings) {
     //We create local copies of the settings to ensure we are always sending the data back as the simulator sees it
     worldSettings = new WorldSettings(*_worldSettings);
@@ -32,14 +31,16 @@ SimWorld::SimWorld(WorldSettings* _worldSettings,RobotSettings* _blueSettings,Ro
 
     // the world in which all simulation happens
     dynamicsWorld= new btDiscreteDynamicsWorld(collisionDispatcher,overlappingPairCache,solver,collisionConfig);
+
+    const float SCALE=worldSettings->scale;
     dynamicsWorld->setGravity(btVector3(SCALE*worldSettings->gravityX,SCALE*worldSettings->gravityY,SCALE*worldSettings->gravityZ));
 
     //field creates and manages all of the geometry related (static) physics objects in the world
     field=new SimField(dynamicsWorld,worldSettings);
     //create a ball
-    ball=new SimBall(dynamicsWorld,worldSettings,btVector3(0,SCALE,0.7*SCALE),btVector3(0,-SCALE,0));
+    ball=new SimBall(dynamicsWorld,worldSettings,btVector3(0,SCALE,worldSettings->ballRadius*SCALE),btVector3(-SCALE,-SCALE,0));
     //creating a robot for testing purposes TODO remove
-    test=new SimBot(dynamicsWorld,blueSettings);
+    test=new SimBot(dynamicsWorld,blueSettings,worldSettings);
 
 }
 SimWorld::~SimWorld() {
@@ -58,7 +59,7 @@ btDiscreteDynamicsWorld* SimWorld::getWorld() {
     return dynamicsWorld;
 }
 void SimWorld::stepSimulation() {
-    dynamicsWorld->stepSimulation(1/200.0,10,1/200.0);
+    dynamicsWorld->stepSimulation(1/200.0,10,1/2000.0);
 }
 //helper functions for creating geometry
 inline int scale(const float &meas){
@@ -146,7 +147,7 @@ std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
     detFrame.add_balls()->CopyFrom(detBall);
     frames.push_back(detFrame);
     //std::cout<<ball->position().x()/SCALE<<":" <<ball->position().y()/SCALE<<std::endl;
-    std::cout<<sqrt(ball->velocity().x()*ball->velocity().x()+ball->velocity().y()*ball->velocity().y())/SCALE<<std::endl;
+    std::cout<<sqrt(ball->velocity().x()*ball->velocity().x()+ball->velocity().y()*ball->velocity().y())/worldSettings->scale<<std::endl;
     return frames;
 }
 std::vector<SSL_WrapperPacket> SimWorld::getPackets() {

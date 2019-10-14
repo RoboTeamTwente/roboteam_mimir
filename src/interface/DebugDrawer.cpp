@@ -6,22 +6,22 @@
 #include <iostream>
 #include "DebugVisualization.h"
 namespace interface {
-    const float SCALE=200;
-    DebugDrawer::DebugDrawer(DebugVisualization *_visualization) {
+    DebugDrawer::DebugDrawer(DebugVisualization *_visualization,WorldSettings * _settings) {
         visualization=_visualization;
+        settings=_settings;
     }
     DebugDrawer::~DebugDrawer() {
 
     }
     void DebugDrawer::drawLine(const btVector3 &from, const btVector3 &to, const btVector3 &color) {
-        visualization->addLine(from/SCALE,to/SCALE,color);// magic!
+        visualization->addLine(from/settings->scale,to/settings->scale,color);// magic!
     }
     void DebugDrawer::drawLine(const btVector3 &from, const btVector3 &to, const btVector3 &fromColor, const btVector3 &toColor) {
-        visualization->addLine(from/SCALE,to/SCALE,fromColor,toColor);
+        visualization->addLine(from/settings->scale,to/settings->scale,fromColor,toColor);
     }
     void DebugDrawer::drawContactPoint(const btVector3 &PointOnB, const btVector3 &normalOnB, btScalar distance,
                                        int lifeTime, const btVector3 &color) {
-        drawLine(PointOnB,PointOnB+normalOnB*20.0,color);
+        drawLine(PointOnB,PointOnB+normalOnB*0.1*settings->scale,color);
     }
     //sets the debug mode; what is drawn by the drawer
     int DebugDrawer::getDebugMode() const {

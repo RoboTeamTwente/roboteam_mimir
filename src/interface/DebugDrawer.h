@@ -6,12 +6,14 @@
 #define ROBOTEAM_MIMIR_DEBUGDRAWER_H
 
 #include <bullet/btBulletDynamicsCommon.h>
+#include "../simulator/config/WorldSettings.h"
+
 namespace interface{
     class DebugVisualization;
     class DebugDrawer : public btIDebugDraw {
 
     public:
-        explicit DebugDrawer(DebugVisualization* _visualization);
+        explicit DebugDrawer(DebugVisualization* _visualization,WorldSettings* _settings);
         ~DebugDrawer() override;
 
         // virtual functions we need to override from btIDebugDraw in order to implement the interface
@@ -26,7 +28,8 @@ namespace interface{
         int getDebugMode() const override;
     private:
         DebugDrawModes debugMode;
-        DebugVisualization * visualization;
+        DebugVisualization * visualization=nullptr;
+        WorldSettings * settings=nullptr;
 
 
     };

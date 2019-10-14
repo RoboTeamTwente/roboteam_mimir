@@ -157,7 +157,7 @@ std::vector<SSL_WrapperPacket> SimWorld::getPackets() {
         wrapper.mutable_detection()->CopyFrom(frame);
         packets.push_back(wrapper);
     }
-    if(tickCount%120==0){ //TODO: make 120 not hardcoded
+    if(tickCount%120==0){ //TODO: make 120 not hardcoded but through interface/settings
         if(packets.empty()){
             SSL_WrapperPacket wrapper;
             packets.push_back(wrapper);

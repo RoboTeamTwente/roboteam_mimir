@@ -108,7 +108,7 @@ SSL_GeometryData SimWorld::getGeometryData() {
     addLine("CenterLine",-hLength,0.0f,hLength,0.0f,geomField,worldSettings->lineWidth);
 
     addLine("LeftPenaltyStretch",-hLength+defense,-defense,-hLength+defense,defense,geomField,worldSettings->lineWidth);
-    addLine("LeftFieldLeftPenaltyStretch",-hLength,defense,-hLength+defense,defense,geomField,worldSettings->lineWidth);
+    addLine("LeftFieldLeftPenaltyStretch",-hLength,defense,-hLength+defense,defense,geomField,worldSettings->lineWidth); //TODO: check what left/right mean in this context (w.r.t what view is this 'left'?)
     addLine("LeftFieldRightPenaltyStretch",-hLength,-defense,-hLength+defense,-defense,geomField,worldSettings->lineWidth);
 
     addLine("RightPenaltyStretch",hLength-defense,-defense,hLength-defense,defense,geomField,worldSettings->lineWidth);

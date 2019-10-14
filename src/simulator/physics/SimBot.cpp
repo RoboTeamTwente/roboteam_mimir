@@ -29,7 +29,7 @@ SimBot::SimBot(btDynamicsWorld *world, RobotSettings *settings, const btVector3 
     shapes.append(convexHullShape);
     for (btVector3 point : mesh.hull()) {
         //note scaling is done here so we do not need to worry about it in mesh construction
-        convexHullShape->addPoint(point * SCALE*5);
+        convexHullShape->addPoint(point * SCALE);
     }
     wholeShape->addChildShape(shapeTransform, convexHullShape);
     shapes.append(wholeShape);

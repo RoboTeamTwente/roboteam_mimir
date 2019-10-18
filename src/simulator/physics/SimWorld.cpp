@@ -147,7 +147,7 @@ std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
     detFrame.add_balls()->CopyFrom(detBall);
     frames.push_back(detFrame);
     //std::cout<<ball->position().x()/SCALE<<":" <<ball->position().y()/SCALE<<std::endl;
-    std::cout<<sqrt(ball->velocity().x()*ball->velocity().x()+ball->velocity().y()*ball->velocity().y())/worldSettings->scale<<std::endl;
+    //std::cout<<sqrt(ball->velocity().x()*ball->velocity().x()+ball->velocity().y()*ball->velocity().y())/worldSettings->scale<<std::endl;
     return frames;
 }
 std::vector<SSL_WrapperPacket> SimWorld::getPackets() {

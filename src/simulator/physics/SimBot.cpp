@@ -25,13 +25,13 @@ SimBot::SimBot(btDynamicsWorld *world, RobotSettings *settings, WorldSettings *w
     //Create the outer hull of the robot
     RobotMesh mesh(settings);
     btConvexHullShape *convexHullShape = new btConvexHullShape();
-    shapes.append(convexHullShape);
+    shapes.push_back(convexHullShape);
     for (btVector3 point : mesh.hull()) {
         //note scaling is done here so we do not need to worry about it in mesh construction
         convexHullShape->addPoint(point * worldSettings->scale);
     }
     wholeShape->addChildShape(shapeTransform, convexHullShape);
-    shapes.append(wholeShape);
+    shapes.push_back(wholeShape);
 
     //set the position of the hull
     btTransform worldTransform;
@@ -57,10 +57,7 @@ SimBot::~SimBot() {
     dynamicsWorld->removeRigidBody(body);
     delete body;
     delete motionState;
-    while (!shapes.empty()) {
-        delete shapes.last();
-        shapes.removeLast();
+    for (int i = shapes.size(); i >=0; --i) {
+        delete shapes[i];
     }
-
-
 }

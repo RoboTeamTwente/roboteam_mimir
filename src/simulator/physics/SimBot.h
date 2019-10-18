@@ -20,7 +20,7 @@ public:
 //    void reset(btScalar x,btScalar y) override;
 private:
     btDynamicsWorld * dynamicsWorld;
-    QList<btCollisionShape*> shapes;
+    btAlignedObjectArray<btCollisionShape*> shapes;
     btRigidBody* body=nullptr;
     btDefaultMotionState * motionState=nullptr;
 };

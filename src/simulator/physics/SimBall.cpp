@@ -21,7 +21,8 @@ SimBall::SimBall(btDynamicsWorld *_world, WorldSettings *settings, const btVecto
     btRigidBody::btRigidBodyConstructionInfo rbInfo(settings->ballMass, motionState, physicsBall, inertia);
     body = new btRigidBody(rbInfo);
     // TODO: set restitution/friction
-    body->setLinearVelocity(initialVel);//TODO test if this works and maybe add ang vel option
+    body->setLinearVelocity(initialVel);
+    //TODO: ang vel option+spinning friction and setting lin vel to 0
     body->setRestitution(1.0f);
     body->setFriction(0.35f);
     // when rolling ball decelerates with friction force for linear as if it's 0.0357

@@ -3,7 +3,7 @@
 //
 
 #include "RobotSettings.h"
-RobotSettings::RobotSettings(float _radius, float _height,float _startAngle, float _endAngle, float _wheelAngle0,
+RobotSettings::RobotSettings(float _radius, float _totalHeight,float _startAngle, float _endAngle, float _wheelAngle0,
                              float _wheelAngle1, float _wheelAngle2, float _wheelAngle3, float _wheelCenterRadius,
                              float _wheelCenterHeight, float _wheelRadius, float _wheelThickness,
                              float _bottomPlateHeight, float _kickerWidth, float _kickerThickness, float _kickerHeight,
@@ -11,7 +11,7 @@ RobotSettings::RobotSettings(float _radius, float _height,float _startAngle, flo
                              radius(_radius),
                              startAngle(_startAngle),
                              endAngle(_endAngle),
-                             height(_height),
+                             totalHeight(_totalHeight),
                              wheelAngle0(_wheelAngle0),
                              wheelAngle1(_wheelAngle1),
                              wheelAngle2(_wheelAngle2),

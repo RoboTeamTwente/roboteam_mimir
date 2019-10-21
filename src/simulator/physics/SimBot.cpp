@@ -36,7 +36,7 @@ SimBot::SimBot(btDynamicsWorld *world, RobotSettings *settings, WorldSettings *w
     //set the position of the hull
     btTransform worldTransform;
     worldTransform.setIdentity();
-    btVector3 originPos(initialPos.x(), initialPos.y(), settings->height * 0.5);//TODO: ensure no offset!
+    btVector3 originPos(initialPos.x(), initialPos.y(), worldSettings->scale*((settings->totalHeight - settings->bottomPlateHeight)* 0.5+settings->bottomPlateHeight));//TODO: ensure no offset!
     worldTransform.setOrigin(originPos);
     worldTransform.setRotation(btQuaternion(btVector3(0, 0, 1), dir));
 
@@ -49,9 +49,31 @@ SimBot::SimBot(btDynamicsWorld *world, RobotSettings *settings, WorldSettings *w
     body->setFriction(1.0);
     body->setRestitution(0.0);
     dynamicsWorld->addRigidBody(body);
+    addWheel(settings, worldSettings);
+
+}
+void SimBot::addWheel(const RobotSettings *settings, const WorldSettings *worldSettings) const {//create wheels
+    btCylinderShapeX *wheelShape=new btCylinderShapeX(btVector3(settings->wheelThickness*0.5,settings->wheelRadius,settings->wheelRadius)*worldSettings->scale);
+    btTransform wheelTransform;
+    wheelTransform.setIdentity();
+    btScalar angle=settings->wheelAngle0/180.0*M_PI;
+    wheelTransform.setRotation(btQuaternion(btVector3(0.0f, 0.0f, 1.0f),angle));
+    btVector3 wheelPos=btVector3(cos(angle)*settings->radius,sin(angle)*settings->radius,settings->wheelRadius)*worldSettings->scale;
+    wheelTransform.setOrigin(wheelPos);
+
+    btDefaultMotionState *motionState1=new btDefaultMotionState(wheelTransform);
+    btVector3 wheelInertia;
+    wheelShape->calculateLocalInertia(settings->wheelMass,wheelInertia);
+    btRigidBody::btRigidBodyConstructionInfo wheelInfo(settings->wheelMass,motionState1,wheelShape,wheelInertia);
+    btRigidBody * wheel= new btRigidBody(wheelInfo);
+    btVector3 heightOffset=btVector3(0,0,-(settings->totalHeight*0.5))*worldSettings->scale;
+    btHingeConstraint * constraint = new btHingeConstraint(*body, *wheel,wheelPos+heightOffset,btVector3(0.0,0.0,0),btVector3(.0,0,0),btVector3(1.0,0.0,0.0));
+    dynamicsWorld->addConstraint(constraint, true);
+    dynamicsWorld->addRigidBody(wheel);
+
 }
 SimBot::SimBot(btDynamicsWorld *world, RobotSettings *settings, WorldSettings * worldSettings) : SimBot(world, settings,worldSettings,
-                                                                         btVector3(0, 0, settings->height * 0.5), 0.0) {
+                                                                         btVector3(0, 0, 0), 0.0) {
 }
 SimBot::~SimBot() {
     dynamicsWorld->removeRigidBody(body);

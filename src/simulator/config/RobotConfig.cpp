@@ -14,29 +14,33 @@ namespace {
 //the vision pattern coordinates are assumed to be perfectly centered in the middle of a robot. (as is the case for SSL-vision too)
 
     const QString radiusStr("Layout/radius");//(m)
-    const QString startAngleStr("Layout/height"); //(degrees) Angle at which the arced hull starts
+    const QString startAngleStr("Layout/totalHeight"); //(degrees) Angle at which the arced hull starts
     const QString endAngleStr("Layout/startAngle"); //(degrees) Angle at which the arced hull ends
-    const QString heightStr("Layout/endAngle");// total height of robot measured from the ground
+    const QString totalHeightStr("Layout/endAngle");// total height of robot measured from the ground
     const QString wheelAngle0Str("Layout/wheelAngle0");//(degrees)
     const QString wheelAngle1Str("Layout/wheelAngle1");//(degrees)
     const QString wheelAngle2Str("Layout/wheelAngle2");//(degrees)
     const QString wheelAngle3Str("Layout/wheelAngle3");//(degrees)
-    const QString wheelCenterRadiusStr("Layout/wheelCentreRadius");//(m) Correction for the centre of the wheels relative to the radius
-    const QString wheelCenterHeightStr("Layout/wheelCentreHeight");//(m) correction for the centre of the wheels relative to the bottom plate height.
+    const QString wheelCenterRadiusStr(
+            "Layout/wheelCentreRadius");//(m) Correction for the centre of the wheels relative to the radius
+    const QString wheelCenterHeightStr(
+            "Layout/wheelCentreHeight");//(m) correction for the centre of the wheels relative to the bottom plate height.
     const QString wheelRadiusStr("Layout/wheelRadius");//(m)
     const QString wheelThicknessStr("Layout/wheelThickness");//(m)
-    const QString bottomPlateHeightStr("Layout/bottomPlateHeight");//(m) total distance between the ground and the bottom of the bottom plate
+    const QString bottomPlateHeightStr(
+            "Layout/bottomPlateHeight");//(m) total distance between the ground and the bottom of the bottom plate
     const QString kickerWidthStr("Layout/kickerWidth");//(m) width of the kicker/dribbler
     const QString kickerThicknessStr("Layout/kickerThickness");//(m) 'depth' of the kicker
     const QString kickerHeightStr("Layout/kickerHeight");//(m) height measured from bottom to top of kicker
-    const QString kickerGroundDistStr("Layout/kickerGroundDist");//(m) distance between ground and the bottom of the kicker
+    const QString kickerGroundDistStr(
+            "Layout/kickerGroundDist");//(m) distance between ground and the bottom of the kicker
     const QString bodyMassStr("Physics/bodyMass");//(kg) mass of the body/hull
     const QString wheelMassStr("Physics/wheelMass");//(kg) mass of a wheel
     const QMap<QString, float> defaultRobotValue = {
             {radiusStr,            0.09f},
             {startAngleStr,        45.0f},
             {endAngleStr,          315.0f},
-            {heightStr,            0.15f},
+            {totalHeightStr,       0.15f},
             {wheelAngle0Str,       60.0f},
             {wheelAngle1Str,       135.0f},
             {wheelAngle2Str,       225.0f},
@@ -60,7 +64,7 @@ RobotConfig::RobotConfig(const QString &path) {
             get(radiusStr),
             get(startAngleStr),
             get(endAngleStr),
-            get(heightStr),
+            get(totalHeightStr),
             get(wheelAngle0Str),
             get(wheelAngle1Str),
             get(wheelAngle2Str),
@@ -84,11 +88,11 @@ RobotConfig::~RobotConfig() {
 }
 void RobotConfig::reloadSettings() {
     delete settings;
-    settings=new RobotSettings(
+    settings = new RobotSettings(
             get(radiusStr),
             get(startAngleStr),
             get(endAngleStr),
-            get(heightStr),
+            get(totalHeightStr),
             get(wheelAngle0Str),
             get(wheelAngle1Str),
             get(wheelAngle2Str),

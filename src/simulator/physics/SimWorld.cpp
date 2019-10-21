@@ -59,7 +59,7 @@ btDiscreteDynamicsWorld* SimWorld::getWorld() {
     return dynamicsWorld;
 }
 void SimWorld::stepSimulation() {
-    dynamicsWorld->stepSimulation(1/200.0,10,1/2000.0);
+    dynamicsWorld->stepSimulation(1/200.0,10,1/200.0);
 }
 //helper functions for creating geometry
 inline int scale(const float &meas){

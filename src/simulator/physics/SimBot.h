@@ -19,10 +19,12 @@ public:
     btScalar orientation() const override;
 //    void reset(btScalar x,btScalar y) override;
 private:
+
     btDynamicsWorld * dynamicsWorld;
     btAlignedObjectArray<btCollisionShape*> shapes;
     btRigidBody* body=nullptr;
     btDefaultMotionState * motionState=nullptr;
+    void addWheel(const RobotSettings *settings, const WorldSettings *worldSettings) const;
 };
 
 

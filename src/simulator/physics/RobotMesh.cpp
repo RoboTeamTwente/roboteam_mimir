@@ -6,10 +6,10 @@
 
 RobotMesh::RobotMesh(RobotSettings *settings) {
 
-    const float halfHeight=settings->height*0.5f;
+    const float halfHeight=settings->totalHeight*0.5f;
     const float radius=settings->radius;
-    const float startAngleRad=settings->startAngle/180.0f*M_PI;
-    const float endAngleRad=settings->endAngle/180.0f*M_PI;
+    const float startAngleRad=settings->startAngle/180.0f*M_PI+M_PI_2;
+    const float endAngleRad=settings->endAngle/180.0f*M_PI+M_PI_2;
     const float halfFrontLength=sin(startAngleRad)*radius;
     //first construct the triangle mesh
     const int angleSteps=20;

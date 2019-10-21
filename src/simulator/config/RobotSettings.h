@@ -11,7 +11,7 @@ public:
     RobotSettings(float _radius,
                   float _startAngle,
                   float _endAngle,
-                  float _height,
+                  float _totalHeight,
                   float _wheelAngle0,
                   float _wheelAngle1,
                   float _wheelAngle2,
@@ -31,7 +31,7 @@ public:
     const float radius;
     const float startAngle;
     const float endAngle;
-    const float height;
+    const float totalHeight;
     const float wheelAngle0;
     const float wheelAngle1;
     const float wheelAngle2;

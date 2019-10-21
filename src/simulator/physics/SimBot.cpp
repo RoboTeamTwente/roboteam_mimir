@@ -67,7 +67,10 @@ void SimBot::addWheel(const RobotSettings *settings, const WorldSettings *worldS
     btRigidBody::btRigidBodyConstructionInfo wheelInfo(settings->wheelMass,motionState1,wheelShape,wheelInertia);
     btRigidBody * wheel= new btRigidBody(wheelInfo);
     btVector3 heightOffset=btVector3(0,0,-(settings->totalHeight*0.5))*worldSettings->scale;
-    btHingeConstraint * constraint = new btHingeConstraint(*body, *wheel,wheelPos+heightOffset,btVector3(0.0,0.0,0),btVector3(.0,0,0),btVector3(1.0,0.0,0.0));
+    btHingeConstraint * constraint = new btHingeConstraint(*body, *wheel,wheelPos+heightOffset,btVector3(0.0,0.0,0),btVector3(wheelPos.x(),wheelPos.y(),0),btVector3(1.0,0.0,0.0));
+    constraint->enableAngularMotor(true,10,100);
+    constraint->setDbgDrawSize(100);
+
     dynamicsWorld->addConstraint(constraint, true);
     dynamicsWorld->addRigidBody(wheel);
 

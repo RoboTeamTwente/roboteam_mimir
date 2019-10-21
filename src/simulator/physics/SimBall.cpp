@@ -23,9 +23,11 @@ SimBall::SimBall(btDynamicsWorld *_world, WorldSettings *settings, const btVecto
     // TODO: set restitution/friction
     body->setLinearVelocity(initialVel);//TODO test if this works and maybe add ang vel option
     body->setRestitution(1.0f);
-    body->setFriction(1.0f);
-    body->setRollingFriction(0.0357f);//TODO: fix rolling friction/two stage ball model/scaling problems (Possibly caused by inertia?)
-    std::cout<<body->getAngularSleepingThreshold()<<std::endl;
+    body->setFriction(0.35f);
+    // when rolling ball decelerates with friction force for linear as if it's 0.0357
+    // However that does not take torque/angular rotation when rolling into account, so we need to multiply by
+    // 7/5.0*ball radius from Torque computation.
+    body->setRollingFriction(0.0357*7.0/5.0*settings->scale*settings->ballRadius);
     body->setSleepingThresholds(0.01*settings->scale,0.01/2/M_PI);
     //add the constructed rigid Body to the world
     world->addRigidBody(body);
@@ -43,20 +45,7 @@ SimBall::SimBall(btDynamicsWorld *_world, WorldSettings *settings) :
 btVector3 SimBall::velocity() const {
     return body->getLinearVelocity();
 }
-void print(btVector3 data){
-    std::cout<<data.x()<<" "<<data.y()<<" "<<data.z()<<std::endl;
-}
 btVector3 SimBall::position() {
     const btTransform transform=body->getWorldTransform();
-    //btVector3 linVel=body->getLinearVelocity();
-    //btVector3 angVel=body->getAngularVelocity();
-    //std::cout<<"_______"<<std::endl;
-//    print(linVel/100);
-//    print(angVel);
-    //float vel=linVel.norm();
-    //std::cout<<std::setprecision(10)<<vel/100.0<<std::endl;
-    //std::cout<<tick<<std::endl;
-    tick++;
-    std::cout<<"_______"<<std::endl;
     return transform.getOrigin();
 }

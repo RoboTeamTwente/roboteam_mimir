@@ -29,6 +29,7 @@ SimBall::SimBall(btDynamicsWorld *_world, WorldSettings *settings, const btVecto
     // However that does not take torque/angular rotation when rolling into account, so we need to multiply by
     // 7/5.0*ball radius from Torque computation.
     body->setRollingFriction(0.0357*7.0/5.0*settings->scale*settings->ballRadius);
+    body->setSpinningFriction(0.03);//TODO: test real values
     body->setSleepingThresholds(0.01*settings->scale,0.01/2/M_PI);
     //add the constructed rigid Body to the world
     world->addRigidBody(body);

@@ -40,7 +40,7 @@ SimWorld::SimWorld(WorldSettings* _worldSettings,RobotSettings* _blueSettings,Ro
     //create a ball
     ball=new SimBall(dynamicsWorld,worldSettings,btVector3(-4*SCALE,0,worldSettings->ballRadius*SCALE),btVector3(SCALE*8,0,0));
     //creating a robot for testing purposes TODO remove
-    test=new SimBot(dynamicsWorld,blueSettings,worldSettings);
+    test=new SimBot(dynamicsWorld,blueSettings,worldSettings,btVector3(1.0,0.0,0.0)*worldSettings->scale,20.0);
 
 }
 SimWorld::~SimWorld() {

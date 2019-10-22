@@ -24,7 +24,9 @@ private:
     btAlignedObjectArray<btCollisionShape*> shapes;
     btRigidBody* body=nullptr;
     btDefaultMotionState * motionState=nullptr;
-    void addWheel(const RobotSettings *settings, const WorldSettings *worldSettings) const;
+    void addWheels(const RobotSettings *settings, const WorldSettings *worldSettings);
+    void addWheel(int wheelLabel,btScalar wheelAngleD,btCollisionShape * wheelShape,const RobotSettings *settings, const WorldSettings *worldSettings);
+
 };
 
 

@@ -38,7 +38,7 @@ SimWorld::SimWorld(WorldSettings* _worldSettings,RobotSettings* _blueSettings,Ro
     //field creates and manages all of the geometry related (static) physics objects in the world
     field=new SimField(dynamicsWorld,worldSettings);
     //create a ball
-    ball=new SimBall(dynamicsWorld,worldSettings,btVector3(-4*SCALE,0,worldSettings->ballRadius*SCALE),btVector3(SCALE*5,0,0));
+    ball=new SimBall(dynamicsWorld,worldSettings,btVector3(-4*SCALE,0,worldSettings->ballRadius*SCALE),btVector3(SCALE*8,0,0));
     //creating a robot for testing purposes TODO remove
     test=new SimBot(dynamicsWorld,blueSettings,worldSettings);
 

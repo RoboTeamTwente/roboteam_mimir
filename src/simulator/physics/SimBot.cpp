@@ -49,31 +49,43 @@ SimBot::SimBot(btDynamicsWorld *world, RobotSettings *settings, WorldSettings *w
     body->setFriction(1.0);
     body->setRestitution(0.0);
     dynamicsWorld->addRigidBody(body);
-    addWheel(settings, worldSettings);
+    addWheels(settings, worldSettings);
 
 }
-void SimBot::addWheel(const RobotSettings *settings, const WorldSettings *worldSettings) const {//create wheels
+void SimBot::addWheels(const RobotSettings *settings, const WorldSettings *worldSettings)  {//create wheels
+    //we don't want to construct the same shape 4 times
     btCylinderShapeX *wheelShape=new btCylinderShapeX(btVector3(settings->wheelThickness*0.5,settings->wheelRadius,settings->wheelRadius)*worldSettings->scale);
-    btTransform wheelTransform;
-    wheelTransform.setIdentity();
-    btScalar angle=settings->wheelAngle0/180.0*M_PI;
-    wheelTransform.setRotation(btQuaternion(btVector3(0.0f, 0.0f, 1.0f),angle));
-    btVector3 wheelPos=btVector3(cos(angle)*settings->radius,sin(angle)*settings->radius,settings->wheelRadius)*worldSettings->scale;
-    wheelTransform.setOrigin(wheelPos);
+    addWheel(0,settings->wheelAngle0,wheelShape,settings,worldSettings);
+    addWheel(1,settings->wheelAngle1,wheelShape,settings,worldSettings);
+    addWheel(2,settings->wheelAngle2,wheelShape,settings,worldSettings);
+    addWheel(3,settings->wheelAngle3,wheelShape,settings,worldSettings);
 
-    btDefaultMotionState *motionState1=new btDefaultMotionState(wheelTransform);
+}
+//TODO: make motors controllable
+void SimBot::addWheel(int wheelLabel, btScalar wheelAngleD, btCollisionShape *wheelShape, const RobotSettings *settings,
+                      const WorldSettings *worldSettings) {
+    btScalar angleR=wheelAngleD/180.0*M_PI;//convert to radians
+    // find the centre of the wheel position
+    btTransform wheelTransform;
+    wheelTransform.setRotation(btQuaternion(btVector3(0.0f, 0.0f, 1.0f),angleR));
+    btVector3 wheelPos=btVector3(cos(angleR)*settings->radius,sin(angleR)*settings->radius,settings->wheelRadius)*worldSettings->scale;
+    wheelTransform.setOrigin(wheelPos);
+    //calculate moments of inertia of wheel
     btVector3 wheelInertia;
     wheelShape->calculateLocalInertia(settings->wheelMass,wheelInertia);
-    btRigidBody::btRigidBodyConstructionInfo wheelInfo(settings->wheelMass,motionState1,wheelShape,wheelInertia);
+    // cosntruct rigid body
+    btDefaultMotionState* motionState= new btDefaultMotionState(wheelTransform);
+    btRigidBody::btRigidBodyConstructionInfo wheelInfo(settings->wheelMass,motionState,wheelShape,wheelInertia);
     btRigidBody * wheel= new btRigidBody(wheelInfo);
-    btVector3 heightOffset=btVector3(0,0,-(settings->totalHeight*0.5))*worldSettings->scale;
+    //construct joint/motor
+    btVector3 heightOffset=btVector3(0,0,-(settings->totalHeight*0.5+0.02))*worldSettings->scale; //TODO fix offsets
     btHingeConstraint * constraint = new btHingeConstraint(*body, *wheel,wheelPos+heightOffset,btVector3(0.0,0.0,0),btVector3(wheelPos.x(),wheelPos.y(),0),btVector3(1.0,0.0,0.0));
-    constraint->enableAngularMotor(true,10,100);
-    constraint->setDbgDrawSize(100);
-
+    constraint->enableAngularMotor(true,-10,100);
+    constraint->setDbgDrawSize(1);
+    wheel->setFriction(0.8); //TODO: fix friction/rolling friction and ball collision
+    //add everything to the world
     dynamicsWorld->addConstraint(constraint, true);
     dynamicsWorld->addRigidBody(wheel);
-
 }
 SimBot::SimBot(btDynamicsWorld *world, RobotSettings *settings, WorldSettings * worldSettings) : SimBot(world, settings,worldSettings,
                                                                          btVector3(0, 0, 0), 0.0) {

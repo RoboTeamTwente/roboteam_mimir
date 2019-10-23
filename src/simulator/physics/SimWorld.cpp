@@ -31,7 +31,6 @@ SimWorld::SimWorld(WorldSettings* _worldSettings,RobotSettings* _blueSettings,Ro
 
     // the world in which all simulation happens
     dynamicsWorld= new btDiscreteDynamicsWorld(collisionDispatcher,overlappingPairCache,solver,collisionConfig);
-
     const float SCALE=worldSettings->scale;
     dynamicsWorld->setGravity(btVector3(SCALE*worldSettings->gravityX,SCALE*worldSettings->gravityY,SCALE*worldSettings->gravityZ));
 
@@ -40,7 +39,11 @@ SimWorld::SimWorld(WorldSettings* _worldSettings,RobotSettings* _blueSettings,Ro
     //create a ball
     ball=new SimBall(dynamicsWorld,worldSettings,btVector3(-4*SCALE,0,worldSettings->ballRadius*SCALE),btVector3(SCALE*8,0,0));
     //creating a robot for testing purposes TODO remove
-    test=new SimBot(dynamicsWorld,blueSettings,worldSettings,btVector3(1.0,0.0,0.0)*worldSettings->scale,20.0);
+    for (int i = -4; i < 2; ++i) {
+        for (int j = -4; j < 2; ++j) {
+            test=new SimBot(dynamicsWorld,blueSettings,worldSettings,btVector3(i,j,0.0)*worldSettings->scale,20.0);
+        }
+    }
 
 }
 SimWorld::~SimWorld() {
@@ -59,7 +62,8 @@ btDiscreteDynamicsWorld* SimWorld::getWorld() {
     return dynamicsWorld;
 }
 void SimWorld::stepSimulation() {
-    dynamicsWorld->stepSimulation(1/200.0,10,1/200.0);
+    dynamicsWorld->stepSimulation(1/60.0,4,1/240.0);
+
 }
 //helper functions for creating geometry
 inline int scale(const float &meas){

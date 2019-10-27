@@ -1,4 +1,4 @@
-#version 330 core
+#version 130
 uniform mat4 mvp_matrix;
 
 attribute vec4 aPos;

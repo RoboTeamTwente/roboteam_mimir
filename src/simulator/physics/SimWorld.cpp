@@ -149,9 +149,20 @@ std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
     detBall.set_pixel_y(0);
     detBall.set_z(worldSettings->ballRadius);//TODO: figure out what's actually being sent by SSL-vision in this field
     detFrame.add_balls()->CopyFrom(detBall);
+
+    //TODO: send robot from data
+    SSL_DetectionRobot robot;
+    robot.set_x(scale(test->position().x())/100.0);
+    robot.set_y(scale(test->position().y())/100.0);
+    robot.set_orientation(test->orientation());
+    robot.set_height(0.144);
+    robot.set_pixel_x(20.0);
+    robot.set_pixel_y(24.0);
+    robot.set_robot_id(1);
+    detFrame.add_robots_blue()->CopyFrom(robot);
+    robot.set_robot_id(2);
+    detFrame.add_robots_yellow()->CopyFrom(robot);
     frames.push_back(detFrame);
-    //std::cout<<ball->position().x()/SCALE<<":" <<ball->position().y()/SCALE<<std::endl;
-    //std::cout<<sqrt(ball->velocity().x()*ball->velocity().x()+ball->velocity().y()*ball->velocity().y())/worldSettings->scale<<std::endl;
     return frames;
 }
 std::vector<SSL_WrapperPacket> SimWorld::getPackets() {

@@ -13,7 +13,9 @@ btVector3 SimBot::position() const {
 btScalar SimBot::orientation() const {
     btTransform transform;
     motionState->getWorldTransform(transform);
-    return transform.getRotation().x();//TODO: actually test this function (is not working currently)
+    btScalar yaw,pitch,roll;
+    transform.getRotation().getEulerZYX(yaw,pitch,roll);
+    return yaw;//TODO: actually test this function (is not working currently)
 }
 //TODO: add option of initializing with wheel velocities
 SimBot::SimBot(btDynamicsWorld *world, RobotSettings *settings, WorldSettings *worldSettings, const btVector3 &initialPos, btScalar dir) {

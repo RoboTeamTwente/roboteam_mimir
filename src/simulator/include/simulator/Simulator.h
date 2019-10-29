@@ -30,9 +30,9 @@ private:
     QTimer *timer;
     SimWorld* simWorld;
     ConfigWidget* configWidget;
-    net::Publisher* publisher;
-    net::Receiver* blueReceiver;
-    net::Receiver* yellowReceiver;
+    std::unique_ptr<net::Publisher> publisher;
+    std::unique_ptr<net::Receiver> blueReceiver;
+    std::unique_ptr<net::Receiver> yellowReceiver;
 
 };
 

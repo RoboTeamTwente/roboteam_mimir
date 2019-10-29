@@ -9,7 +9,7 @@
 TEST(ReceiverTest,receiveTest){
     //We are going to manually send commands to test the receiver
     QUdpSocket sendSocket;
-    QHostAddress address("127.0.01");
+    QHostAddress address("127.0.0.1");
     unsigned int port = 10006;
     net::Receiver receiver(address,port);
     // at this point the receiver should already be listening

@@ -8,6 +8,7 @@
 #include <QString>
 #include <QDir>
 #include <QSettings>
+#include <memory>
 
 class WorldConfig;
 class RobotConfig;
@@ -15,21 +16,20 @@ class RobotConfig;
 class ConfigWidget {
 public:
     ConfigWidget();
-    ~ConfigWidget();
 
     QList<QString> getWorldNames();
     void setCurrentWorld(QString &name);
-    WorldConfig *getCurrentWorldConfig();
-    RobotConfig *getRobotConfig(bool isYellow);
+    std::shared_ptr<WorldConfig> getCurrentWorldConfig();
+    std::shared_ptr<RobotConfig> getRobotConfig(bool isYellow);
 private:
     static QDir findConfigDir();
     void readWorldConfigs(const QDir &worldDir);
     void readRobotConfigs(const QDir &robotDir);
-    QList<RobotConfig *> robotConfigList;
-    QList<WorldConfig *> worldConfigList;
-    WorldConfig *currentWorld = nullptr;
-    RobotConfig *blueRobot = nullptr;
-    RobotConfig *yellowRobot = nullptr;
+    QList<std::shared_ptr<RobotConfig>> robotConfigList;
+    QList<std::shared_ptr<WorldConfig>> worldConfigList;
+    std::shared_ptr<WorldConfig> currentWorld = nullptr;
+    std::shared_ptr<RobotConfig> blueRobot = nullptr;
+    std::shared_ptr<RobotConfig> yellowRobot = nullptr;
 };
 
 

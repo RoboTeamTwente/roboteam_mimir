@@ -23,12 +23,6 @@ ConfigWidget::ConfigWidget() {
         std::cerr<<"Could not find robot subdirectory!"<<std::endl;
     }
 }
-ConfigWidget::~ConfigWidget() {
-    while(!worldConfigList.empty()){
-        delete worldConfigList.first();
-    }
-    delete currentWorld;
-}
 
 QDir ConfigWidget::findConfigDir() {
     //ugly but we need to find a way to find the directory
@@ -55,7 +49,7 @@ void ConfigWidget::readRobotConfigs(const QDir& robotDir) {
     QList<QString> files=robotDir.entryList(QDir::Filter::Files);
     for (const auto & fileName : files){
         QString path=robotDir.absolutePath()+"/"+fileName;
-        RobotConfig * robotConfig=new RobotConfig(path);
+        std::shared_ptr<RobotConfig> robotConfig=std::make_shared<RobotConfig>(path);
         robotConfigList.push_back(robotConfig);
         //we put the configs on the first file by default.
         if(!blueRobot){
@@ -71,7 +65,7 @@ void ConfigWidget::readWorldConfigs(const QDir& worldDir) {
     QList<QString> files=worldDir.entryList(QDir::Filter::Files);
     for (const auto & fileName : files){
         QString path=worldDir.absolutePath()+"/"+fileName;
-        WorldConfig *world=new WorldConfig(path);
+        std::shared_ptr<WorldConfig> world=std::make_shared<WorldConfig>(path);
         worldConfigList.push_back(world);
         if(!currentWorld){
             currentWorld=world;
@@ -94,9 +88,9 @@ QList<QString> ConfigWidget::getWorldNames() {
     }
     return names;
 }
-WorldConfig* ConfigWidget::getCurrentWorldConfig() {
+std::shared_ptr<WorldConfig> ConfigWidget::getCurrentWorldConfig() {
     return currentWorld;
 }
-RobotConfig * ConfigWidget::getRobotConfig(bool isYellow) {
+std::shared_ptr<RobotConfig>ConfigWidget::getRobotConfig(bool isYellow) {
     return isYellow?  yellowRobot : blueRobot;
 }

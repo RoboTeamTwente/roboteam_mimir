@@ -20,11 +20,11 @@ Simulator::Simulator() {
     int receiveYellowPort=10003;
     publisher=new net::Publisher(localIP,sendPort);
     blueReceiver=new net::Receiver(localIP,receiveBluePort);
-    blueReceiver=new net::Receiver(localIP,receiveYellowPort);
+    yellowReceiver=new net::Receiver(localIP,receiveYellowPort);
     //read all config files and save them in a widget
     configWidget=new ConfigWidget();
     // get the initial config settings and create a physics simulator with them
-    WorldSettings* worldSettings= configWidget->getCurrentWorldConfig()->settings;
+    std::shared_ptr<WorldSettings> worldSettings= configWidget->getCurrentWorldConfig()->settings;
     std::shared_ptr<RobotSettings> blueSettings = configWidget->getRobotConfig(false)->settings;
     std::shared_ptr<RobotSettings> yellowSettings=configWidget->getRobotConfig(true)->settings;
     simWorld=new SimWorld(worldSettings,blueSettings,yellowSettings);
@@ -57,6 +57,6 @@ void Simulator::tick() {
     }
 }
 
-WorldSettings* Simulator::getWorldSettings() {
+std::shared_ptr<WorldSettings> Simulator::getWorldSettings() {
     return configWidget->getCurrentWorldConfig()->settings;
 }

@@ -44,8 +44,8 @@ namespace {
 }
 
 WorldConfig::WorldConfig(const QString &path) {
-    settingsFile = new QSettings(path, QSettings::IniFormat);
-    settings = new WorldSettings(
+    settingsFile = std::make_unique<QSettings>(path, QSettings::IniFormat);
+    settings = std::make_shared<WorldSettings>(
             get(fieldLengthStr),
             get(fieldWidthStr),
             get(boundaryWidthStr),
@@ -65,8 +65,7 @@ WorldConfig::WorldConfig(const QString &path) {
     );
 }
 void WorldConfig::reloadSettings() {
-    delete settings;
-    settings = new WorldSettings(
+    settings = std::make_shared<WorldSettings>(
             get(fieldLengthStr),
             get(fieldWidthStr),
             get(boundaryWidthStr),
@@ -84,9 +83,6 @@ void WorldConfig::reloadSettings() {
             get(centerCircleRadiusStr),
             get(scaleStr)
     );
-}
-WorldConfig::~WorldConfig() {
-    delete settingsFile;
 }
 QString WorldConfig::name() const {
     if (settingsFile) {

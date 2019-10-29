@@ -82,7 +82,6 @@ RobotConfig::RobotConfig(const QString &path) {
             get(wheelMassStr)
     );
 }
-RobotConfig::~RobotConfig() {}
 void RobotConfig::reloadSettings() {
     settings = std::make_shared<RobotSettings>(
             get(radiusStr),

@@ -23,7 +23,7 @@ public:
     Simulator();
     ~Simulator();
     btDiscreteDynamicsWorld* getPhysicsWorld();
-    WorldSettings* getWorldSettings();
+    std::shared_ptr<WorldSettings> getWorldSettings();
 public slots:
     void tick();
 private:

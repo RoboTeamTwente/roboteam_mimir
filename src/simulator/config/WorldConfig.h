@@ -7,20 +7,19 @@
 
 #include <QSettings>
 #include "WorldSettings.h"
-
+#include <memory>
 
 
 class WorldConfig {
 public:
     explicit WorldConfig(const QString& filepath);
-    ~WorldConfig();
     void reloadSettings();
     QString name() const;
-    WorldSettings* settings;
+    std::shared_ptr<WorldSettings> settings;
 private:
     float get(const QString& valueString) const;
 
-    QSettings* settingsFile;
+    std::unique_ptr<QSettings> settingsFile;
 };
 
 

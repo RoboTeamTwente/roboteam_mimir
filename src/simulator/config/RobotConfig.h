@@ -12,7 +12,6 @@
 class RobotConfig {
 public:
     explicit RobotConfig(const QString &filepath);
-    ~RobotConfig();
     void reloadSettings();
     QString name() const;
     std::shared_ptr<RobotSettings> settings;

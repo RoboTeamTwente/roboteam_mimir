@@ -6,7 +6,7 @@
 #include <iostream>
 #include "DebugVisualization.h"
 namespace interface {
-    DebugDrawer::DebugDrawer(DebugVisualization *_visualization,WorldSettings * _settings) {
+    DebugDrawer::DebugDrawer(DebugVisualization *_visualization,std::shared_ptr<WorldSettings> _settings) {
         visualization=_visualization;
         settings=_settings;
     }

@@ -13,7 +13,7 @@
 
 namespace interface {
 
-    DebugVisualization::DebugVisualization(WorldSettings* settings,btDiscreteDynamicsWorld *_world, QWidget *parent) : QOpenGLWidget(parent) {
+    DebugVisualization::DebugVisualization(std::shared_ptr<WorldSettings> settings,btDiscreteDynamicsWorld *_world, QWidget *parent) : QOpenGLWidget(parent) {
         //connect debug drawer to the world.
         drawer=new DebugDrawer(this,settings);
         world=_world;

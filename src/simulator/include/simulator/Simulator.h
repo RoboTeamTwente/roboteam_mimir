@@ -30,7 +30,9 @@ private:
     SimWorld* simWorld;
     ConfigWidget* configWidget;
     net::Publisher* publisher;
-    net::Receiver* receiver;
+    net::Receiver* blueReceiver;
+    net::Receiver* yellowReceiver;
+
 };
 
 

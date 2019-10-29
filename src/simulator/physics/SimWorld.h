@@ -11,6 +11,7 @@
 
 #include <bullet/btBulletDynamicsCommon.h>
 #include "proto/messages_robocup_ssl_wrapper.pb.h"
+#include "proto/mimir_robotcommand.pb.h"
 #include "SimBot.h"
 
 class SimField;

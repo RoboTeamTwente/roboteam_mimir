@@ -13,11 +13,14 @@
 
 Simulator::Simulator() {
     //set up network connections
-    QHostAddress localIP("224.5.23.2");
+    //TODO: make these settings saved in sim and easy to adjust
+    QHostAddress localIP("127.0.0.1");
     int sendPort=10006;
     int receiveBluePort=10004;
+    int receiveYellowPort=10003;
     publisher=new net::Publisher(localIP,sendPort);
-    receiver=new net::Receiver(localIP,receiveBluePort);
+    blueReceiver=new net::Receiver(localIP,receiveBluePort);
+    blueReceiver=new net::Receiver(localIP,receiveYellowPort);
     //read all config files and save them in a widget
     configWidget=new ConfigWidget();
     // get the initial config settings and create a physics simulator with them
@@ -44,6 +47,9 @@ btDiscreteDynamicsWorld* Simulator::getPhysicsWorld() {
 }
 
 void Simulator::tick() {
+    //TODO: fix input delay and make receivers callback based on a seperate thread so we can keep the looprate low but the internal step of the world high
+    auto blueMsgs=blueReceiver->readMessages();
+    auto yellowMsgs=yellowReceiver->readMessages();
     simWorld->stepSimulation();
     std::vector<SSL_WrapperPacket> packets=simWorld->getPackets();
     for (const auto& packet: packets){

@@ -96,7 +96,7 @@ QString WorldConfig::name() const {
 }
 float WorldConfig::get(const QString &valueString) const {
     if (settingsFile->contains(valueString)) {
-        return settingsFile->value(valueString).toFloat();
+        return settingsFile->value(valueString).toFloat(); // Every setting should be a float!
     }
     std::cerr << "Could not find " << valueString.toStdString() << " in WorldConfig " << name().toStdString()
               << ", returning default" << std::endl;

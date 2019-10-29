@@ -4,6 +4,8 @@
 
 #include "Receiver.h"
 #include <QNetworkInterface>
+
+#include "iostream"//TODO: remove after testing
 //Receives all the robot commands
 namespace net {
     Receiver::Receiver(const QHostAddress &_address, unsigned int _port) :
@@ -20,11 +22,7 @@ namespace net {
     void Receiver::start() {
         stop();
         socket = new QUdpSocket(this);
-        socket->bind(QHostAddress::AnyIPv4, port, QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint);
-        //just join all possible network interfaces
-        foreach (const QNetworkInterface &interface, QNetworkInterface::allInterfaces()) {
-                socket->joinMulticastGroup(IP, interface);
-            }
+        socket->bind(IP,port);
     }
     void Receiver::stop() {
         delete socket;
@@ -48,15 +46,17 @@ namespace net {
     }
     std::vector<mimir_robotcommand> Receiver::readMessages() {
         std::vector<mimir_robotcommand> commands;
-        while(socket->state()==QAbstractSocket::BoundState&&socket->hasPendingDatagrams()){
+        while(socket->hasPendingDatagrams()){
             QByteArray datagram;
             datagram.resize(socket->pendingDatagramSize());
+            std::cout<<datagram.size()<<std::endl;
             socket->readDatagram(datagram.data(),datagram.size());
             mimir_robotcommand command;
             if(command.ParseFromArray(datagram.data(),datagram.size())){
                 commands.push_back(command);
             }
             else{
+                std::cerr<<"ehh"<<std::endl;
                 //TODO: log errors
             }
         }

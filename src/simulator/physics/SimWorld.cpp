@@ -141,8 +141,8 @@ std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
     SSL_DetectionFrame detFrame;
     SSL_DetectionBall detBall;
     btVector3 position=ball->position();
-    detBall.set_x(position.x());
-    detBall.set_y(position.y());
+    detBall.set_x(scale(position.x())/worldSettings->scale);
+    detBall.set_y(scale(position.y())/worldSettings->scale);
     detBall.set_area(0.0);//TODO: fix below 4 vars
     detBall.set_confidence(1.0);
     detBall.set_pixel_x(0);
@@ -152,8 +152,8 @@ std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
 
     //TODO: send robot from data
     SSL_DetectionRobot robot;
-    robot.set_x(scale(test->position().x())/100.0);
-    robot.set_y(scale(test->position().y())/100.0);
+    robot.set_x(scale(test->position().x())/worldSettings->scale);
+    robot.set_y(scale(test->position().y())/worldSettings->scale);
     robot.set_orientation(test->orientation());
     robot.set_height(0.144);
     robot.set_pixel_x(20.0);
@@ -173,6 +173,8 @@ std::vector<SSL_WrapperPacket> SimWorld::getPackets() {
         wrapper.mutable_detection()->CopyFrom(frame);
         packets.push_back(wrapper);
     }
+
+    // we add the geometry every x frames
     if(tickCount%120==0){ //TODO: make 120 not hardcoded but through interface/settings
         if(packets.empty()){
             SSL_WrapperPacket wrapper;

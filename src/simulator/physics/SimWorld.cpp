@@ -12,7 +12,7 @@
 #include "SimBall.h"
 #include "../config/WorldSettings.h"
 #include "../config/RobotSettings.h"
-SimWorld::SimWorld(WorldSettings* _worldSettings,RobotSettings* _blueSettings,RobotSettings* _yellowSettings) {
+SimWorld::SimWorld(WorldSettings* _worldSettings,std::shared_ptr<RobotSettings> _blueSettings,std::shared_ptr<RobotSettings> _yellowSettings) {
     //We create local copies of the settings to ensure we are always sending the data back as the simulator sees it
     worldSettings = new WorldSettings(*_worldSettings);
     blueSettings = new RobotSettings(*_blueSettings);

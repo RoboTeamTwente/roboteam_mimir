@@ -6,6 +6,7 @@
 #define ROBOTEAM_MIMIR_SIMULATOR_H
 
 #include <QObject>
+#include <memory>
 
 class SimWorld;
 class ConfigWidget;

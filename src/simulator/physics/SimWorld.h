@@ -27,7 +27,7 @@ Q_OBJECT
 public slots:
     void stepSimulation();
 public:
-    SimWorld(WorldSettings *_worldSettings, RobotSettings *_blueSettings, RobotSettings *_yellowSettings);
+    SimWorld(WorldSettings *_worldSettings, std::shared_ptr<RobotSettings>_blueSettings, std::shared_ptr<RobotSettings>_yellowSettings);
     ~SimWorld() override;
     btDiscreteDynamicsWorld *getWorld();
     std::vector<SSL_WrapperPacket> getPackets();

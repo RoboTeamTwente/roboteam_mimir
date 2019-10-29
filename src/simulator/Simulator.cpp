@@ -25,8 +25,8 @@ Simulator::Simulator() {
     configWidget=new ConfigWidget();
     // get the initial config settings and create a physics simulator with them
     WorldSettings* worldSettings= configWidget->getCurrentWorldConfig()->settings;
-    RobotSettings* blueSettings = configWidget->getRobotConfig(false)->settings;
-    RobotSettings* yellowSettings=configWidget->getRobotConfig(true)->settings;
+    std::shared_ptr<RobotSettings> blueSettings = configWidget->getRobotConfig(false)->settings;
+    std::shared_ptr<RobotSettings> yellowSettings=configWidget->getRobotConfig(true)->settings;
     simWorld=new SimWorld(worldSettings,blueSettings,yellowSettings);
 
     //start simulator logic loop

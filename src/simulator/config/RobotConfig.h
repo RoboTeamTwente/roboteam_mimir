@@ -7,7 +7,7 @@
 
 #include <QSettings>
 #include "RobotSettings.h"
-
+#include <memory>
 
 class RobotConfig {
 public:
@@ -15,7 +15,7 @@ public:
     ~RobotConfig();
     void reloadSettings();
     QString name() const;
-    RobotSettings* settings;
+    std::shared_ptr<RobotSettings> settings;
 private:
     float get(const QString &valueString) const; //only used to load the const variables into the settings format
     QSettings *settingsFile;

@@ -60,7 +60,7 @@ namespace {
 }
 RobotConfig::RobotConfig(const QString &path) {
     settingsFile = new QSettings(path, QSettings::IniFormat);
-    settings = new RobotSettings(
+    settings =  std::make_shared<RobotSettings>(
             get(radiusStr),
             get(startAngleStr),
             get(endAngleStr),
@@ -83,12 +83,10 @@ RobotConfig::RobotConfig(const QString &path) {
     );
 }
 RobotConfig::~RobotConfig() {
-    delete settings;
     delete settingsFile;
 }
 void RobotConfig::reloadSettings() {
-    delete settings;
-    settings = new RobotSettings(
+    settings = std::make_shared<RobotSettings>(
             get(radiusStr),
             get(startAngleStr),
             get(endAngleStr),

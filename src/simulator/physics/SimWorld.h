@@ -37,7 +37,7 @@ private:
 
     std::shared_ptr<SimField> field;
     std::shared_ptr<SimBall> ball;
-    SimBot* test;//TODO: remove
+    std::shared_ptr<SimBot> test;//TODO: remove
     std::vector<std::shared_ptr<SimBot>> blueBots;
     std::vector<std::shared_ptr<SimBot>> yellowBots;
     // these make up the total physics simulator together

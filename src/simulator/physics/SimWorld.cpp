@@ -41,11 +41,9 @@ SimWorld::SimWorld(std::shared_ptr<WorldSettings> _worldSettings,std::shared_ptr
     //creating a robot for testing purposes TODO remove
     for (int i = -4; i < 2; ++i) {
         for (int j = -4; j < 2; ++j) {
-            test=new SimBot(dynamicsWorld,blueSettings,worldSettings,btVector3(i,j,0.0)*worldSettings->scale,20.0);
+            test=std::make_shared<SimBot>(dynamicsWorld,blueSettings,worldSettings,btVector3(i,j,0.0)*worldSettings->scale,20.0);
         }
     }
-    delete test;
-
 }
 SimWorld::~SimWorld() {
 
@@ -149,17 +147,17 @@ std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
 
     //TODO: send robot from data
     SSL_DetectionRobot robot;
-//    robot.set_x(scale(test->position().x())/worldSettings->scale);
-//    robot.set_y(scale(test->position().y())/worldSettings->scale);
-//    robot.set_orientation(test->orientation());
-//    robot.set_height(0.144);
-//    robot.set_pixel_x(20.0);
-//    robot.set_pixel_y(24.0);
-//    robot.set_robot_id(1);
-//    detFrame.add_robots_blue()->CopyFrom(robot);
-//    robot.set_robot_id(2);
-//    detFrame.add_robots_yellow()->CopyFrom(robot);
-//    frames.push_back(detFrame);
+    robot.set_x(scale(test->position().x())/worldSettings->scale);
+    robot.set_y(scale(test->position().y())/worldSettings->scale);
+    robot.set_orientation(test->orientation());
+    robot.set_height(0.144);
+    robot.set_pixel_x(20.0);
+    robot.set_pixel_y(24.0);
+    robot.set_robot_id(1);
+    detFrame.add_robots_blue()->CopyFrom(robot);
+    robot.set_robot_id(2);
+    detFrame.add_robots_yellow()->CopyFrom(robot);
+    frames.push_back(detFrame);
     return frames;
 }
 std::vector<SSL_WrapperPacket> SimWorld::getPackets() {

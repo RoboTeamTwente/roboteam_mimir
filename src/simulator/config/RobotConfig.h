@@ -18,7 +18,7 @@ public:
     std::shared_ptr<RobotSettings> settings;
 private:
     float get(const QString &valueString) const; //only used to load the const variables into the settings format
-    QSettings *settingsFile;
+    std::unique_ptr<QSettings> settingsFile;
 
 };
 

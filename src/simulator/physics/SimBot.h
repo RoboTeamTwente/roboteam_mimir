@@ -9,11 +9,12 @@
 #include "../config/RobotSettings.h"
 #include "../config/WorldSettings.h"
 #include "RobotMesh.h"
+#include <memory>
 
 class SimBot : public BaseSimBot {
 public:
-    SimBot(btDynamicsWorld * world, RobotSettings* settings, WorldSettings* worldSettings);
-    SimBot(btDynamicsWorld * world, RobotSettings* settings, WorldSettings* worldSettings, const btVector3& initialPos,btScalar dir);
+    SimBot(btDynamicsWorld * world, std::shared_ptr<RobotSettings> settings, std::shared_ptr<WorldSettings> worldSettings);
+    SimBot(btDynamicsWorld * world, std::shared_ptr<RobotSettings> settings, std::shared_ptr<WorldSettings> worldSettings, const btVector3& initialPos,btScalar dir);
     ~SimBot();
     btVector3 position() const override;
     btScalar orientation() const override;
@@ -24,8 +25,8 @@ private:
     btAlignedObjectArray<btCollisionShape*> shapes;
     btRigidBody* body=nullptr;
     btDefaultMotionState * motionState=nullptr;
-    void addWheels(const RobotSettings *settings, const WorldSettings *worldSettings,btTransform hullTransform);
-    void addWheel(int wheelLabel,btScalar wheelAngleD,btCollisionShape * wheelShape,const RobotSettings *settings, const WorldSettings *worldSettings,btTransform hullTransform);
+    void addWheels(const std::shared_ptr<RobotSettings> settings, const std::shared_ptr<WorldSettings> worldSettings,btTransform hullTransform);
+    void addWheel(int wheelLabel,btScalar wheelAngleD,btCollisionShape * wheelShape,const std::shared_ptr<RobotSettings> settings, const std::shared_ptr<WorldSettings> worldSettings,btTransform hullTransform);
 
 };
 

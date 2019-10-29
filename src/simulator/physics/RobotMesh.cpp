@@ -4,7 +4,7 @@
 
 #include "RobotMesh.h"
 
-RobotMesh::RobotMesh(RobotSettings *settings) {
+RobotMesh::RobotMesh(std::shared_ptr<RobotSettings> settings) {
 
     const float halfHeight=settings->totalHeight*0.5f;
     const float radius=settings->radius;

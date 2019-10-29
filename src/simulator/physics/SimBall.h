@@ -10,8 +10,8 @@
 
 class SimBall {
 public:
-    SimBall(btDynamicsWorld* _world,WorldSettings* settings);
-    SimBall(btDynamicsWorld* _world,WorldSettings* settings,const btVector3& initialPos, const btVector3& initialVel = btVector3(0.0f,0.0f,0.0f));
+    SimBall(btDynamicsWorld* _world,std::shared_ptr<WorldSettings> settings);
+    SimBall(btDynamicsWorld* _world,std::shared_ptr<WorldSettings> settings,const btVector3& initialPos, const btVector3& initialVel = btVector3(0.0f,0.0f,0.0f));
     ~SimBall();
     btVector3 position();//TODO make const again
     btVector3 velocity() const;

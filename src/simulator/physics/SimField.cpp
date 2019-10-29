@@ -3,7 +3,7 @@
 //
 
 #include "SimField.h"
-SimField::SimField(btDynamicsWorld *world, WorldSettings * cfg) {
+SimField::SimField(btDynamicsWorld *world, std::shared_ptr<WorldSettings> cfg) {
     dynamicsWorld = world;
     const float SCALE=cfg->scale;
     const float halfGoalHeight = cfg->goalHeight*0.5f*SCALE;

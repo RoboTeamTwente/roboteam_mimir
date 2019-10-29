@@ -18,7 +18,7 @@ btScalar SimBot::orientation() const {
     return yaw;
 }
 //TODO: add option of initializing with wheel velocities
-SimBot::SimBot(btDynamicsWorld *world, RobotSettings *settings, WorldSettings *worldSettings, const btVector3 &initialPos, btScalar dir) {
+SimBot::SimBot(btDynamicsWorld *world, std::shared_ptr<RobotSettings> settings, std::shared_ptr<WorldSettings> worldSettings, const btVector3 &initialPos, btScalar dir) {
     dynamicsWorld = world;
     btCompoundShape *wholeShape = new btCompoundShape();
     btTransform shapeTransform;
@@ -56,7 +56,7 @@ SimBot::SimBot(btDynamicsWorld *world, RobotSettings *settings, WorldSettings *w
     addWheels(settings, worldSettings,worldTransform);
 
 }
-void SimBot::addWheels(const RobotSettings *settings, const WorldSettings *worldSettings, btTransform hullTransform)  {
+void SimBot::addWheels(const std::shared_ptr<RobotSettings> settings, const std::shared_ptr<WorldSettings> worldSettings, btTransform hullTransform)  {
     //we don't want to construct the same shape 4 times
     btCylinderShapeX *wheelShape=new btCylinderShapeX(btVector3(settings->wheelThickness*0.5,settings->wheelRadius,settings->wheelRadius)*worldSettings->scale);
     addWheel(0,settings->wheelAngle0,wheelShape,settings,worldSettings,hullTransform);
@@ -67,8 +67,8 @@ void SimBot::addWheels(const RobotSettings *settings, const WorldSettings *world
 }
 //TODO: make motors controllable
 //TODO: fix initial offset of wheels at creation
-void SimBot::addWheel(int wheelLabel, btScalar wheelAngleD, btCollisionShape *wheelShape, const RobotSettings *settings,
-                      const WorldSettings *worldSettings,btTransform hullTransform) {
+void SimBot::addWheel(int wheelLabel, btScalar wheelAngleD, btCollisionShape *wheelShape, const std::shared_ptr<RobotSettings> settings,
+                      const std::shared_ptr<WorldSettings> worldSettings,btTransform hullTransform) {
     btScalar angleR=wheelAngleD/180.0*M_PI;//convert to radians
     // find the centre of the wheel position
     btTransform wheelTransform;
@@ -93,14 +93,14 @@ void SimBot::addWheel(int wheelLabel, btScalar wheelAngleD, btCollisionShape *wh
     dynamicsWorld->addConstraint(constraint, true);
     dynamicsWorld->addRigidBody(wheel);
 }
-SimBot::SimBot(btDynamicsWorld *world, RobotSettings *settings, WorldSettings * worldSettings) : SimBot(world, settings,worldSettings,
+SimBot::SimBot(btDynamicsWorld *world, std::shared_ptr<RobotSettings> settings, std::shared_ptr<WorldSettings> worldSettings) : SimBot(world, settings,worldSettings,
                                                                          btVector3(0, 0, 0), 0.0) {
 }
 SimBot::~SimBot() {
     dynamicsWorld->removeRigidBody(body);
     delete body;
     delete motionState;
-    for (int i = shapes.size(); i >=0; --i) {
+    for (int i = shapes.size()-1; i >=0; --i) {
         delete shapes[i];
     }
 }

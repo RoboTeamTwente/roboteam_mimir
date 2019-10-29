@@ -7,9 +7,11 @@
 
 #include <bullet/btBulletDynamicsCommon.h>
 #include "../config/WorldSettings.h"
+#include <memory>
+
 class SimField {
 public:
-    explicit SimField(btDynamicsWorld *world, WorldSettings * cfg);
+    explicit SimField(btDynamicsWorld *world, std::shared_ptr<WorldSettings> cfg);
     ~SimField();
 private:
     btDynamicsWorld * dynamicsWorld;

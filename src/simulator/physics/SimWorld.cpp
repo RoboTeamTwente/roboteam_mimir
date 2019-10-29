@@ -14,9 +14,9 @@
 #include "../config/RobotSettings.h"
 SimWorld::SimWorld(std::shared_ptr<WorldSettings> _worldSettings,std::shared_ptr<RobotSettings> _blueSettings,std::shared_ptr<RobotSettings> _yellowSettings) {
     //We create local copies of the settings to ensure we are always sending the data back as the simulator sees it
-    worldSettings = new WorldSettings(*_worldSettings);
-    blueSettings = new RobotSettings(*_blueSettings);
-    yellowSettings= new RobotSettings(*_yellowSettings);
+    worldSettings = std::make_shared<WorldSettings>(*_worldSettings);
+    blueSettings = std::make_shared<RobotSettings>(*_blueSettings);
+    yellowSettings= std::make_shared<RobotSettings>(*_yellowSettings);
     //Contains default setup for memory and how collisions between different types of objects are handled/calculated
     collisionConfig = new btDefaultCollisionConfiguration();
 
@@ -35,23 +35,21 @@ SimWorld::SimWorld(std::shared_ptr<WorldSettings> _worldSettings,std::shared_ptr
     dynamicsWorld->setGravity(btVector3(SCALE*worldSettings->gravityX,SCALE*worldSettings->gravityY,SCALE*worldSettings->gravityZ));
 
     //field creates and manages all of the geometry related (static) physics objects in the world
-    field=new SimField(dynamicsWorld,worldSettings);
+    field=std::make_shared<SimField>(dynamicsWorld,worldSettings);
     //create a ball
-    ball=new SimBall(dynamicsWorld,worldSettings,btVector3(-4*SCALE,0,worldSettings->ballRadius*SCALE),btVector3(SCALE*8,0,0));
+    ball=std::make_shared<SimBall>(dynamicsWorld,worldSettings,btVector3(-4*SCALE,0,worldSettings->ballRadius*SCALE),btVector3(SCALE*8,0,0));
     //creating a robot for testing purposes TODO remove
     for (int i = -4; i < 2; ++i) {
         for (int j = -4; j < 2; ++j) {
             test=new SimBot(dynamicsWorld,blueSettings,worldSettings,btVector3(i,j,0.0)*worldSettings->scale,20.0);
         }
     }
+    delete test;
 
 }
 SimWorld::~SimWorld() {
-    delete worldSettings;
-    delete blueSettings;
-    delete yellowSettings;
+
     //delete bullet related objects in reverse order of creation!
-    delete field;
     delete dynamicsWorld;
     delete solver;
     delete overlappingPairCache;
@@ -63,7 +61,6 @@ btDiscreteDynamicsWorld* SimWorld::getWorld() {
 }
 void SimWorld::stepSimulation() {
     dynamicsWorld->stepSimulation(1/60.0,4,1/240.0);
-
 }
 //helper functions for creating geometry
 inline int scale(const float &meas){

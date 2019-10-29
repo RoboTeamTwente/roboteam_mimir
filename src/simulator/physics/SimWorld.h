@@ -35,11 +35,11 @@ private:
     SSL_GeometryData getGeometryData();
     std::vector<SSL_DetectionFrame> getDetectionFrames();
 
-    SimField *field;
-    SimBall *ball;
-    SimBot * test;//TODO: remove
-    std::vector<SimBot *> blueBots;
-    std::vector<SimBot *> yellowBots;
+    std::shared_ptr<SimField> field;
+    std::shared_ptr<SimBall> ball;
+    SimBot* test;//TODO: remove
+    std::vector<std::shared_ptr<SimBot>> blueBots;
+    std::vector<std::shared_ptr<SimBot>> yellowBots;
     // these make up the total physics simulator together
     btDefaultCollisionConfiguration *collisionConfig;
     btCollisionDispatcher *collisionDispatcher;
@@ -47,9 +47,9 @@ private:
     btSequentialImpulseConstraintSolver *solver;
     btDiscreteDynamicsWorld *dynamicsWorld; // is publicly accessible through getWorld() for debugDrawing purposes
     // we create a local copy of the settings
-    RobotSettings *blueSettings = nullptr;
-    RobotSettings *yellowSettings = nullptr;
-    WorldSettings *worldSettings = nullptr;
+    std::shared_ptr<RobotSettings> blueSettings = nullptr;
+    std::shared_ptr<RobotSettings> yellowSettings = nullptr;
+    std::shared_ptr<WorldSettings> worldSettings = nullptr;
 
     int tickCount = 0;
 

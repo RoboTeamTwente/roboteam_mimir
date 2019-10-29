@@ -8,10 +8,11 @@
 #include <QList>
 #include "bullet/btBulletDynamicsCommon.h"
 #include "../config/RobotSettings.h"
+#include <memory>
 
 class RobotMesh {
 public:
-    explicit RobotMesh(RobotSettings* settings);
+    explicit RobotMesh(std::shared_ptr<RobotSettings> settings);
     const QList<btVector3> &hull() const;
 private:
 

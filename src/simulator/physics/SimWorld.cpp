@@ -149,17 +149,17 @@ std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
 
     //TODO: send robot from data
     SSL_DetectionRobot robot;
-    robot.set_x(scale(test->position().x())/worldSettings->scale);
-    robot.set_y(scale(test->position().y())/worldSettings->scale);
-    robot.set_orientation(test->orientation());
-    robot.set_height(0.144);
-    robot.set_pixel_x(20.0);
-    robot.set_pixel_y(24.0);
-    robot.set_robot_id(1);
-    detFrame.add_robots_blue()->CopyFrom(robot);
-    robot.set_robot_id(2);
-    detFrame.add_robots_yellow()->CopyFrom(robot);
-    frames.push_back(detFrame);
+//    robot.set_x(scale(test->position().x())/worldSettings->scale);
+//    robot.set_y(scale(test->position().y())/worldSettings->scale);
+//    robot.set_orientation(test->orientation());
+//    robot.set_height(0.144);
+//    robot.set_pixel_x(20.0);
+//    robot.set_pixel_y(24.0);
+//    robot.set_robot_id(1);
+//    detFrame.add_robots_blue()->CopyFrom(robot);
+//    robot.set_robot_id(2);
+//    detFrame.add_robots_yellow()->CopyFrom(robot);
+//    frames.push_back(detFrame);
     return frames;
 }
 std::vector<SSL_WrapperPacket> SimWorld::getPackets() {

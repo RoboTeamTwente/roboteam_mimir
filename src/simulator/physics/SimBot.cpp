@@ -83,12 +83,14 @@ void SimBot::addWheel(int wheelLabel, btScalar wheelAngleD, btCollisionShape *wh
     btDefaultMotionState* motionState= new btDefaultMotionState(hullTransform*wheelTransform);
     btRigidBody::btRigidBodyConstructionInfo wheelInfo(settings->wheelMass,motionState,wheelShape,wheelInertia);
     btRigidBody * wheel= new btRigidBody(wheelInfo);
+    wheels[wheelLabel]=wheel;
     //construct joint/motor
     btVector3 heightOffset=btVector3(0,0,-(settings->totalHeight*0.5+0.02))*worldSettings->scale; //TODO fix offsets and transforms (also wheel construction)
     btHingeConstraint * constraint = new btHingeConstraint(*body, *wheel,wheelPos+heightOffset,btVector3(0.0,0.0,0),btVector3(wheelPos.x(),wheelPos.y(),0),btVector3(1.0,0.0,0.0));
     constraint->enableAngularMotor(true,10,100);
     constraint->setDbgDrawSize(1);
     wheel->setFriction(0.8); //TODO: fix friction/rolling friction and ball collision
+    wheelMotor[wheelLabel]=constraint;
     //add everything to the world
     dynamicsWorld->addConstraint(constraint, true);
     dynamicsWorld->addRigidBody(wheel);
@@ -100,7 +102,14 @@ SimBot::~SimBot() {
     dynamicsWorld->removeRigidBody(body);
     delete body;
     delete motionState;
-    for (int i = shapes.size()-1; i >=0; --i) {
+    int x=shapes.size();
+    for (int i = x -1; i >=0; --i) {
         delete shapes[i];
+    }
+    for (int j = 0; j < 4; ++ j) {
+        dynamicsWorld->removeRigidBody(wheels[j]);
+        dynamicsWorld->removeConstraint(wheelMotor[j]);
+        delete wheels[j];
+        delete wheelMotor[j];
     }
 }

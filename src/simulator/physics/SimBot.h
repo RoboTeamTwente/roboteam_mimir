@@ -25,6 +25,8 @@ private:
     btAlignedObjectArray<btCollisionShape*> shapes;
     btRigidBody* body=nullptr;
     btDefaultMotionState * motionState=nullptr;
+    btRigidBody* wheels[4];
+    btHingeConstraint* wheelMotor[4];
     void addWheels(const std::shared_ptr<RobotSettings> settings, const std::shared_ptr<WorldSettings> worldSettings,btTransform hullTransform);
     void addWheel(int wheelLabel,btScalar wheelAngleD,btCollisionShape * wheelShape,const std::shared_ptr<RobotSettings> settings, const std::shared_ptr<WorldSettings> worldSettings,btTransform hullTransform);
 

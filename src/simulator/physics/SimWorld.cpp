@@ -57,7 +57,7 @@ SimWorld::~SimWorld() {
     //delete bullet related objects in reverse order of creation!
 }
 btDiscreteDynamicsWorld* SimWorld::getWorld() {
-    return dynamicsWorld.get(); // In general we don't want to share ownership of the world with e.g. visual interfaces
+    return dynamicsWorld.get(); // Raw as we don't want to share ownership of the world with e.g. visual interfaces
 }
 void SimWorld::stepSimulation() {
     dynamicsWorld->stepSimulation(1/100.0, 10, 1/600.0);

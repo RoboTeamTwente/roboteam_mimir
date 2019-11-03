@@ -4,6 +4,8 @@
 
 #include "SimBot.h"
 
+#include "iostream"
+
 btVector3 SimBot::position() const {
     btTransform transform;
     motionState->getWorldTransform(transform);
@@ -18,7 +20,7 @@ btScalar SimBot::orientation() const {
     return yaw;
 }
 //TODO: add option of initializing with wheel velocities
-SimBot::SimBot(btDynamicsWorld *world, std::shared_ptr<RobotSettings> settings, std::shared_ptr<WorldSettings> worldSettings, const btVector3 &initialPos, btScalar dir) {
+SimBot::SimBot(btDynamicsWorld *world, const std::shared_ptr<RobotSettings>& settings, const std::shared_ptr<WorldSettings>& worldSettings, const btVector3 &initialPos, btScalar dir) {
     dynamicsWorld = world;
     btCompoundShape *wholeShape = new btCompoundShape();
     btTransform shapeTransform;
@@ -54,6 +56,11 @@ SimBot::SimBot(btDynamicsWorld *world, std::shared_ptr<RobotSettings> settings, 
 
     worldTransform.setOrigin(btVector3(initialPos.x(),initialPos.y(),0.0));
     addWheels(settings, worldSettings,worldTransform);
+    robSettings=settings;
+    std::cout<<wheels[0]->getCenterOfMassPosition().z()<<std::endl;
+    std::cout<<wheels[1]->getCenterOfMassPosition().z()<<std::endl;
+    std::cout<<wheels[2]->getCenterOfMassPosition().z()<<std::endl;
+    std::cout<<wheels[3]->getCenterOfMassPosition().z()<<std::endl;
 
 }
 void SimBot::addWheels(const std::shared_ptr<RobotSettings> settings, const std::shared_ptr<WorldSettings> worldSettings, btTransform hullTransform)  {
@@ -63,10 +70,7 @@ void SimBot::addWheels(const std::shared_ptr<RobotSettings> settings, const std:
     addWheel(1,settings->wheelAngle1,wheelShape,settings,worldSettings,hullTransform);
     addWheel(2,settings->wheelAngle2,wheelShape,settings,worldSettings,hullTransform);
     addWheel(3,settings->wheelAngle3,wheelShape,settings,worldSettings,hullTransform);
-
 }
-//TODO: make motors controllable
-//TODO: fix initial offset of wheels at creation
 void SimBot::addWheel(int wheelLabel, btScalar wheelAngleD, btCollisionShape *wheelShape, const std::shared_ptr<RobotSettings> settings,
                       const std::shared_ptr<WorldSettings> worldSettings,btTransform hullTransform) {
     btScalar angleR=wheelAngleD/180.0*M_PI;//convert to radians
@@ -85,15 +89,34 @@ void SimBot::addWheel(int wheelLabel, btScalar wheelAngleD, btCollisionShape *wh
     btRigidBody * wheel= new btRigidBody(wheelInfo);
     wheels[wheelLabel]=wheel;
     //construct joint/motor
-    btVector3 heightOffset=btVector3(0,0,-(settings->totalHeight*0.5+0.02))*worldSettings->scale; //TODO fix offsets and transforms (also wheel construction)
+    btVector3 heightOffset=btVector3(0,0,-(settings->totalHeight+3*settings->bottomPlateHeight)*0.5)*worldSettings->scale; //TODO fix offsets and transforms (also wheel construction)
     btHingeConstraint * constraint = new btHingeConstraint(*body, *wheel,wheelPos+heightOffset,btVector3(0.0,0.0,0),btVector3(wheelPos.x(),wheelPos.y(),0),btVector3(1.0,0.0,0.0));
-    constraint->enableAngularMotor(true,10,100);
-    constraint->setDbgDrawSize(1);
-    wheel->setFriction(0.8); //TODO: fix friction/rolling friction and ball collision
+    constraint->enableAngularMotor(true,0,1000);
+    constraint->setDbgDrawSize(1.5);
+    wheel->setFriction(1); //TODO: fix friction/rolling friction and ball collision
     wheelMotor[wheelLabel]=constraint;
     //add everything to the world
     dynamicsWorld->addConstraint(constraint, true);
     dynamicsWorld->addRigidBody(wheel);
+
+    std::cout<<wheelPos.z()<<" "<<(wheelPos+heightOffset).z()<<" "<<heightOffset.z()<<std::endl;
+}
+void SimBot::wheelControl(btScalar wheel0, btScalar wheel1, btScalar wheel2, btScalar wheel3) {
+    wheelMotor[0]->setMotorTargetVelocity(wheel0);
+    wheelMotor[1]->setMotorTargetVelocity(wheel1);
+    wheelMotor[2]->setMotorTargetVelocity(wheel2);
+    wheelMotor[3]->setMotorTargetVelocity(wheel3); //TODO: make 4 a constant called NWHEEL or so
+}
+void SimBot::localControl(btScalar velTangent, btScalar velNormal, btScalar velAngle) {
+    btScalar degToRad=M_PI/180.0f;
+    btScalar angles[4]={degToRad*robSettings->wheelAngle0,
+                             degToRad*robSettings->wheelAngle1,
+                             degToRad*robSettings->wheelAngle2,
+                             degToRad*robSettings->wheelAngle3};
+    for (int i = 0; i < 4; ++ i) {
+        btScalar wheelVel=1.0/robSettings->wheelRadius * ((robSettings->radius * velAngle) - (velTangent*sin(angles[i])) + (velNormal * cos(angles[i])));
+        wheelMotor[i]->setMotorTargetVelocity(wheelVel);
+    }
 }
 SimBot::SimBot(btDynamicsWorld *world, std::shared_ptr<RobotSettings> settings, std::shared_ptr<WorldSettings> worldSettings) : SimBot(world, settings,worldSettings,
                                                                          btVector3(0, 0, 0), 0.0) {

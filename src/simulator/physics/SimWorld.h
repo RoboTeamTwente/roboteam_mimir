@@ -31,6 +31,7 @@ public:
     ~SimWorld() override;
     btDiscreteDynamicsWorld *getWorld();
     std::vector<SSL_WrapperPacket> getPackets();
+    void doCommands(btScalar dt);
 private:
     SSL_GeometryData getGeometryData();
     std::vector<SSL_DetectionFrame> getDetectionFrames();

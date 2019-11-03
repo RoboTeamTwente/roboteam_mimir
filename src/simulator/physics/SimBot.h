@@ -14,12 +14,14 @@
 class SimBot : public BaseSimBot {
 public:
     SimBot(btDynamicsWorld * world, std::shared_ptr<RobotSettings> settings, std::shared_ptr<WorldSettings> worldSettings);
-    SimBot(btDynamicsWorld * world, std::shared_ptr<RobotSettings> settings, std::shared_ptr<WorldSettings> worldSettings, const btVector3& initialPos,btScalar dir);
+    SimBot(btDynamicsWorld * world, const std::shared_ptr<RobotSettings>& settings, const std::shared_ptr<WorldSettings>& worldSettings, const btVector3& initialPos,btScalar dir);
     ~SimBot();
     btVector3 position() const override;
     btScalar orientation() const override;
-//    void reset(btScalar x,btScalar y) override;
-private:
+    void wheelControl(btScalar wheel0, btScalar wheel1, btScalar wheel2, btScalar wheel3) override;
+    void localControl(btScalar velTangent, btScalar velNormal, btScalar velAngle) override;
+
+    private:
 
     btDynamicsWorld * dynamicsWorld;
     btAlignedObjectArray<btCollisionShape*> shapes;
@@ -27,6 +29,7 @@ private:
     btDefaultMotionState * motionState=nullptr;
     btRigidBody* wheels[4];
     btHingeConstraint* wheelMotor[4];
+    std::shared_ptr<RobotSettings> robSettings;
     void addWheels(const std::shared_ptr<RobotSettings> settings, const std::shared_ptr<WorldSettings> worldSettings,btTransform hullTransform);
     void addWheel(int wheelLabel,btScalar wheelAngleD,btCollisionShape * wheelShape,const std::shared_ptr<RobotSettings> settings, const std::shared_ptr<WorldSettings> worldSettings,btTransform hullTransform);
 

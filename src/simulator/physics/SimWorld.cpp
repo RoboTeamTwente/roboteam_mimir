@@ -12,11 +12,18 @@
 #include "SimBall.h"
 #include "../config/WorldSettings.h"
 #include "../config/RobotSettings.h"
-SimWorld::SimWorld(std::shared_ptr<WorldSettings> _worldSettings,std::shared_ptr<RobotSettings> _blueSettings,std::shared_ptr<RobotSettings> _yellowSettings) {
+
+static void BulletTickCallback(btDynamicsWorld * world, btScalar dt){
+    SimWorld* simWorld = (SimWorld *) (world->getWorldUserInfo());// This is how it's done in the example. Seems like black magic
+    simWorld->doCommands(dt);
+}
+
+SimWorld::SimWorld(std::shared_ptr<WorldSettings> _worldSettings, std::shared_ptr<RobotSettings> _blueSettings,
+        std::shared_ptr<RobotSettings> _yellowSettings) {
     //We create local copies of the settings to ensure we are always sending the data back as the simulator sees it
     worldSettings = std::make_shared<WorldSettings>(*_worldSettings);
     blueSettings = std::make_shared<RobotSettings>(*_blueSettings);
-    yellowSettings= std::make_shared<RobotSettings>(*_yellowSettings);
+    yellowSettings = std::make_shared<RobotSettings>(*_yellowSettings);
     //Contains default setup for memory and how collisions between different types of objects are handled/calculated
     collisionConfig = new btDefaultCollisionConfiguration();
 
@@ -30,20 +37,21 @@ SimWorld::SimWorld(std::shared_ptr<WorldSettings> _worldSettings,std::shared_ptr
     solver = new btSequentialImpulseConstraintSolver();
 
     // the world in which all simulation happens
-    dynamicsWorld= new btDiscreteDynamicsWorld(collisionDispatcher,overlappingPairCache,solver,collisionConfig);
-    const float SCALE=worldSettings->scale;
-    dynamicsWorld->setGravity(btVector3(SCALE*worldSettings->gravityX,SCALE*worldSettings->gravityY,SCALE*worldSettings->gravityZ));
-
+    dynamicsWorld = new btDiscreteDynamicsWorld(collisionDispatcher, overlappingPairCache, solver, collisionConfig);
+    const float SCALE = worldSettings->scale;
+    dynamicsWorld->setGravity(
+            btVector3(SCALE*worldSettings->gravityX, SCALE*worldSettings->gravityY, SCALE*worldSettings->gravityZ));
+    // make sure bullet calls our motor commands when relevant every physics tick
+    dynamicsWorld->setInternalTickCallback(BulletTickCallback,this,true);
     //field creates and manages all of the geometry related (static) physics objects in the world
-    field=std::make_shared<SimField>(dynamicsWorld,worldSettings);
+    field = std::make_shared<SimField>(dynamicsWorld, worldSettings);
     //create a ball
-    ball=std::make_shared<SimBall>(dynamicsWorld,worldSettings,btVector3(-4*SCALE,0,worldSettings->ballRadius*SCALE),btVector3(SCALE*8,0,0));
+    ball = std::make_shared<SimBall>(dynamicsWorld, worldSettings,
+            btVector3(- 4*SCALE, 0, worldSettings->ballRadius*SCALE), btVector3(SCALE*8, 0, 0));
     //creating a robot for testing purposes TODO remove
-    for (int i = -4; i < 2; ++i) {
-        for (int j = -4; j < 2; ++j) {
-            test=std::make_shared<SimBot>(dynamicsWorld,blueSettings,worldSettings,btVector3(i,j,0.0)*worldSettings->scale,20.0);
-        }
-    }
+    test = std::make_shared<SimBot>(dynamicsWorld, blueSettings, worldSettings,
+            btVector3(0.0,0.0, 0.0)*worldSettings->scale, 0.0);
+
 }
 SimWorld::~SimWorld() {
 
@@ -58,13 +66,14 @@ btDiscreteDynamicsWorld* SimWorld::getWorld() {
     return dynamicsWorld;
 }
 void SimWorld::stepSimulation() {
-    dynamicsWorld->stepSimulation(1/60.0,4,1/240.0);
+    dynamicsWorld->stepSimulation(1/100.0, 10, 1/600.0);
 }
 //helper functions for creating geometry
-inline int scale(const float &meas){
+inline int scale(const float &meas) {
     return (int) (1000*meas);
 }
-void addLine(const std::string& name,float p1x,float p1y, float p2x,float p2y, SSL_GeometryFieldSize* field, float lineThickness){
+void addLine(const std::string &name, float p1x, float p1y, float p2x, float p2y, SSL_GeometryFieldSize* field,
+        float lineThickness) {
     SSL_FieldLineSegment segment;
     segment.set_name(name);
     segment.mutable_p1()->set_x(scale(p1x));
@@ -74,7 +83,8 @@ void addLine(const std::string& name,float p1x,float p1y, float p2x,float p2y, S
     segment.set_thickness(scale(lineThickness));
     field->add_field_lines()->CopyFrom(segment);
 }
-void addArc(const std::string& name, float centerx, float centery, float radius,float angle1,float angle2,SSL_GeometryFieldSize* field,float lineThickness){
+void addArc(const std::string &name, float centerx, float centery, float radius, float angle1, float angle2,
+        SSL_GeometryFieldSize* field, float lineThickness) {
     SSL_FieldCicularArc arc;
     arc.set_name(name);
     arc.mutable_center()->set_x(scale(centerx));
@@ -85,10 +95,16 @@ void addArc(const std::string& name, float centerx, float centery, float radius,
     arc.set_thickness(scale(lineThickness));
     field->add_field_arcs()->CopyFrom(arc);
 }
+void SimWorld::doCommands(btScalar dt) {
+    dynamicsWorld->clearForces();//according to wiki    //set robot motors
+    //TODO: options for local, global velocity and angular control mode.
+    test->localControl(1.0,0.0,0.0);
+    dynamicsWorld->applyGravity();
+}
 SSL_GeometryData SimWorld::getGeometryData() {
     //TODO: add camera calibration info
     SSL_GeometryData data;
-    SSL_GeometryFieldSize* geomField=data.mutable_field();
+    SSL_GeometryFieldSize* geomField = data.mutable_field();
     //SSL geometry is sent in mm not in m
     //the names of the variables in the settings should correspond exactly with how the measurements from SSL-vision are done
     geomField->set_goal_depth(scale(worldSettings->goalDepth));
@@ -97,25 +113,33 @@ SSL_GeometryData SimWorld::getGeometryData() {
     geomField->set_field_width(scale(worldSettings->fieldWidth));
     geomField->set_goal_width(scale(worldSettings->goalWidth));
 
-    const float hWidth=worldSettings->fieldWidth*0.5f;
-    const float hLength=worldSettings->fieldLength*0.5f;
-    const float defense=worldSettings->goalWidth;
-    addLine("TopTouchLine",-hLength,hWidth,hLength,hWidth,geomField,worldSettings->lineWidth);
-    addLine("BottomTouchLine",-hLength,-hWidth,hLength,-hWidth,geomField,worldSettings->lineWidth);
-    addLine("LeftGoalLine",-hLength,-hWidth,-hLength,hWidth,geomField,worldSettings->lineWidth);
-    addLine("RightGoalLine",hLength,-hWidth,hLength,hWidth,geomField,worldSettings->lineWidth);
-    addLine("HalfwayLine",0.0f,-hWidth,0.0f,hWidth,geomField,worldSettings->lineWidth);//TODO: check if HalfwayLine and CenterLine are not accidentally swapped
-    addLine("CenterLine",-hLength,0.0f,hLength,0.0f,geomField,worldSettings->lineWidth);
+    const float hWidth = worldSettings->fieldWidth*0.5f;
+    const float hLength = worldSettings->fieldLength*0.5f;
+    const float defense = worldSettings->goalWidth;
+    addLine("TopTouchLine", - hLength, hWidth, hLength, hWidth, geomField, worldSettings->lineWidth);
+    addLine("BottomTouchLine", - hLength, - hWidth, hLength, - hWidth, geomField, worldSettings->lineWidth);
+    addLine("LeftGoalLine", - hLength, - hWidth, - hLength, hWidth, geomField, worldSettings->lineWidth);
+    addLine("RightGoalLine", hLength, - hWidth, hLength, hWidth, geomField, worldSettings->lineWidth);
+    addLine("HalfwayLine", 0.0f, - hWidth, 0.0f, hWidth, geomField,
+            worldSettings->lineWidth);//TODO: check if HalfwayLine and CenterLine are not accidentally swapped
+    addLine("CenterLine", - hLength, 0.0f, hLength, 0.0f, geomField, worldSettings->lineWidth);
 
-    addLine("LeftPenaltyStretch",-hLength+defense,-defense,-hLength+defense,defense,geomField,worldSettings->lineWidth);
-    addLine("LeftFieldLeftPenaltyStretch",-hLength,defense,-hLength+defense,defense,geomField,worldSettings->lineWidth); //TODO: check what left/right mean in this context (w.r.t what view is this 'left'?)
-    addLine("LeftFieldRightPenaltyStretch",-hLength,-defense,-hLength+defense,-defense,geomField,worldSettings->lineWidth);
+    addLine("LeftPenaltyStretch", - hLength + defense, - defense, - hLength + defense, defense, geomField,
+            worldSettings->lineWidth);
+    addLine("LeftFieldLeftPenaltyStretch", - hLength, defense, - hLength + defense, defense, geomField,
+            worldSettings->lineWidth); //TODO: check what left/right mean in this context (w.r.t what view is this 'left'?)
+    addLine("LeftFieldRightPenaltyStretch", - hLength, - defense, - hLength + defense, - defense, geomField,
+            worldSettings->lineWidth);
 
-    addLine("RightPenaltyStretch",hLength-defense,-defense,hLength-defense,defense,geomField,worldSettings->lineWidth);
-    addLine("RightFieldLeftPenaltyStretch",hLength-defense,-defense,hLength,-defense,geomField,worldSettings->lineWidth);
-    addLine("RightFieldRightPenaltyStretch",hLength-defense,defense,hLength,defense,geomField,worldSettings->lineWidth);
+    addLine("RightPenaltyStretch", hLength - defense, - defense, hLength - defense, defense, geomField,
+            worldSettings->lineWidth);
+    addLine("RightFieldLeftPenaltyStretch", hLength - defense, - defense, hLength, - defense, geomField,
+            worldSettings->lineWidth);
+    addLine("RightFieldRightPenaltyStretch", hLength - defense, defense, hLength, defense, geomField,
+            worldSettings->lineWidth);
 
-    addArc("CenterCircle",0.0f,0.0f,worldSettings->centerCircleRadius,0.0f,2*M_PI,geomField,worldSettings->lineWidth);
+    addArc("CenterCircle", 0.0f, 0.0f, worldSettings->centerCircleRadius, 0.0f, 2*M_PI, geomField,
+            worldSettings->lineWidth);
     return data;
 }
 std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
@@ -135,7 +159,7 @@ std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
     std::vector<SSL_DetectionFrame> frames;
     SSL_DetectionFrame detFrame;
     SSL_DetectionBall detBall;
-    btVector3 position=ball->position();
+    btVector3 position = ball->position();
     detBall.set_x(scale(position.x())/worldSettings->scale);
     detBall.set_y(scale(position.y())/worldSettings->scale);
     detBall.set_area(0.0);//TODO: fix below 4 vars
@@ -162,21 +186,21 @@ std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
 }
 std::vector<SSL_WrapperPacket> SimWorld::getPackets() {
     std::vector<SSL_WrapperPacket> packets;
-    std::vector<SSL_DetectionFrame> frames=getDetectionFrames();
-    for (const auto& frame : frames) {
+    std::vector<SSL_DetectionFrame> frames = getDetectionFrames();
+    for (const auto &frame : frames) {
         SSL_WrapperPacket wrapper;
         wrapper.mutable_detection()->CopyFrom(frame);
         packets.push_back(wrapper);
     }
 
     // we add the geometry every x frames
-    if(tickCount%120==0){ //TODO: make 120 not hardcoded but through interface/settings
-        if(packets.empty()){
+    if (tickCount%120 == 0) { //TODO: make 120 not hardcoded but through interface/settings
+        if (packets.empty()) {
             SSL_WrapperPacket wrapper;
             packets.push_back(wrapper);
         }
         packets[0].mutable_geometry()->CopyFrom(getGeometryData());
     }
-    tickCount++;
+    tickCount ++;
     return packets;
 }

@@ -10,6 +10,6 @@ namespace interface {
         simulator=new Simulator();
         debugVisualization = new DebugVisualization(simulator->getWorldSettings(),simulator->getPhysicsWorld(),this);
         setCentralWidget(debugVisualization);
-        //showMaximized();
+        showMaximized();
     }
 }

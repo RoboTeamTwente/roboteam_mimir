@@ -13,8 +13,8 @@
 
 class SimBot : public BaseSimBot {
 public:
-    SimBot(btDynamicsWorld * world, std::shared_ptr<RobotSettings> settings, std::shared_ptr<WorldSettings> worldSettings);
-    SimBot(btDynamicsWorld * world, const std::shared_ptr<RobotSettings>& settings, const std::shared_ptr<WorldSettings>& worldSettings, const btVector3& initialPos,btScalar dir);
+    SimBot(std::shared_ptr<btDynamicsWorld> world, std::shared_ptr<RobotSettings> settings, std::shared_ptr<WorldSettings> worldSettings);
+    SimBot(std::shared_ptr<btDynamicsWorld> world, const std::shared_ptr<RobotSettings>& settings, const std::shared_ptr<WorldSettings>& worldSettings, const btVector3& initialPos,btScalar dir);
     ~SimBot();
     btVector3 position() const override;
     btScalar orientation() const override;
@@ -23,7 +23,7 @@ public:
 
     private:
 
-    btDynamicsWorld * dynamicsWorld;
+    std::shared_ptr<btDynamicsWorld>  dynamicsWorld;
     btAlignedObjectArray<btCollisionShape*> shapes;
     btRigidBody* body=nullptr;
     btDefaultMotionState * motionState=nullptr;

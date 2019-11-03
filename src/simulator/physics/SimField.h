@@ -11,10 +11,10 @@
 
 class SimField {
 public:
-    explicit SimField(btDynamicsWorld *world, std::shared_ptr<WorldSettings> cfg);
+    explicit SimField(std::shared_ptr<btDynamicsWorld> world, std::shared_ptr<WorldSettings> cfg);
     ~SimField();
 private:
-    btDynamicsWorld * dynamicsWorld;
+    std::shared_ptr<btDynamicsWorld> dynamicsWorld;
     btAlignedObjectArray<btCollisionObject*> objects;
     btStaticPlaneShape * plane;
     btCollisionShape * goalBack;

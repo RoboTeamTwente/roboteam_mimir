@@ -5,7 +5,7 @@
 #include <iostream>
 #include <iomanip>
 #include "SimBall.h"
-SimBall::SimBall(btDynamicsWorld *_world, std::shared_ptr<WorldSettings> settings, const btVector3 &initialPos,
+SimBall::SimBall(std::shared_ptr<btDynamicsWorld> _world, std::shared_ptr<WorldSettings> settings, const btVector3 &initialPos,
                  const btVector3 &initialVel) :
         world(_world) {
     //create the shape and inertia
@@ -40,7 +40,7 @@ SimBall::~SimBall() {
     delete motionState;
 }
 
-SimBall::SimBall(btDynamicsWorld *_world, std::shared_ptr<WorldSettings> settings) :
+SimBall::SimBall(std::shared_ptr<btDynamicsWorld> _world, std::shared_ptr<WorldSettings> settings) :
         SimBall(_world, settings, btVector3(0.0f, 0.0f, settings->scale*settings->ballRadius)) {
 }
 

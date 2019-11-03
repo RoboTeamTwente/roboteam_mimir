@@ -20,7 +20,7 @@ btScalar SimBot::orientation() const {
     return yaw;
 }
 //TODO: add option of initializing with wheel velocities
-SimBot::SimBot(btDynamicsWorld *world, const std::shared_ptr<RobotSettings>& settings, const std::shared_ptr<WorldSettings>& worldSettings, const btVector3 &initialPos, btScalar dir) {
+SimBot::SimBot(std::shared_ptr<btDynamicsWorld> world, const std::shared_ptr<RobotSettings>& settings, const std::shared_ptr<WorldSettings>& worldSettings, const btVector3 &initialPos, btScalar dir) {
     dynamicsWorld = world;
     btCompoundShape *wholeShape = new btCompoundShape();
     btTransform shapeTransform;
@@ -118,7 +118,7 @@ void SimBot::localControl(btScalar velTangent, btScalar velNormal, btScalar velA
         wheelMotor[i]->setMotorTargetVelocity(wheelVel);
     }
 }
-SimBot::SimBot(btDynamicsWorld *world, std::shared_ptr<RobotSettings> settings, std::shared_ptr<WorldSettings> worldSettings) : SimBot(world, settings,worldSettings,
+SimBot::SimBot(std::shared_ptr<btDynamicsWorld> world, std::shared_ptr<RobotSettings> settings, std::shared_ptr<WorldSettings> worldSettings) : SimBot(world, settings,worldSettings,
                                                                          btVector3(0, 0, 0), 0.0) {
 }
 SimBot::~SimBot() {

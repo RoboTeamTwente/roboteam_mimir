@@ -42,11 +42,11 @@ private:
     std::vector<std::shared_ptr<SimBot>> blueBots;
     std::vector<std::shared_ptr<SimBot>> yellowBots;
     // these make up the total physics simulator together
-    btDefaultCollisionConfiguration *collisionConfig;
-    btCollisionDispatcher *collisionDispatcher;
-    btBroadphaseInterface *overlappingPairCache;
-    btSequentialImpulseConstraintSolver *solver;
-    btDiscreteDynamicsWorld *dynamicsWorld; // is publicly accessible through getWorld() for debugDrawing purposes
+    std::unique_ptr<btDefaultCollisionConfiguration> collisionConfig;
+    std::unique_ptr<btCollisionDispatcher> collisionDispatcher;
+    std::unique_ptr<btBroadphaseInterface> overlappingPairCache;
+    std::unique_ptr<btSequentialImpulseConstraintSolver> solver;
+    std::shared_ptr<btDiscreteDynamicsWorld> dynamicsWorld; // is publicly accessible through getWorld() for debugDrawing purposes
     // we create a local copy of the settings
     std::shared_ptr<RobotSettings> blueSettings = nullptr;
     std::shared_ptr<RobotSettings> yellowSettings = nullptr;

@@ -10,15 +10,15 @@
 
 class SimBall {
 public:
-    SimBall(btDynamicsWorld* _world,std::shared_ptr<WorldSettings> settings);
-    SimBall(btDynamicsWorld* _world,std::shared_ptr<WorldSettings> settings,const btVector3& initialPos, const btVector3& initialVel = btVector3(0.0f,0.0f,0.0f));
+    SimBall(std::shared_ptr<btDynamicsWorld> _world,std::shared_ptr<WorldSettings> settings);
+    SimBall(std::shared_ptr<btDynamicsWorld> _world,std::shared_ptr<WorldSettings> settings,const btVector3& initialPos, const btVector3& initialVel = btVector3(0.0f,0.0f,0.0f));
     ~SimBall();
     btVector3 position();//TODO make const again
     btVector3 velocity() const;
 private:
     int tick=0;
     float lastVel=0.0;
-    btDynamicsWorld * world;
+    std::shared_ptr<btDynamicsWorld> world;
     btCollisionShape * physicsBall;
     btRigidBody * body;
     btMotionState * motionState;

@@ -25,19 +25,19 @@ SimWorld::SimWorld(std::shared_ptr<WorldSettings> _worldSettings, std::shared_pt
     blueSettings = std::make_shared<RobotSettings>(*_blueSettings);
     yellowSettings = std::make_shared<RobotSettings>(*_yellowSettings);
     //Contains default setup for memory and how collisions between different types of objects are handled/calculated
-    collisionConfig = new btDefaultCollisionConfiguration();
+    collisionConfig = std::make_unique<btDefaultCollisionConfiguration>();
 
     //uses the default dispatcher. We might want to use the parallel one down the road.
-    collisionDispatcher = new btCollisionDispatcher(collisionConfig);
+    collisionDispatcher = std::make_unique<btCollisionDispatcher>(collisionConfig.get());
 
     //btDbvtBroadphase is a good general purpose broadphase. You can also try out btAxis3Sweep.
-    overlappingPairCache = new btDbvtBroadphase();
+    overlappingPairCache = std::make_unique<btDbvtBroadphase>();
 
     //the default constraint solver. For parallel processing you can use a different solver (see Extras/BulletMultiThreaded)
-    solver = new btSequentialImpulseConstraintSolver();
+    solver = std::make_unique<btSequentialImpulseConstraintSolver>();
 
     // the world in which all simulation happens
-    dynamicsWorld = new btDiscreteDynamicsWorld(collisionDispatcher, overlappingPairCache, solver, collisionConfig);
+    dynamicsWorld = std::make_shared<btDiscreteDynamicsWorld>(collisionDispatcher.get(), overlappingPairCache.get(), solver.get(), collisionConfig.get());
     const float SCALE = worldSettings->scale;
     dynamicsWorld->setGravity(
             btVector3(SCALE*worldSettings->gravityX, SCALE*worldSettings->gravityY, SCALE*worldSettings->gravityZ));
@@ -54,16 +54,10 @@ SimWorld::SimWorld(std::shared_ptr<WorldSettings> _worldSettings, std::shared_pt
 
 }
 SimWorld::~SimWorld() {
-
     //delete bullet related objects in reverse order of creation!
-    delete dynamicsWorld;
-    delete solver;
-    delete overlappingPairCache;
-    delete collisionDispatcher;
-    delete collisionConfig;
 }
 btDiscreteDynamicsWorld* SimWorld::getWorld() {
-    return dynamicsWorld;
+    return dynamicsWorld.get(); // In general we don't want to share ownership of the world with e.g. visual interfaces
 }
 void SimWorld::stepSimulation() {
     dynamicsWorld->stepSimulation(1/100.0, 10, 1/600.0);

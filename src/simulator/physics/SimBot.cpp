@@ -20,7 +20,9 @@ btScalar SimBot::orientation() const {
     return yaw;
 }
 //TODO: add option of initializing with wheel velocities
-SimBot::SimBot(std::shared_ptr<btDynamicsWorld> world, const std::shared_ptr<RobotSettings>& settings, const std::shared_ptr<WorldSettings>& worldSettings, const btVector3 &initialPos, btScalar dir) {
+SimBot::SimBot(unsigned int _id, std::shared_ptr<btDynamicsWorld> world, const std::shared_ptr<RobotSettings>& settings, const std::shared_ptr<WorldSettings>& worldSettings, const btVector3 &initialPos, btScalar dir) :
+id{_id}
+{
     dynamicsWorld = world;
     btCompoundShape *wholeShape = new btCompoundShape();
     btTransform shapeTransform;
@@ -119,7 +121,7 @@ void SimBot::localControl(btScalar velTangent, btScalar velNormal, btScalar velA
         wheelMotor[i]->setMotorTargetVelocity(wheelVel);
     }
 }
-SimBot::SimBot(std::shared_ptr<btDynamicsWorld> world, std::shared_ptr<RobotSettings> settings, std::shared_ptr<WorldSettings> worldSettings) : SimBot(world, settings,worldSettings,
+SimBot::SimBot(unsigned int id, std::shared_ptr<btDynamicsWorld> world, std::shared_ptr<RobotSettings> settings, std::shared_ptr<WorldSettings> worldSettings) : SimBot(id,world, settings,worldSettings,
                                                                          btVector3(0, 0, 0), 0.0) {
 }
 SimBot::~SimBot() {
@@ -135,5 +137,34 @@ SimBot::~SimBot() {
         dynamicsWorld->removeConstraint(wheelMotor[j]);
         delete wheels[j];
         delete wheelMotor[j];
+    }
+}
+unsigned int SimBot::getId() {
+    return id;
+}
+
+void SimBot::receiveCommand(const mimir_robotcommand &robotcommand) {
+    if (robotcommand.id()!=id){
+        std::cout<<"Something is very very wrong"<<std::endl;
+        return;
+    }
+    switch(robotcommand.control_case()){
+        case mimir_robotcommand::kWheels:{
+            const auto &w=robotcommand.wheels();
+            wheelControl(w.wheel1(),w.wheel2(),w.wheel3(),w.wheel4());
+            break;
+        }
+        case mimir_robotcommand::kGlobalVel:{
+            break;
+        }
+        case mimir_robotcommand::kRobotVel:  {
+            const auto &r=robotcommand.robotvel();
+            localControl(r.veltangent(),r.velnormal(),r.velangle());
+            break;
+        }
+        case mimir_robotcommand::CONTROL_NOT_SET:{
+            std::cerr<<"You shouldn't be seeing this!"<<std::endl;
+            break;
+        }
     }
 }

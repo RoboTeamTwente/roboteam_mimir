@@ -32,15 +32,20 @@ public:
     btDiscreteDynamicsWorld *getWorld();
     std::vector<SSL_WrapperPacket> getPackets();
     void doCommands(btScalar dt);
+    void addCommands(std::vector<mimir_robotcommand> commands,bool TeamIsYellow); //TODO: fix copying
+    void setRobotCount(unsigned int robotsPerTeam);
 private:
+    void resetRobots();
     SSL_GeometryData getGeometryData();
     std::vector<SSL_DetectionFrame> getDetectionFrames();
 
     std::shared_ptr<SimField> field;
     std::shared_ptr<SimBall> ball;
-    std::shared_ptr<SimBot> test;//TODO: remove
-    std::vector<std::shared_ptr<SimBot>> blueBots;
-    std::vector<std::shared_ptr<SimBot>> yellowBots;
+    std::vector<std::unique_ptr<SimBot>> blueBots;
+    std::vector<std::unique_ptr<SimBot>> yellowBots;
+
+    std::vector<mimir_robotcommand> blueCommands;
+    std::vector<mimir_robotcommand> yellowCommands;
     // these make up the total physics simulator together
     std::unique_ptr<btDefaultCollisionConfiguration> collisionConfig;
     std::unique_ptr<btCollisionDispatcher> collisionDispatcher;
@@ -52,6 +57,7 @@ private:
     std::shared_ptr<RobotSettings> yellowSettings = nullptr;
     std::shared_ptr<WorldSettings> worldSettings = nullptr;
 
+    unsigned int numRobots = 3;
     int tickCount = 0;
 
 };

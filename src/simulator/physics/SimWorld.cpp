@@ -48,10 +48,7 @@ SimWorld::SimWorld(std::shared_ptr<WorldSettings> _worldSettings, std::shared_pt
     //create a ball
     ball = std::make_shared<SimBall>(dynamicsWorld, worldSettings,
             btVector3(- 4*SCALE, 0, worldSettings->ballRadius*SCALE), btVector3(SCALE*8, 0, 0));
-    //creating a robot for testing purposes TODO remove
-    test = std::make_shared<SimBot>(dynamicsWorld, blueSettings, worldSettings,
-            btVector3(0.0,0.0, 0.0)*worldSettings->scale, 0.0);
-
+    resetRobots();
 }
 SimWorld::~SimWorld() {
     //delete bullet related objects in reverse order of creation!
@@ -92,7 +89,22 @@ void addArc(const std::string &name, float centerx, float centery, float radius,
 void SimWorld::doCommands(btScalar dt) {
     dynamicsWorld->clearForces();//according to wiki
     //TODO: options for local, global velocity and angular control mode.
-    test->localControl(3.0,0.0,0.0);
+    for (const auto& command: blueCommands) {
+        for (auto &robot : blueBots) {
+            if (robot->getId()==command.id()){
+                robot->receiveCommand(command);
+            }
+        }
+    }
+    for (const auto& command: yellowCommands) {
+        for (auto &robot : yellowBots) {
+            if (robot->getId()==command.id()){
+                robot->receiveCommand(command);
+            }
+        }
+    }
+    blueCommands.clear();
+    yellowCommands.clear();
     dynamicsWorld->applyGravity();
 }
 SSL_GeometryData SimWorld::getGeometryData() {
@@ -175,6 +187,7 @@ std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
     detFrame.add_robots_blue()->CopyFrom(robot);
     robot.set_robot_id(2);
     detFrame.add_robots_yellow()->CopyFrom(robot);
+
     frames.push_back(detFrame);
     return frames;
 }
@@ -197,4 +210,34 @@ std::vector<SSL_WrapperPacket> SimWorld::getPackets() {
     }
     tickCount ++;
     return packets;
+}
+
+//TODO: use move semantics
+void SimWorld::addCommands(std::vector<mimir_robotcommand> commands, bool TeamIsYellow) {
+    if (TeamIsYellow){
+        yellowCommands.insert(commands.begin(),commands.end(),yellowCommands.end());
+    }
+    else{
+        blueCommands.insert(commands.begin(),commands.end(),blueCommands.end());
+    }
+}
+void SimWorld::setRobotCount(unsigned int robotsPerTeam) {
+    if (robotsPerTeam!=numRobots){
+        numRobots=robotsPerTeam;
+        resetRobots();
+    }
+}
+
+//Reloads and resets all of the robots
+void SimWorld::resetRobots() {
+    yellowBots.clear();
+    blueBots.clear();
+    for (unsigned int i = 0; i < numRobots; ++i) {
+        yellowBots.push_back(
+                std::make_unique<SimBot>(i,dynamicsWorld, yellowSettings, worldSettings,
+                        btVector3(0.0,0.0, 0.0)*worldSettings->scale, 0.0));
+        blueBots.push_back(
+                std::make_unique<SimBot>(i,dynamicsWorld, blueSettings, worldSettings,
+                                         btVector3(0.0,0.0, 0.0)*worldSettings->scale, 0.0));
+    }
 }

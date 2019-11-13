@@ -10,19 +10,22 @@
 #include "../config/WorldSettings.h"
 #include "RobotMesh.h"
 #include <memory>
+#include <proto/mimir_robotcommand.pb.h>
 
 class SimBot : public BaseSimBot {
 public:
-    SimBot(std::shared_ptr<btDynamicsWorld> world, std::shared_ptr<RobotSettings> settings, std::shared_ptr<WorldSettings> worldSettings);
-    SimBot(std::shared_ptr<btDynamicsWorld> world, const std::shared_ptr<RobotSettings>& settings, const std::shared_ptr<WorldSettings>& worldSettings, const btVector3& initialPos,btScalar dir);
+    SimBot(unsigned int _id,std::shared_ptr<btDynamicsWorld> world, std::shared_ptr<RobotSettings> settings, std::shared_ptr<WorldSettings> worldSettings);
+    SimBot(unsigned int _id,std::shared_ptr<btDynamicsWorld> world, const std::shared_ptr<RobotSettings>& settings, const std::shared_ptr<WorldSettings>& worldSettings, const btVector3& initialPos,btScalar dir);
     ~SimBot();
     btVector3 position() const override;
     btScalar orientation() const override;
+
+    void receiveCommand(const mimir_robotcommand &robotcommand);
     void wheelControl(btScalar wheel0, btScalar wheel1, btScalar wheel2, btScalar wheel3) override;
     void localControl(btScalar velTangent, btScalar velNormal, btScalar velAngle) override;
-
+    unsigned int getId();
     private:
-
+    const unsigned int id;
     std::shared_ptr<btDynamicsWorld>  dynamicsWorld;
     btAlignedObjectArray<btCollisionShape*> shapes;
     btRigidBody* body=nullptr;

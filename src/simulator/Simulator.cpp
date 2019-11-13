@@ -17,7 +17,7 @@ Simulator::Simulator() {
     QHostAddress localIP("127.0.0.1");
     int sendPort=10006;
     int receiveBluePort=10004;
-    int receiveYellowPort=10003;
+    int receiveYellowPort=10007;
     publisher=std::make_unique<net::Publisher>(localIP,sendPort);
     blueReceiver=std::make_unique<net::Receiver>(localIP,receiveBluePort);
     yellowReceiver=std::make_unique<net::Receiver>(localIP,receiveYellowPort);

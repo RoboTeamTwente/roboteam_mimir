@@ -90,9 +90,9 @@ void addArc(const std::string &name, float centerx, float centery, float radius,
     field->add_field_arcs()->CopyFrom(arc);
 }
 void SimWorld::doCommands(btScalar dt) {
-    dynamicsWorld->clearForces();//according to wiki    //set robot motors
+    dynamicsWorld->clearForces();//according to wiki
     //TODO: options for local, global velocity and angular control mode.
-    test->localControl(1.0,0.0,0.0);
+    test->localControl(3.0,0.0,0.0);
     dynamicsWorld->applyGravity();
 }
 SSL_GeometryData SimWorld::getGeometryData() {

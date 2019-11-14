@@ -156,6 +156,7 @@ void SimBot::receiveCommand(const mimir_robotcommand &robotcommand) {
             break;
         }
         case mimir_robotcommand::kGlobalVel:{
+            std::cerr<<"No global control yet!"<<std::endl;
             break;
         }
         case mimir_robotcommand::kRobotVel:  {

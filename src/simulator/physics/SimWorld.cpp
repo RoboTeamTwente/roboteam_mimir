@@ -175,18 +175,29 @@ std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
     detBall.set_z(worldSettings->ballRadius);//TODO: figure out what's actually being sent by SSL-vision in this field
     detFrame.add_balls()->CopyFrom(detBall);
 
-    //TODO: send robot from data
-    SSL_DetectionRobot robot;
-    robot.set_x(scale(test->position().x())/worldSettings->scale);
-    robot.set_y(scale(test->position().y())/worldSettings->scale);
-    robot.set_orientation(test->orientation());
-    robot.set_height(0.144);
-    robot.set_pixel_x(20.0);
-    robot.set_pixel_y(24.0);
-    robot.set_robot_id(1);
-    detFrame.add_robots_blue()->CopyFrom(robot);
-    robot.set_robot_id(2);
-    detFrame.add_robots_yellow()->CopyFrom(robot);
+    //TODO: move function to make detection to robot (make a camera class)
+    for (const auto &blueBot: blueBots) {
+        SSL_DetectionRobot robot;
+        robot.set_x(scale(blueBot->position().x())/worldSettings->scale);
+        robot.set_y(scale(blueBot->position().y())/worldSettings->scale);
+        robot.set_orientation(blueBot->orientation());
+        robot.set_height(0.144);
+        robot.set_pixel_x(20.0);
+        robot.set_pixel_y(24.0);
+        robot.set_robot_id(blueBot->getId());
+        detFrame.add_robots_blue()->CopyFrom(robot);
+    }
+    for (const auto &yellowBot: yellowBots) {
+        SSL_DetectionRobot robot;
+        robot.set_x(scale(yellowBot->position().x())/worldSettings->scale);
+        robot.set_y(scale(yellowBot->position().y())/worldSettings->scale);
+        robot.set_orientation(yellowBot->orientation());
+        robot.set_height(0.144);
+        robot.set_pixel_x(20.0);
+        robot.set_pixel_y(24.0);
+        robot.set_robot_id(yellowBot->getId());
+        detFrame.add_robots_yellow()->CopyFrom(robot);
+    }
 
     frames.push_back(detFrame);
     return frames;
@@ -215,10 +226,10 @@ std::vector<SSL_WrapperPacket> SimWorld::getPackets() {
 //TODO: use move semantics
 void SimWorld::addCommands(std::vector<mimir_robotcommand> commands, bool TeamIsYellow) {
     if (TeamIsYellow){
-        yellowCommands.insert(commands.begin(),commands.end(),yellowCommands.end());
+        yellowCommands.insert(yellowCommands.end(),commands.begin(),commands.end());
     }
     else{
-        blueCommands.insert(commands.begin(),commands.end(),blueCommands.end());
+        blueCommands.insert(blueCommands.begin(),commands.begin(),commands.end());
     }
 }
 void SimWorld::setRobotCount(unsigned int robotsPerTeam) {

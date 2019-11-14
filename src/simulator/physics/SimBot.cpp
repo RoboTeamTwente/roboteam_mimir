@@ -143,6 +143,7 @@ unsigned int SimBot::getId() {
     return id;
 }
 
+//TODO: move to base class.
 void SimBot::receiveCommand(const mimir_robotcommand &robotcommand) {
     if (robotcommand.id()!=id){
         std::cout<<"Something is very very wrong"<<std::endl;

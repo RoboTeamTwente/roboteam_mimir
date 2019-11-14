@@ -14,12 +14,12 @@
 Simulator::Simulator() {
     //set up network connections
     //TODO: make these settings saved in sim and easy to adjust
-    QHostAddress localIP("127.0.0.1");
+    QHostAddress localIP("224.5.23.2");
     int sendPort=10006;
     int receiveBluePort=10004;
     int receiveYellowPort=10007;
     publisher=std::make_unique<net::Publisher>(localIP,sendPort);
-    blueReceiver=std::make_unique<net::Receiver>(localIP,receiveBluePort);
+    blueReceiver=std::make_unique<net::Receiver>(QHostAddress("127.0.0.1"),receiveBluePort);
     yellowReceiver=std::make_unique<net::Receiver>(localIP,receiveYellowPort);
     //read all config files and save them in a widget
     configWidget=new ConfigWidget();
@@ -50,6 +50,12 @@ void Simulator::tick() {
     //TODO: fix input delay and make receivers callback based on a seperate thread so we can keep the looprate low but the internal step of the world high
     auto blueMsgs=blueReceiver->readMessages();
     auto yellowMsgs=yellowReceiver->readMessages();
+    if (blueMsgs.size()>0){
+        simWorld->addCommands(blueMsgs,false);
+    }
+    if (yellowMsgs.size()>0){
+        simWorld->addCommands(yellowMsgs,true);
+    }
     simWorld->stepSimulation();
     std::vector<SSL_WrapperPacket> packets=simWorld->getPackets();
     for (const auto& packet: packets){

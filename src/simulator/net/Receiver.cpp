@@ -22,7 +22,7 @@ namespace net {
     void Receiver::start() {
         stop();
         socket = new QUdpSocket(this);
-        socket->bind(IP,port);
+        socket->bind(IP,port);//TODO: add print with bind status
     }
     void Receiver::stop() {
         delete socket;
@@ -49,7 +49,6 @@ namespace net {
         while(socket->hasPendingDatagrams()){
             QByteArray datagram;
             datagram.resize(socket->pendingDatagramSize());
-            std::cout<<datagram.size()<<std::endl;
             socket->readDatagram(datagram.data(),datagram.size());
             mimir_robotcommand command;
             if(command.ParseFromArray(datagram.data(),datagram.size())){

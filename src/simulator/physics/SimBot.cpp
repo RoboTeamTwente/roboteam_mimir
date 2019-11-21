@@ -93,7 +93,7 @@ void SimBot::addWheel(int wheelLabel, btScalar wheelAngleD, btCollisionShape *wh
     //construct joint/motor
     btVector3 heightOffset=btVector3(0,0,-(settings->totalHeight+3*settings->bottomPlateHeight)*0.5)*worldSettings->scale; //TODO fix offsets and transforms (also wheel construction)
     btHingeConstraint * constraint = new btHingeConstraint(*body, *wheel,wheelPos+heightOffset,btVector3(0.0,0.0,0),btVector3(wheelPos.x(),wheelPos.y(),0),btVector3(1.0,0.0,0.0));
-    constraint->enableAngularMotor(true,0,1000);
+    constraint->enableAngularMotor(true,0,10000000);
     constraint->setDbgDrawSize(1.5);
     // set friction to be different in each direction of the wheel axis x is perpendicular, y is tangent. Z friction is lateral (only really relevant for ball/ball and robot/robot collisions)
     wheel->setAnisotropicFriction(btVector3(0.0,1.0,0.0),btCollisionObject::CF_ANISOTROPIC_FRICTION);
@@ -102,7 +102,6 @@ void SimBot::addWheel(int wheelLabel, btScalar wheelAngleD, btCollisionShape *wh
     dynamicsWorld->addConstraint(constraint, true);
     dynamicsWorld->addRigidBody(wheel);
 
-    std::cout<<wheelPos.z()<<" "<<(wheelPos+heightOffset).z()<<" "<<heightOffset.z()<<std::endl;
 }
 void SimBot::wheelControl(btScalar wheel0, btScalar wheel1, btScalar wheel2, btScalar wheel3) {
     wheelMotor[0]->setMotorTargetVelocity(wheel0);
@@ -145,6 +144,7 @@ unsigned int SimBot::getId() {
 
 //TODO: move to base class.
 void SimBot::receiveCommand(const mimir_robotcommand &robotcommand) {
+    body->setActivationState(ACTIVE_TAG);//TODO: only activate body when command has nonzero velocities
     if (robotcommand.id()!=id){
         std::cout<<"Something is very very wrong"<<std::endl;
         return;
@@ -152,21 +152,32 @@ void SimBot::receiveCommand(const mimir_robotcommand &robotcommand) {
     switch(robotcommand.control_case()){
         case mimir_robotcommand::kWheels:{
             const auto &w=robotcommand.wheels();
-            wheelControl(w.wheel1(),w.wheel2(),w.wheel3(),w.wheel4());
-            break;
+            wheelControl(w.wheel1(),w.wheel2(),w.wheel3(),w.wheel4()); break;
         }
         case mimir_robotcommand::kGlobalVel:{
-            std::cerr<<"No global control yet!"<<std::endl;
+            if (robotcommand.globalvel().angleControl_case()==robotcommand.globalvel().kAngle){
+
+            }
+            else{
+                const auto &g=robotcommand.globalvel();
+                globalControl(g.velx(),g.vely(),g.anglevel());
+            }
             break;
         }
         case mimir_robotcommand::kRobotVel:  {
             const auto &r=robotcommand.robotvel();
-            localControl(r.veltangent(),r.velnormal(),r.velangle());
-            break;
+            localControl(r.veltangent(),r.velnormal(),r.velangle()); break;
         }
         case mimir_robotcommand::CONTROL_NOT_SET:{
-            std::cerr<<"You shouldn't be seeing this!"<<std::endl;
-            break;
+            std::cerr<<"You shouldn't be seeing this!"<<std::endl; break;
         }
     }
+}
+void SimBot::globalControl(btScalar xVel, btScalar yVel, btScalar angularVel) {
+    btVector3 vel=body->getLinearVelocity();
+    std::cout<<"command: "<<sqrt(xVel*xVel+yVel*yVel)<< " speed: "<<  sqrt(vel.x()*vel.x()+vel.y()*vel.y())<<std::endl;
+    btScalar robotAngle=orientation(); //We assume the robot knows it's absolute rotation
+    //clockwise rotation since we rotate back to robot frame
+    localControl(xVel*cos(robotAngle)+yVel*sin(robotAngle),-xVel*sin(robotAngle)+yVel*cos(robotAngle),angularVel);
+
 }

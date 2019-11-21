@@ -23,6 +23,8 @@ public:
     void receiveCommand(const mimir_robotcommand &robotcommand);
     void wheelControl(btScalar wheel0, btScalar wheel1, btScalar wheel2, btScalar wheel3) override;
     void localControl(btScalar velTangent, btScalar velNormal, btScalar velAngle) override;
+    void globalControl(btScalar xVel, btScalar yVel, btScalar angularVel);
+    void globalControlAngle(btScalar xVel,btScalar yVel,btScalar angle);
     unsigned int getId();
     private:
     const unsigned int id;

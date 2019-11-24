@@ -3,19 +3,22 @@
 //
 
 #include "WheelGroundInteraction.h"
-#include <btBulletDynamicsCommon.h>
+#include <iostream> //TODO: remove redundant include
 
-//This callback is almost identical to btCollisionDispatcher:defaultNearCallBack, except we check and edit some collision points
 bool isWheelGroundCollision(btCollisionObject *obj0, btCollisionObject *obj1) {
-    return true;
-//    return (obj0->getUserIndex() == bodyType::WHEEL &&
-//            obj1->getUserIndex() == bodyType::GROUND) ||
-//            (obj1->getUserIndex() == bodyType::WHEEL &&
-//            obj0->getUserIndex() == bodyType::GROUND);
+    return (obj0->getUserIndex() == bodyType::WHEEL &&
+            obj1->getUserIndex() == bodyType::GROUND) ||
+            (obj1->getUserIndex() == bodyType::WHEEL &&
+            obj0->getUserIndex() == bodyType::GROUND);
 }
 void editContactPoint(btManifoldPoint &point){
-    point.m_contactCFM=0.002;
+    std::cout<<point.m_combinedFriction<<std::endl;
+    std::cout<<point.m_contactMotion1<<std::endl;
+    std::cout<<point.m_contactMotion2<<std::endl;
+    std::cout<<"_____________"<<std::endl;
+    //point.m_contactCFM=0.01;
 }
+//This callback is almost identical to btCollisionDispatcher:defaultNearCallBack, except we check and edit some collision points
 void customNearCallback(btBroadphasePair &collisionPair, btCollisionDispatcher &dispatcher,
                         const btDispatcherInfo &dispatchInfo) {
     btCollisionObject *colObj0 = (btCollisionObject *) collisionPair.m_pProxy0->m_clientObject;
@@ -41,9 +44,11 @@ void customNearCallback(btBroadphasePair &collisionPair, btCollisionDispatcher &
                 collisionPair.m_algorithm->processCollision(&obj0Wrap, &obj1Wrap, dispatchInfo, &contactPointResult);
                 //START OF EDITED CODE FOR MIMIR
                 if (isWheelGroundCollision(colObj0,colObj1)){
-                    int numContacts = contactPointResult.getPersistentManifold()->getNumContacts();
-                    for (int i = 0; i < numContacts; ++i) {
-                        editContactPoint(contactPointResult.getPersistentManifold()->getContactPoint(i));
+                    if (contactPointResult.getPersistentManifold()){
+                        int numContacts = contactPointResult.getPersistentManifold()->getNumContacts();
+                        for (int i = 0; i < numContacts; ++i) {
+                            editContactPoint(contactPointResult.getPersistentManifold()->getContactPoint(i));
+                        }
                     }
                 }
                 //END MIMIR Code

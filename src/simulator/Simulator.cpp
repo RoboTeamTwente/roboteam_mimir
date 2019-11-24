@@ -19,8 +19,8 @@ Simulator::Simulator() {
     int receiveBluePort=10004;
     int receiveYellowPort=10007;
     publisher=std::make_unique<net::Publisher>(localIP,sendPort);
-    blueReceiver=std::make_unique<net::Receiver>(QHostAddress("127.0.0.1"),receiveBluePort);
-    yellowReceiver=std::make_unique<net::Receiver>(localIP,receiveYellowPort);
+    blueReceiver=std::make_unique<net::Receiver>(QHostAddress("127.0.0.1"),receiveBluePort);//TODO: change back to localIP
+    yellowReceiver=std::make_unique<net::Receiver>(QHostAddress("127.0.0.1"),receiveYellowPort);
     //read all config files and save them in a widget
     configWidget=new ConfigWidget();
     // get the initial config settings and create a physics simulator with them
@@ -33,7 +33,7 @@ Simulator::Simulator() {
     timer= new QTimer();
     timer->setTimerType(Qt::PreciseTimer);
     connect(timer,&QTimer::timeout,this,&Simulator::tick);
-    timer->start(16);
+    timer->start(5);
 
 }
 Simulator::~Simulator() {

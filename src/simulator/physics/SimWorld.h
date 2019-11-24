@@ -57,7 +57,7 @@ private:
     std::shared_ptr<RobotSettings> yellowSettings = nullptr;
     std::shared_ptr<WorldSettings> worldSettings = nullptr;
 
-    unsigned int numRobots = 10;
+    unsigned int numRobots = 1;
     int tickCount = 0;
 
 };

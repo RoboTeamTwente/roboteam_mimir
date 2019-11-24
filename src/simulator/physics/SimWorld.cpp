@@ -12,7 +12,7 @@
 #include "SimBall.h"
 #include "../config/WorldSettings.h"
 #include "../config/RobotSettings.h"
-
+#include "WheelGroundInteraction.h"
 static void BulletTickCallback(btDynamicsWorld * world, btScalar dt){
     SimWorld* simWorld = (SimWorld *) (world->getWorldUserInfo());// This is how it's done in the example. Seems like black magic
     simWorld->doCommands(dt);
@@ -30,6 +30,7 @@ SimWorld::SimWorld(std::shared_ptr<WorldSettings> _worldSettings, std::shared_pt
     //uses the default dispatcher. We might want to use the parallel one down the road.
     collisionDispatcher = std::make_unique<btCollisionDispatcher>(collisionConfig.get());
 
+    collisionDispatcher->setNearCallback(customNearCallback);
     //btDbvtBroadphase is a good general purpose broadphase. You can also try out btAxis3Sweep.
     overlappingPairCache = std::make_unique<btDbvtBroadphase>();
 
@@ -57,7 +58,7 @@ btDiscreteDynamicsWorld* SimWorld::getWorld() {
     return dynamicsWorld.get(); // Raw as we don't want to share ownership of the world with e.g. visual interfaces
 }
 void SimWorld::stepSimulation() {
-    dynamicsWorld->stepSimulation(1/100.0, 10, 1/600.0);
+    dynamicsWorld->stepSimulation(1/200.0, 10, 1/200.0);
 }
 //helper functions for creating geometry
 inline int scale(const float &meas) {
@@ -244,11 +245,11 @@ void SimWorld::resetRobots() {
     yellowBots.clear();
     blueBots.clear();
     for (unsigned int i = 0; i < numRobots; ++i) {
-        yellowBots.push_back(
-                std::make_unique<SimBot>(i,dynamicsWorld, yellowSettings, worldSettings,
-                        btVector3(0.0,0.0, 0.0)*worldSettings->scale, 0.0));
+//        yellowBots.push_back(
+//                std::make_unique<SimBot>(i,dynamicsWorld, yellowSettings, worldSettings,
+//                        btVector3(0.0,0.0, 0.0)*worldSettings->scale, 0.0));
         blueBots.push_back(
                 std::make_unique<SimBot>(i,dynamicsWorld, blueSettings, worldSettings,
-                                         btVector3(0.0,0.0, 0.0)*worldSettings->scale, 0.0));
+                                         btVector3(0.0,0.4, 0.0)*worldSettings->scale, 0.0));
     }
 }

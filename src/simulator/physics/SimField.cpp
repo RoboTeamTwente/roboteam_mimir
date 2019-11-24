@@ -3,6 +3,8 @@
 //
 
 #include "SimField.h"
+#include "WheelGroundInteraction.h"
+
 SimField::SimField(std::shared_ptr<btDynamicsWorld>world, std::shared_ptr<WorldSettings> cfg) {
     dynamicsWorld = world;
     const float SCALE=cfg->scale;
@@ -66,6 +68,8 @@ void SimField::addObject(btCollisionShape *shape, const btTransform &transform) 
     object->setRestitution(0.56);
     object->setFriction(1.0);
 //    object->setSpinningFriction(1.0);
+    //allow custom friction for robot wheels, so we set the userIndex.
+    object->setUserIndex(bodyType::GROUND);//TODO: only set for the bottom field, not for all sides
     dynamicsWorld->addCollisionObject(object);
     objects.push_back(object);
 

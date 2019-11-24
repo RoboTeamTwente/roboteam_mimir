@@ -12,10 +12,7 @@ bool isWheelGroundCollision(btCollisionObject *obj0, btCollisionObject *obj1) {
             obj0->getUserIndex() == bodyType::GROUND);
 }
 void editContactPoint(btManifoldPoint &point){
-    std::cout<<point.m_combinedFriction<<std::endl;
-    std::cout<<point.m_contactMotion1<<std::endl;
-    std::cout<<point.m_contactMotion2<<std::endl;
-    std::cout<<"_____________"<<std::endl;
+    //TODO: fix control
     //point.m_contactCFM=0.01;
 }
 //This callback is almost identical to btCollisionDispatcher:defaultNearCallBack, except we check and edit some collision points

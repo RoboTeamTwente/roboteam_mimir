@@ -94,7 +94,7 @@ void SimBot::addWheel(int wheelLabel, btScalar wheelAngleD, btCollisionShape *wh
     constraint->enableAngularMotor(true,0,10000000);
     constraint->setDbgDrawSize(1.5);
     // set friction to be different in each direction of the wheel axis x is perpendicular, y is tangent. Z friction is lateral (only really relevant for ball/ball and robot/robot collisions)
-    wheel->setAnisotropicFriction(btVector3(0.1,0.85,0.0),btCollisionObject::CF_ANISOTROPIC_FRICTION);
+    wheel->setAnisotropicFriction(btVector3(0.15,0.85,0.0),btCollisionObject::CF_ANISOTROPIC_FRICTION);
     wheelMotor[wheelLabel]=constraint;
     //add everything to the world
     dynamicsWorld->addConstraint(constraint, true);

@@ -59,10 +59,6 @@ id{_id}
     worldTransform.setOrigin(btVector3(initialPos.x(),initialPos.y(),0.0));
     addWheels(settings, worldSettings,worldTransform);
     robSettings=settings;
-    std::cout<<wheels[0]->getCenterOfMassPosition().z()<<std::endl;
-    std::cout<<wheels[1]->getCenterOfMassPosition().z()<<std::endl;
-    std::cout<<wheels[2]->getCenterOfMassPosition().z()<<std::endl;
-    std::cout<<wheels[3]->getCenterOfMassPosition().z()<<std::endl;
 
 }
 void SimBot::addWheels(const std::shared_ptr<RobotSettings> settings, const std::shared_ptr<WorldSettings> worldSettings, btTransform hullTransform)  {
@@ -175,7 +171,7 @@ void SimBot::receiveCommand(const mimir_robotcommand &robotcommand) {
 }
 void SimBot::globalControl(btScalar xVel, btScalar yVel, btScalar angularVel) {
     btVector3 vel=body->getLinearVelocity();
-    std::cout<<"command: "<<sqrt(xVel*xVel+yVel*yVel)<< " speed: "<<  sqrt(vel.x()*vel.x()+vel.y()*vel.y())<<std::endl;
+
     btScalar robotAngle=orientation(); //We assume the robot knows it's absolute rotation
     //clockwise rotation since we rotate back to robot frame
     localControl(xVel*cos(robotAngle)+yVel*sin(robotAngle),-xVel*sin(robotAngle)+yVel*cos(robotAngle),angularVel);

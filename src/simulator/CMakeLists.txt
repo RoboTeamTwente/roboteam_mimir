@@ -20,7 +20,13 @@ add_library(simulator
         physics/SimBall.cpp
         physics/SimBall.h
         physics/SimBot.cpp
-        physics/SimBot.h physics/BaseSimBot.h physics/RobotMesh.cpp physics/RobotMesh.h)
+        physics/SimBot.h
+        physics/BaseSimBot.h
+        physics/RobotMesh.cpp
+        physics/RobotMesh.h
+        physics/WheelGroundInteraction.cpp
+        physics/WheelGroundInteraction.h
+        )
 target_link_libraries(simulator
         PRIVATE net
         PRIVATE Qt5::Core

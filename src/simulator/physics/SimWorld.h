@@ -50,14 +50,14 @@ private:
     std::unique_ptr<btDefaultCollisionConfiguration> collisionConfig;
     std::unique_ptr<btCollisionDispatcher> collisionDispatcher;
     std::unique_ptr<btBroadphaseInterface> overlappingPairCache;
-    std::unique_ptr<btSequentialImpulseConstraintSolver> solver;
+    std::unique_ptr<btConstraintSolver> solver;
     std::shared_ptr<btDiscreteDynamicsWorld> dynamicsWorld; // is publicly accessible through getWorld() for debugDrawing purposes
     // we create a local copy of the settings
     std::shared_ptr<RobotSettings> blueSettings = nullptr;
     std::shared_ptr<RobotSettings> yellowSettings = nullptr;
     std::shared_ptr<WorldSettings> worldSettings = nullptr;
 
-    unsigned int numRobots = 3;
+    unsigned int numRobots = 10;
     int tickCount = 0;
 
 };

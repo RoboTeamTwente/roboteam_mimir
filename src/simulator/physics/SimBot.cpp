@@ -141,41 +141,60 @@ unsigned int SimBot::getId() {
 }
 
 //TODO: move to base class.
-void SimBot::receiveCommand(const mimir_robotcommand &robotcommand) {
-    body->setActivationState(ACTIVE_TAG);//TODO: only activate body when command has nonzero velocities
+void SimBot::receiveCommand(const mimir_robotcommand &robotcommand, double time) {
+    //We don't apply the commands yet, we just receive here.
     if (robotcommand.id()!=id){
-        std::cout<<"Something is very very wrong"<<std::endl;
+        std::cerr<<"Sending command to wrong robot!"<<std::endl;
         return;
     }
-    switch(robotcommand.control_case()){
+    lastCommandTime=time; //TODO: fix timing for commands (the layer above this) so that in between time is also fixed.
+    isActive=true;
+    lastCommand = robotcommand;
+}
+void SimBot::globalControl(btScalar xVel, btScalar yVel, btScalar angularVel) {
+    btScalar robotAngle=orientation(); //We assume the robot knows it's absolute rotation
+    //clockwise rotation since we rotate back to robot frame
+    localControl(xVel*cos(robotAngle)+yVel*sin(robotAngle),-xVel*sin(robotAngle)+yVel*cos(robotAngle),angularVel);
+}
+
+//Simulate the internal code loop on the robot.
+void SimBot::update(double time) {
+    //The real robot stops after not receiving commands for some time
+    if (time-lastCommandTime>0.3){ //TODO: move to settings
+        deactivate();
+        return;
+    }
+    body->activate();
+    switch(lastCommand.control_case()){
         case mimir_robotcommand::kWheels:{
-            const auto &w=robotcommand.wheels();
+            const auto &w=lastCommand.wheels();
             wheelControl(w.wheel1(),w.wheel2(),w.wheel3(),w.wheel4()); break;
         }
         case mimir_robotcommand::kGlobalVel:{
-            if (robotcommand.globalvel().angleControl_case()==robotcommand.globalvel().kAngle){
-
+            if (lastCommand.globalvel().angleControl_case()==lastCommand.globalvel().kAngle){
+                const auto &g=lastCommand.globalvel();
+                //globalControlAngle(g.velx(),g.vely(),g.angle());
             }
             else{
-                const auto &g=robotcommand.globalvel();
+                const auto &g=lastCommand.globalvel();
                 globalControl(g.velx(),g.vely(),g.anglevel());
             }
             break;
         }
         case mimir_robotcommand::kRobotVel:  {
-            const auto &r=robotcommand.robotvel();
+            const auto &r=lastCommand.robotvel();
             localControl(r.veltangent(),r.velnormal(),r.velangle()); break;
         }
         case mimir_robotcommand::CONTROL_NOT_SET:{
-            std::cerr<<"You shouldn't be seeing this!"<<std::endl; break;
+            std::cerr<<"You shouldn't be seeing this!"<<std::endl; break; //TODO: fix this error on startup
         }
     }
 }
-void SimBot::globalControl(btScalar xVel, btScalar yVel, btScalar angularVel) {
-    btVector3 vel=body->getLinearVelocity();
-
-    btScalar robotAngle=orientation(); //We assume the robot knows it's absolute rotation
-    //clockwise rotation since we rotate back to robot frame
-    localControl(xVel*cos(robotAngle)+yVel*sin(robotAngle),-xVel*sin(robotAngle)+yVel*cos(robotAngle),angularVel);
-
+void SimBot::deactivate() {
+    if (isActive){
+        wheelControl(0,0,0,0);
+        isActive=false;
+    }
+}
+bool SimBot::canKickBall() {
 }

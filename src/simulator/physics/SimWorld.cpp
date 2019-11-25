@@ -90,22 +90,30 @@ void addArc(const std::string &name, float centerx, float centery, float radius,
 void SimWorld::doCommands(btScalar dt) {
     dynamicsWorld->clearForces();//according to wiki
     //TODO: options for local, global velocity and angular control mode.
+    //TODO: add delay options
+    time += dt;
     for (const auto& command: blueCommands) {
         for (auto &robot : blueBots) {
             if (robot->getId()==command.id()){
-                robot->receiveCommand(command);
+                robot->receiveCommand(command,time);
             }
         }
     }
     for (const auto& command: yellowCommands) {
         for (auto &robot : yellowBots) {
             if (robot->getId()==command.id()){
-                robot->receiveCommand(command);
+                robot->receiveCommand(command,time);
             }
         }
     }
     blueCommands.clear();
     yellowCommands.clear();
+    for (auto& bot : blueBots) {
+        bot->update(time);
+    }
+    for (auto& bot : yellowBots){
+        bot->update(time);
+    }
     dynamicsWorld->applyGravity();
 }
 SSL_GeometryData SimWorld::getGeometryData() {

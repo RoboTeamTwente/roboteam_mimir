@@ -59,6 +59,7 @@ private:
 
     unsigned int numRobots = 1;
     int tickCount = 0;
+    double time = 0;
 
 };
 

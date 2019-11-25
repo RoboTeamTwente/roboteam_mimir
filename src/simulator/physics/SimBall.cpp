@@ -3,7 +3,6 @@
 //
 
 #include <iostream>
-#include <iomanip>
 #include "SimBall.h"
 SimBall::SimBall(std::shared_ptr<btDynamicsWorld> _world, std::shared_ptr<WorldSettings> settings, const btVector3 &initialPos,
                  const btVector3 &initialVel) :
@@ -12,7 +11,6 @@ SimBall::SimBall(std::shared_ptr<btDynamicsWorld> _world, std::shared_ptr<WorldS
     physicsBall = new btSphereShape(settings->scale*settings->ballRadius);
     btVector3 inertia(1.0,1.0,1.0);
     inertia*=0.4*settings->ballMass*settings->ballRadius*settings->ballRadius*settings->scale*settings->scale;
-    //TODO: figure out how we can add initial velocity
     btTransform worldTransform;
     worldTransform.setIdentity();
     worldTransform.setOrigin(initialPos);
@@ -47,7 +45,11 @@ SimBall::SimBall(std::shared_ptr<btDynamicsWorld> _world, std::shared_ptr<WorldS
 btVector3 SimBall::velocity() const {
     return body->getLinearVelocity();
 }
-btVector3 SimBall::position() {
+btVector3 SimBall::position() const {
     const btTransform transform=body->getWorldTransform();
     return transform.getOrigin();
+}
+void SimBall::kick(const btVector3 &force) {
+    body->activate();
+    body->applyCentralForce(force);
 }

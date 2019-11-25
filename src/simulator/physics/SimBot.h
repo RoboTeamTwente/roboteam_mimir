@@ -60,6 +60,9 @@ private:
 
     bool canKickBall(SimBall* Ball);
 
+    void
+    addDribbler(const std::shared_ptr<RobotSettings> &settings, const std::shared_ptr<WorldSettings> &worldSettings,
+                btScalar dir, const btVector3 &originPos);
 };
 
 

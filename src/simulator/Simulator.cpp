@@ -47,6 +47,7 @@ btDiscreteDynamicsWorld* Simulator::getPhysicsWorld() {
 }
 
 void Simulator::tick() {
+    auto start=std::chrono::high_resolution_clock::now();
     //TODO: fix input delay and make receivers callback based on a seperate thread so we can keep the looprate low but the internal step of the world high
     auto blueMsgs=blueReceiver->readMessages();
     auto yellowMsgs=yellowReceiver->readMessages();
@@ -61,6 +62,8 @@ void Simulator::tick() {
     for (const auto& packet: packets){
         publisher->send(packet);
     }
+    auto end=std::chrono::high_resolution_clock::now();
+    std::cout<<"loop took "<<std::chrono::duration_cast<std::chrono::microseconds>(end-start).count()<<" us"<<std::endl;
 }
 
 std::shared_ptr<WorldSettings> Simulator::getWorldSettings() {

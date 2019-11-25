@@ -110,7 +110,7 @@ void SimWorld::doCommands(btScalar dt) {
     yellowCommands.clear();
     for (auto& bot : blueBots) {
 //        bot->update(ball.get(),time);
-        bot->localControl(0.1,0.0,0.0); //TODO; remove after testing
+        bot->globalControl(0.03,0.0,0.0); //TODO; remove after testing
     }
     for (auto& bot : yellowBots){
         bot->update(ball.get(),time);

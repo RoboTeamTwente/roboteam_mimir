@@ -63,9 +63,9 @@ id{_id}
 
     //TODO: fix dimensions and offsets to be accurate
     //TODO: put constants in settings
-    btCylinderShape * dribblerShape = new btCylinderShapeX(btVector3(0.07 / 2.0f, 0.007f, 0.007f) * worldSettings->scale);
+    btCylinderShape * dribblerShape = new btCylinderShapeX(btVector3(0.08 / 2.0f, 0.007f, 0.007f) * worldSettings->scale);
     shapes.push_back(dribblerShape);
-    btVector3 dribblerCenter = btVector3(settings->radius + 0.01f,0, -settings->totalHeight / 2.0f + 0.03f) * worldSettings->scale;
+    btVector3 dribblerCenter = btVector3(settings->radius-0.015,0, -settings->totalHeight / 2.0f + 0.03f) * worldSettings->scale;
     btTransform dribblerStartTransform;
     dribblerStartTransform.setIdentity();
     dribblerStartTransform.setOrigin(dribblerCenter + originPos);
@@ -77,8 +77,8 @@ id{_id}
     rbDribInfo.m_startWorldTransform = dribblerStartTransform;
 
     dribbler = new btRigidBody(rbDribInfo);
-    dribbler->setRestitution(0.2f);
-    dribbler->setFriction(10.0f);
+    dribbler->setRestitution(0.0f);
+    dribbler->setFriction(3.5f);
     dynamicsWorld->addRigidBody(dribbler);
 
     btTransform localA, localB;
@@ -88,7 +88,7 @@ id{_id}
     localA.setRotation(btQuaternion(btVector3(1, 0, 0), M_PI_2));
     localB.setRotation(btQuaternion(btVector3(0, 1, 0), M_PI_2));
     dribblerMotor = new btHingeConstraint(*body, *dribbler, localA, localB);
-    dribblerMotor->enableAngularMotor(true, 100, 1000);
+    dribblerMotor->enableAngularMotor(true, 20, 1000);
     dynamicsWorld->addConstraint(dribblerMotor, true);
 }
 void SimBot::addWheels(const std::shared_ptr<RobotSettings> settings, const std::shared_ptr<WorldSettings> worldSettings, btTransform hullTransform)  {

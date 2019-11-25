@@ -25,7 +25,7 @@ public:
     void receiveCommand(const mimir_robotcommand &robotcommand, double time);
     void update(SimBall* ball,double time);
     unsigned int getId();
-    void localControl(btScalar velTangent, btScalar velNormal, btScalar velAngle) override;
+    void globalControl(btScalar xVel, btScalar yVel, btScalar angularVel);
 private:
     const unsigned int id;
     std::shared_ptr<btDynamicsWorld> dynamicsWorld;
@@ -42,7 +42,7 @@ private:
                   const std::shared_ptr<RobotSettings> settings, const std::shared_ptr<WorldSettings> worldSettings,
                   btTransform hullTransform);
     void wheelControl(btScalar wheel0, btScalar wheel1, btScalar wheel2, btScalar wheel3) override;
-    void globalControl(btScalar xVel, btScalar yVel, btScalar angularVel);
+    void localControl(btScalar velTangent, btScalar velNormal, btScalar velAngle) override;
     void globalControlAngle(btScalar xVel, btScalar yVel, btScalar angle);
     void deactivate();
 

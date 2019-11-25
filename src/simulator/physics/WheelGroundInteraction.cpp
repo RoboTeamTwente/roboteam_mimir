@@ -13,7 +13,7 @@ bool isWheelGroundCollision(btCollisionObject *obj0, btCollisionObject *obj1) {
 }
 void editContactPoint(btManifoldPoint &point){
     //TODO: fix control
-    //point.m_contactCFM=0.01;
+    point.m_contactCFM=0.01; //TODO: tune this value
 }
 //This callback is almost identical to btCollisionDispatcher:defaultNearCallBack, except we check and edit some collision points
 void customNearCallback(btBroadphasePair &collisionPair, btCollisionDispatcher &dispatcher,

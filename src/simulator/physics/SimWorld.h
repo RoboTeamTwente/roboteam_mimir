@@ -4,7 +4,7 @@
 
 #ifndef ROBOTEAM_MIMIR_SIMWORLD_H
 #define ROBOTEAM_MIMIR_SIMWORLD_H
-//remove later
+//TODO: remove later
 #include <QObject>
 #include "iostream"
 //end
@@ -54,7 +54,7 @@ private:
     std::shared_ptr<btDiscreteDynamicsWorld> dynamicsWorld; // is publicly accessible through getWorld() for debugDrawing purposes
     // we create a local copy of the settings
     std::shared_ptr<RobotSettings> blueSettings = nullptr;
-    std::shared_ptr<RobotSettings> yellowSettings = nullptr;
+    std::shared_ptr<RobotSettings> yellowSettings = nullptr; //TODO: unused?
     std::shared_ptr<WorldSettings> worldSettings = nullptr;
 
     unsigned int numRobots = 1;

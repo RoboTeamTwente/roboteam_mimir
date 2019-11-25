@@ -6,7 +6,7 @@
 
 #include "iostream"
 #include "WheelGroundInteraction.h"
-
+#include "SimBall.h"
 btVector3 SimBot::position() const {
     btTransform transform;
     motionState->getWorldTransform(transform);
@@ -61,6 +61,35 @@ id{_id}
     addWheels(settings, worldSettings,worldTransform);
     robSettings=settings;
 
+    //TODO: fix dimensions and offsets to be accurate
+    //TODO: put constants in settings
+    btCylinderShape * dribblerShape = new btCylinderShapeX(btVector3(0.07 / 2.0f, 0.007f, 0.007f) * worldSettings->scale);
+    shapes.push_back(dribblerShape);
+    btVector3 dribblerCenter = btVector3(settings->radius + 0.01f,0, -settings->totalHeight / 2.0f + 0.03f) * worldSettings->scale;
+    btTransform dribblerStartTransform;
+    dribblerStartTransform.setIdentity();
+    dribblerStartTransform.setOrigin(dribblerCenter + originPos);
+    dribblerStartTransform.setRotation(btQuaternion(btVector3(0, 0, 1), dir+M_PI_2));
+
+    btVector3 dribblerInertia(0,0,0);
+    dribblerShape->calculateLocalInertia(0.02*settings->bodyMass, dribblerInertia);
+    btRigidBody::btRigidBodyConstructionInfo rbDribInfo(0.02 * settings->bodyMass, nullptr, dribblerShape, dribblerInertia);
+    rbDribInfo.m_startWorldTransform = dribblerStartTransform;
+
+    dribbler = new btRigidBody(rbDribInfo);
+    dribbler->setRestitution(0.2f);
+    dribbler->setFriction(10.0f);
+    dynamicsWorld->addRigidBody(dribbler);
+
+    btTransform localA, localB;
+    localA.setIdentity();
+    localB.setIdentity();
+    localA.setOrigin(dribblerCenter);
+    localA.setRotation(btQuaternion(btVector3(1, 0, 0), M_PI_2));
+    localB.setRotation(btQuaternion(btVector3(0, 1, 0), M_PI_2));
+    dribblerMotor = new btHingeConstraint(*body, *dribbler, localA, localB);
+    dribblerMotor->enableAngularMotor(true, 100, 1000);
+    dynamicsWorld->addConstraint(dribblerMotor, true);
 }
 void SimBot::addWheels(const std::shared_ptr<RobotSettings> settings, const std::shared_ptr<WorldSettings> worldSettings, btTransform hullTransform)  {
     //we don't want to construct the same shape 4 times
@@ -135,6 +164,10 @@ SimBot::~SimBot() {
         delete wheels[j];
         delete wheelMotor[j];
     }
+    dynamicsWorld->removeRigidBody(dribbler);
+    dynamicsWorld->removeConstraint(dribblerMotor);
+    delete dribbler;
+    delete dribblerMotor;
 }
 unsigned int SimBot::getId() {
     return id;
@@ -158,9 +191,9 @@ void SimBot::globalControl(btScalar xVel, btScalar yVel, btScalar angularVel) {
 }
 
 //Simulate the internal code loop on the robot.
-void SimBot::update(double time) {
+void SimBot::update(SimBall* ball,double time) {
     //The real robot stops after not receiving commands for some time
-    if (time-lastCommandTime>0.3){ //TODO: move to settings
+    if (time-lastCommandTime>0.1){ //TODO: move to settings
         deactivate();
         return;
     }
@@ -189,6 +222,13 @@ void SimBot::update(double time) {
             std::cerr<<"You shouldn't be seeing this!"<<std::endl; break; //TODO: fix this error on startup
         }
     }
+    //Kicker
+    //TODO: listen to commands properly
+//    if (canKickBall(ball)){
+//        std::cout<<"KICKING BALL"<<std::endl;
+//        btVector3 force=(ball->position()-body->getCenterOfMassPosition()).normalized()*1000;
+//        ball->kick(force);
+//    }
 }
 void SimBot::deactivate() {
     if (isActive){
@@ -196,5 +236,6 @@ void SimBot::deactivate() {
         isActive=false;
     }
 }
-bool SimBot::canKickBall() {
+bool SimBot::canKickBall(SimBall * ball) {
+    return (body->getCenterOfMassPosition()-ball->position()).norm()<0.3*100;//TODO: fix worldscale
 }

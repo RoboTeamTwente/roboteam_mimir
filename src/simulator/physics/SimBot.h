@@ -11,7 +11,7 @@
 #include "RobotMesh.h"
 #include <memory>
 #include <proto/mimir_robotcommand.pb.h>
-
+class SimBall;
 class SimBot : public BaseSimBot {
 public:
     SimBot(unsigned int _id, std::shared_ptr<btDynamicsWorld> world, std::shared_ptr<RobotSettings> settings,
@@ -23,8 +23,9 @@ public:
     btScalar orientation() const override;
 
     void receiveCommand(const mimir_robotcommand &robotcommand, double time);
-    void update(double time);
+    void update(SimBall* ball,double time);
     unsigned int getId();
+    void localControl(btScalar velTangent, btScalar velNormal, btScalar velAngle) override;
 private:
     const unsigned int id;
     std::shared_ptr<btDynamicsWorld> dynamicsWorld;
@@ -41,11 +42,13 @@ private:
                   const std::shared_ptr<RobotSettings> settings, const std::shared_ptr<WorldSettings> worldSettings,
                   btTransform hullTransform);
     void wheelControl(btScalar wheel0, btScalar wheel1, btScalar wheel2, btScalar wheel3) override;
-    void localControl(btScalar velTangent, btScalar velNormal, btScalar velAngle) override;
     void globalControl(btScalar xVel, btScalar yVel, btScalar angularVel);
     void globalControlAngle(btScalar xVel, btScalar yVel, btScalar angle);
-
     void deactivate();
+
+    btHingeConstraint *dribblerMotor;
+    btRigidBody *dribbler;
+
 
 
     mimir_robotcommand lastCommand;
@@ -55,7 +58,7 @@ private:
     bool kickerCharged=true;
     double lastKickTime;
 
-    bool canKickBall();
+    bool canKickBall(SimBall* Ball);
 
 };
 

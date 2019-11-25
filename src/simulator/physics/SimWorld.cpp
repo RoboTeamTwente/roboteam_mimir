@@ -48,7 +48,7 @@ SimWorld::SimWorld(std::shared_ptr<WorldSettings> _worldSettings, std::shared_pt
     field = std::make_shared<SimField>(dynamicsWorld, worldSettings);
     //create a ball
     ball = std::make_shared<SimBall>(dynamicsWorld, worldSettings,
-            btVector3(- 4*SCALE, 0, worldSettings->ballRadius*SCALE), btVector3(SCALE*8, 0, 0));
+            btVector3(0.3*SCALE, 0, worldSettings->ballRadius*SCALE), btVector3(-SCALE*0.0, 0, 0));
     resetRobots();
 }
 SimWorld::~SimWorld() {
@@ -109,10 +109,11 @@ void SimWorld::doCommands(btScalar dt) {
     blueCommands.clear();
     yellowCommands.clear();
     for (auto& bot : blueBots) {
-        bot->update(time);
+//        bot->update(ball.get(),time);
+        bot->localControl(0.1,0.0,0.0); //TODO; remove after testing
     }
     for (auto& bot : yellowBots){
-        bot->update(time);
+        bot->update(ball.get(),time);
     }
     dynamicsWorld->applyGravity();
 }
@@ -258,6 +259,6 @@ void SimWorld::resetRobots() {
 //                        btVector3(0.0,0.0, 0.0)*worldSettings->scale, 0.0));
         blueBots.push_back(
                 std::make_unique<SimBot>(i,dynamicsWorld, blueSettings, worldSettings,
-                                         btVector3(0.0,0.4, 0.0)*worldSettings->scale, 0.0));
+                                         btVector3(0.0,0.0, 0.0)*worldSettings->scale, 0.0));
     }
 }

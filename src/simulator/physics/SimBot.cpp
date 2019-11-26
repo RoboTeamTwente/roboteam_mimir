@@ -24,7 +24,8 @@ btScalar SimBot::orientation() const {
 //TODO: add option of initializing with wheel velocities
 SimBot::SimBot(unsigned int _id, std::shared_ptr<btDynamicsWorld> world, const std::shared_ptr<RobotSettings> &settings,
                const std::shared_ptr<WorldSettings> &worldSettings, const btVector3 &initialPos, btScalar dir) :
-        id{_id} {
+        id{_id},
+        SCALE(worldSettings->scale){
     dynamicsWorld = world;
     btCompoundShape *wholeShape = new btCompoundShape();
     btTransform shapeTransform;
@@ -36,7 +37,7 @@ SimBot::SimBot(unsigned int _id, std::shared_ptr<btDynamicsWorld> world, const s
     shapes.push_back(convexHullShape);
     for (btVector3 point : mesh.hull()) {
         //note scaling is done here so we do not need to worry about it in mesh construction
-        convexHullShape->addPoint(point * worldSettings->scale);
+        convexHullShape->addPoint(point * SCALE);
     }
     wholeShape->addChildShape(shapeTransform, convexHullShape);
     shapes.push_back(wholeShape);
@@ -44,7 +45,7 @@ SimBot::SimBot(unsigned int _id, std::shared_ptr<btDynamicsWorld> world, const s
     //set the position of the hull
     btTransform worldTransform;
     worldTransform.setIdentity();
-    btVector3 originPos(initialPos.x(), initialPos.y(), worldSettings->scale *
+    btVector3 originPos(initialPos.x(), initialPos.y(), SCALE *
                                                         ((settings->totalHeight - settings->bottomPlateHeight) * 0.5 +
                                                          settings->bottomPlateHeight));//TODO: ensure no offset!
     worldTransform.setOrigin(originPos);
@@ -71,10 +72,10 @@ void SimBot::addDribbler(const std::shared_ptr<RobotSettings> &settings, const s
     //TODO: fix dimensions and offsets to be accurate
 //TODO: put constants in settings
     btCylinderShape *dribblerShape = new btCylinderShapeX(
-            btVector3(0.1 / 2.0f, 0.007f, 0.007f) * worldSettings->scale);
+            btVector3(0.1 / 2.0f, 0.007f, 0.007f) * SCALE);
     shapes.push_back(dribblerShape);
     btVector3 dribblerCenter =
-            btVector3(settings->radius - 0.015, 0, -settings->totalHeight / 2.0f + 0.03f) * worldSettings->scale;
+            btVector3(settings->radius - 0.015, 0, -settings->totalHeight / 2.0f + 0.03f) * SCALE;
     btTransform dribblerStartTransform;
     dribblerStartTransform.setIdentity();
     dribblerStartTransform.setOrigin(dribblerCenter + originPos);
@@ -107,7 +108,7 @@ SimBot::addWheels(const std::shared_ptr<RobotSettings> settings, const std::shar
     //we don't want to construct the same shape 4 times
     btCylinderShapeX *wheelShape = new btCylinderShapeX(
             btVector3(settings->wheelThickness * 0.5, settings->wheelRadius, settings->wheelRadius) *
-            worldSettings->scale);
+            SCALE);
     addWheel(0, settings->wheelAngle0, wheelShape, settings, worldSettings, hullTransform);
     addWheel(1, settings->wheelAngle1, wheelShape, settings, worldSettings, hullTransform);
     addWheel(2, settings->wheelAngle2, wheelShape, settings, worldSettings, hullTransform);
@@ -122,7 +123,7 @@ void SimBot::addWheel(int wheelLabel, btScalar wheelAngleD, btCollisionShape *wh
     wheelTransform.setRotation(btQuaternion(btVector3(0.0f, 0.0f, 1.0f), angleR));
     btVector3 wheelPos =
             btVector3(cos(angleR) * settings->radius, sin(angleR) * settings->radius, settings->wheelRadius) *
-            worldSettings->scale;
+            SCALE;
     wheelTransform.setOrigin(wheelPos);
     //calculate moments of inertia of wheel
     btVector3 wheelInertia;
@@ -136,7 +137,7 @@ void SimBot::addWheel(int wheelLabel, btScalar wheelAngleD, btCollisionShape *wh
     wheels[wheelLabel] = wheel;
     //construct joint/motor
     btVector3 heightOffset = btVector3(0, 0, -(settings->totalHeight + 3 * settings->bottomPlateHeight) * 0.5) *
-                             worldSettings->scale; //TODO fix offsets and transforms (also wheel construction)
+                             SCALE; //TODO fix offsets and transforms (also wheel construction)
     btHingeConstraint *constraint = new btHingeConstraint(*body, *wheel, wheelPos + heightOffset,
                                                           btVector3(0.0, 0.0, 0),
                                                           btVector3(wheelPos.x(), wheelPos.y(), 0),
@@ -251,11 +252,11 @@ void SimBot::update(SimBall *ball, double time) {
     }
     //Kicker
     //TODO: listen to commands properly
-//    if (canKickBall(ball)){
-//        std::cout<<"KICKING BALL"<<std::endl;
-//        btVector3 force=(ball->position()-body->getCenterOfMassPosition()).normalized()*1000;
-//        ball->kick(force);
-//    }
+    if (canKickBall(ball)){
+        std::cout<<"KICKING BALL"<<std::endl;
+        btVector3 force=(ball->position()-body->getCenterOfMassPosition()).normalized()*1000;
+        ball->kick(force);
+    }
 }
 void SimBot::deactivate() {
     if (isActive) {
@@ -264,5 +265,17 @@ void SimBot::deactivate() {
     }
 }
 bool SimBot::canKickBall(SimBall *ball) {
-    return (body->getCenterOfMassPosition() - ball->position()).norm() < 0.3 * 100;//TODO: fix worldscale
+    return (body->getCenterOfMassPosition() - ball->position()).norm() < 0.3 *SCALE;//TODO: fix actual kicker area
+}
+
+SSL_DetectionRobot SimBot::asDetection() const {
+    SSL_DetectionRobot robot;
+    robot.set_x(position().x()/SCALE*1000);//TODO: fix mm to m conversion. Do we only get up to mm precision (as integer) or is it double?
+    robot.set_y(position().y()/SCALE*1000);
+    robot.set_orientation(orientation());
+    robot.set_height(0.144); //TODO: compute from robot values.
+    robot.set_pixel_x(20.0);
+    robot.set_pixel_y(24.0);
+    robot.set_robot_id(id);
+    return robot;
 }

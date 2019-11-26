@@ -12,11 +12,13 @@
 class Camera {
 public:
     Camera(btVector3 camPos,double cx, double cy, double length, double width,btDynamicsWorld* world);
-    bool isVisible(double x, double y);
-    bool isBallVisible(btVector3 ballPos);
+    bool isVisible(double x, double y) const;
+    bool isBallVisible(btVector3 ballPos) const;
+    int getId() const;
 private:
     //We use QTvectors/quaternions/matrices here, not bullet, since QT has a lot more convenient camera operations with Quaternions and Vectors
     //which are lacking in Bullet.
+    int id;//TODO: fix ID
     btVector3 position;
     QRectF visibleArea;
     btDynamicsWorld* dynamicsWorld;

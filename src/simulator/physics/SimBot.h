@@ -11,6 +11,7 @@
 #include "RobotMesh.h"
 #include <memory>
 #include <proto/mimir_robotcommand.pb.h>
+#include <proto/messages_robocup_ssl_detection.pb.h>
 class SimBall;
 class SimBot : public BaseSimBot {
 public:
@@ -25,9 +26,11 @@ public:
     void receiveCommand(const mimir_robotcommand &robotcommand, double time);
     void update(SimBall* ball,double time);
     unsigned int getId();
+    SSL_DetectionRobot asDetection() const;
     void globalControl(btScalar xVel, btScalar yVel, btScalar angularVel);
 private:
     const unsigned int id;
+    const double SCALE;
     std::shared_ptr<btDynamicsWorld> dynamicsWorld;
     btAlignedObjectArray<btCollisionShape *> shapes;
     btRigidBody *body = nullptr;
@@ -48,7 +51,6 @@ private:
 
     btHingeConstraint *dribblerMotor;
     btRigidBody *dribbler;
-
 
 
     mimir_robotcommand lastCommand;

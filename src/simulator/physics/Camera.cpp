@@ -14,24 +14,21 @@ position(camPos){
             <<visibleArea.bottomRight().x()<<" "<<visibleArea.bottomRight().y()<<" "
             <<visibleArea.bottomLeft().x()<<" "<<visibleArea.bottomLeft().y();
 }
-bool Camera::isVisible(double x, double y) {
+bool Camera::isVisible(double x, double y) const {
     return visibleArea.contains(x,y);
 }
 
-bool Camera::isBallVisible(btVector3 ballPos) {
+bool Camera::isBallVisible(btVector3 ballPos) const {
     if (isVisible(ballPos.x(),ballPos.y())){
         btCollisionWorld::AllHitsRayResultCallback ray(position,ballPos);
         ray.m_collisionFilterGroup = COL_CAMERARAY;
         //ray.m_collisionFilterMask= COL_ROBOT|COL_FIELD;
         // we only want to check for collisions with robots and field elements
         dynamicsWorld->rayTest(position,ballPos,ray);
-        if (ray.hasHit()){
-            std::cout<<"Vision blocked by bot or field!"<<std::endl; //TODO: remove prints
-        }
-        else{
-            std::cout<<"No vision block!"<<std::endl;
-        }
         return !ray.hasHit();
     }
     return false;
+}
+int Camera::getId() const {
+    return id;
 }

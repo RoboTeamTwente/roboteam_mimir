@@ -6,6 +6,8 @@
 // http://www.cs.kent.edu/~ruttan/GameEngines/lectures/Bullet_User_Manual
 // this resource also has a lot of information:
 // https://docs.google.com/document/d/10sXEhzFRSnvFcl3XxNGhnD4N2SedqwdAvK3dsihxVUA/edit#heading=h.2ye70wns7io3
+// Also the cached wiki is useful, see:
+// TODO: add link
 
 #include "SimWorld.h"
 #include "SimField.h"
@@ -160,58 +162,48 @@ SSL_GeometryData SimWorld::getGeometryData() {
     return data;
 }
 std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
-    //pseudocode
-    //make a detectionFrame for each camera
-    // for each robot
-    //find x,y+orientation
-    //put info into relevant detectionFrames/camera's
-    // for ball
-    // find position
-    // for each camera
     // check if center of ball visible from camPoint (raycast) by intersections with robots
     // compute area in pixels as a function from distance to Camera. TODO: figure out if area computation takes into account the skew/distortion or if it's literally the raw pixel area
-    // if so add it to relevant detectionFrame
     //for later; add motionState interpolation
 
     std::vector<SSL_DetectionFrame> frames;
-    SSL_DetectionFrame detFrame;
-    SSL_DetectionBall detBall;
-    btVector3 position = ball->position();
-    cameras[0].isBallVisible(position);
-    detBall.set_x(scale(position.x())/worldSettings->scale);
-    detBall.set_y(scale(position.y())/worldSettings->scale);
-    detBall.set_area(0.0);//TODO: fix below 4 vars
-    detBall.set_confidence(1.0);
-    detBall.set_pixel_x(0);
-    detBall.set_pixel_y(0);
-    detBall.set_z(worldSettings->ballRadius);//TODO: figure out what's actually being sent by SSL-vision in this field
-    detFrame.add_balls()->CopyFrom(detBall);
+    for (const auto& camera: cameras) {
+        SSL_DetectionFrame frame;
+        frame.clear_balls();
+        frame.clear_robots_blue();
+        frame.clear_robots_yellow();
+        frame.set_camera_id(camera.getId());
+        frame.set_t_capture(time);//TODO: fix motionstate interpolation?
+        frames.push_back(frame);
+    }
 
-    //TODO: move function to make detection to robot (make a camera class)
+    //TODO: add noise
     for (const auto &blueBot: blueBots) {
-        SSL_DetectionRobot robot;
-        robot.set_x(scale(blueBot->position().x())/worldSettings->scale);
-        robot.set_y(scale(blueBot->position().y())/worldSettings->scale);
-        robot.set_orientation(blueBot->orientation());
-        robot.set_height(0.144);
-        robot.set_pixel_x(20.0);
-        robot.set_pixel_y(24.0);
-        robot.set_robot_id(blueBot->getId());
-        detFrame.add_robots_blue()->CopyFrom(robot);
+        const btVector3 botPos=blueBot->position();
+        for (int i = 0; i < cameras.size(); ++ i) {
+            if (cameras[i].isVisible(botPos.x(),botPos.y())){
+                SSL_DetectionRobot bot=blueBot->asDetection();
+                frames[i].add_robots_blue()->CopyFrom(bot);
+            }
+        }
     }
     for (const auto &yellowBot: yellowBots) {
-        SSL_DetectionRobot robot;
-        robot.set_x(scale(yellowBot->position().x())/worldSettings->scale);
-        robot.set_y(scale(yellowBot->position().y())/worldSettings->scale);
-        robot.set_orientation(yellowBot->orientation());
-        robot.set_height(0.144);
-        robot.set_pixel_x(20.0);
-        robot.set_pixel_y(24.0);
-        robot.set_robot_id(yellowBot->getId());
-        detFrame.add_robots_yellow()->CopyFrom(robot);
+        const btVector3 botPos=yellowBot->position();
+        for (int j = 0; j < cameras.size(); ++ j) {
+            if (cameras[j].isVisible(botPos.x(),botPos.y())) {
+                SSL_DetectionRobot bot = yellowBot->asDetection();
+                //frames[j].mutable_robots_yellow()->Add()->CopyFrom(bot);
+            }
+        }
     }
 
-    frames.push_back(detFrame);
+    const btVector3 &ballPos=ball->position();
+    for (int k = 0; k <cameras.size(); ++ k) {
+        if (cameras[k].isBallVisible(ballPos)){
+            frames[k].mutable_balls()->Add()->CopyFrom(ball->asDetection());
+        }
+    }
+
     return frames;
 }
 std::vector<SSL_WrapperPacket> SimWorld::getPackets() {

@@ -12,7 +12,7 @@
 #include "SimBall.h"
 #include "../config/WorldSettings.h"
 #include "../config/RobotSettings.h"
-#include "WheelGroundInteraction.h"
+#include "CollisionShared.h"
 static void BulletTickCallback(btDynamicsWorld * world, btScalar dt){
     SimWorld* simWorld = (SimWorld *) (world->getWorldUserInfo());// This is how it's done in the example. Seems like black magic
     simWorld->doCommands(dt);
@@ -49,6 +49,7 @@ SimWorld::SimWorld(std::shared_ptr<WorldSettings> _worldSettings, std::shared_pt
     //create a ball
     ball = std::make_shared<SimBall>(dynamicsWorld, worldSettings,
             btVector3(0.3*SCALE, 0, worldSettings->ballRadius*SCALE), btVector3(-SCALE*0.0, 0, 0));
+    cameras.push_back(Camera(btVector3(0.0,0.0,0.4)*SCALE,0.0,0.0,SCALE*14.0,SCALE*11.0,dynamicsWorld.get()));
     resetRobots();
 }
 SimWorld::~SimWorld() {
@@ -176,6 +177,7 @@ std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
     SSL_DetectionFrame detFrame;
     SSL_DetectionBall detBall;
     btVector3 position = ball->position();
+    cameras[0].isBallVisible(position);
     detBall.set_x(scale(position.x())/worldSettings->scale);
     detBall.set_y(scale(position.y())/worldSettings->scale);
     detBall.set_area(0.0);//TODO: fix below 4 vars

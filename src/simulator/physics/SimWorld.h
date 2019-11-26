@@ -13,6 +13,7 @@
 #include "proto/messages_robocup_ssl_wrapper.pb.h"
 #include "proto/mimir_robotcommand.pb.h"
 #include "SimBot.h"
+#include "Camera.h"
 
 class SimField;
 
@@ -43,7 +44,7 @@ private:
     std::shared_ptr<SimBall> ball;
     std::vector<std::unique_ptr<SimBot>> blueBots;
     std::vector<std::unique_ptr<SimBot>> yellowBots;
-
+    std::vector<Camera> cameras;
     std::vector<mimir_robotcommand> blueCommands;
     std::vector<mimir_robotcommand> yellowCommands;
     // these make up the total physics simulator together

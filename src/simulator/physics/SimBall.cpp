@@ -4,6 +4,8 @@
 
 #include <iostream>
 #include "SimBall.h"
+#include "CollisionShared.h"
+
 SimBall::SimBall(std::shared_ptr<btDynamicsWorld> _world, std::shared_ptr<WorldSettings> settings, const btVector3 &initialPos,
                  const btVector3 &initialVel) :
         world(_world) {
@@ -30,7 +32,7 @@ SimBall::SimBall(std::shared_ptr<btDynamicsWorld> _world, std::shared_ptr<WorldS
     body->setSpinningFriction(0.03);//TODO: test real values
     body->setSleepingThresholds(0.01*settings->scale,0.01/2/M_PI);
     //add the constructed rigid Body to the world
-    world->addRigidBody(body);
+    world->addRigidBody(body,COL_BALL,COL_FIELD|COL_ROBOT|COL_BALL);
 }
 SimBall::~SimBall() {
     delete body;

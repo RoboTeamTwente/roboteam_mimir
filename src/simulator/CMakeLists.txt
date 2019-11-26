@@ -24,9 +24,9 @@ add_library(simulator
         physics/BaseSimBot.h
         physics/RobotMesh.cpp
         physics/RobotMesh.h
-        physics/WheelGroundInteraction.cpp
-        physics/WheelGroundInteraction.h
-        )
+        physics/CollisionShared.cpp
+        physics/CollisionShared.h
+        physics/Camera.cpp physics/Camera.h)
 target_link_libraries(simulator
         PRIVATE net
         PRIVATE Qt5::Core

@@ -3,7 +3,7 @@
 //
 
 #include "SimField.h"
-#include "WheelGroundInteraction.h"
+#include "CollisionShared.h"
 
 SimField::SimField(std::shared_ptr<btDynamicsWorld>world, std::shared_ptr<WorldSettings> cfg) {
     dynamicsWorld = world;
@@ -70,7 +70,8 @@ void SimField::addObject(btCollisionShape *shape, const btTransform &transform) 
 //    object->setSpinningFriction(1.0);
     //allow custom friction for robot wheels, so we set the userIndex.
     object->setUserIndex(bodyType::GROUND);//TODO: only set for the bottom field, not for all sides
-    dynamicsWorld->addCollisionObject(object);
+    int fieldCollidesWith = COL_BALL | COL_ROBOT | COL_CAMERARAY;
+    dynamicsWorld->addCollisionObject(object,COL_FIELD,fieldCollidesWith);
     objects.push_back(object);
 
 }

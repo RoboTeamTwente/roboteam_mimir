@@ -5,7 +5,7 @@
 #include "SimBot.h"
 
 #include "iostream"
-#include "WheelGroundInteraction.h"
+#include "CollisionShared.h"
 #include "SimBall.h"
 
 btVector3 SimBot::position() const {
@@ -58,7 +58,7 @@ SimBot::SimBot(unsigned int _id, std::shared_ptr<btDynamicsWorld> world, const s
     body = new btRigidBody(rbInfo);
     body->setFriction(1.0);
     body->setRestitution(0.0);
-    dynamicsWorld->addRigidBody(body);
+    dynamicsWorld->addRigidBody(body,COL_ROBOT,COL_EVERYTHING);
 
     worldTransform.setOrigin(btVector3(initialPos.x(), initialPos.y(), 0.0));
     addWheels(settings, worldSettings, worldTransform);
@@ -89,7 +89,7 @@ void SimBot::addDribbler(const std::shared_ptr<RobotSettings> &settings, const s
     dribbler = new btRigidBody(rbDribInfo);
     dribbler->setRestitution(0.2f);
     dribbler->setFriction(3.5f);
-    dynamicsWorld->addRigidBody(dribbler);
+    dynamicsWorld->addRigidBody(dribbler, COL_ROBOT, COL_EVERYTHING);
 
     btTransform localA, localB;
     localA.setIdentity();
@@ -98,7 +98,7 @@ void SimBot::addDribbler(const std::shared_ptr<RobotSettings> &settings, const s
     localA.setRotation(btQuaternion(btVector3(1, 0, 0), M_PI_2));
     localB.setRotation(btQuaternion(btVector3(0, 1, 0), M_PI_2));
     dribblerMotor = new btHingeConstraint(*body, *dribbler, localA, localB);
-    dribblerMotor->enableAngularMotor(true, 20, 1000);
+    dribblerMotor->enableAngularMotor(true, 200, 1000);
     dynamicsWorld->addConstraint(dribblerMotor, true);
 }
 void
@@ -148,7 +148,7 @@ void SimBot::addWheel(int wheelLabel, btScalar wheelAngleD, btCollisionShape *wh
     wheelMotor[wheelLabel] = constraint;
     //add everything to the world
     dynamicsWorld->addConstraint(constraint, true);
-    dynamicsWorld->addRigidBody(wheel);
+    dynamicsWorld->addRigidBody(wheel,COL_ROBOT,COL_EVERYTHING);
 
 }
 void SimBot::wheelControl(btScalar wheel0, btScalar wheel1, btScalar wheel2, btScalar wheel3) {

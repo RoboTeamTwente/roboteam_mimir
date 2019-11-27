@@ -34,7 +34,10 @@ public:
     std::vector<SSL_WrapperPacket> getPackets();
     void doCommands(btScalar dt);
     void addCommands(std::vector<mimir_robotcommand> commands,bool TeamIsYellow); //TODO: fix copying
-    void setRobotCount(unsigned int robotsPerTeam);
+    void setRobotCount(unsigned numRobots, bool isYellow);
+    void updateWorldConfig(std::shared_ptr<WorldSettings> _worldSettings);
+    void updateRobotConfig(std::shared_ptr<RobotSettings> _robotSettings, bool isYellow);
+    void resetWorld();
 private:
     void resetRobots();
     SSL_GeometryData getGeometryData();
@@ -58,7 +61,8 @@ private:
     std::shared_ptr<RobotSettings> yellowSettings = nullptr; //TODO: unused?
     std::shared_ptr<WorldSettings> worldSettings = nullptr;
 
-    unsigned int numRobots = 1;
+    unsigned int numBlueBots = 1;
+    unsigned int numYellowBots = 1;
     int tickCount = 0;
     double time = 0;
 

@@ -78,6 +78,7 @@ QList<QString> Simulator::getWorldConfigNames() {
 //TODO: signal to simulator to reset certain properties such as robots on the slots here
 void Simulator::setRobotConfig(const QString &name, bool isYellow) {
     configWidget->setCurrentRobot(name,isYellow);
+    simWorld->updateRobotConfig(configWidget->getRobotConfig(isYellow)->settings,isYellow);
 }
 void Simulator::setBlueConfig(const QString &name) {
     std::cerr<<"setting Blue Config to "<< name.toStdString()<<std::endl;
@@ -91,18 +92,21 @@ void Simulator::setYellowConfig(const QString &name) {
 void Simulator::setWorldConfig(const QString &name) {
     std::cerr<<"setting worldConfig to "<< name.toStdString()<<std::endl;
     configWidget->setCurrentWorld(name);
+    simWorld->updateWorldConfig(configWidget->getCurrentWorldConfig()->settings);
 }
 void Simulator::setBlueBotCount(int count) {
     if (count<0 || count > 16){
         std::cerr<<"Invalid number of robots"<<std::endl;
     }
     std::cout<<count<<" blue bots"<<std::endl;
+    simWorld->setRobotCount(count,false);
 }
 void Simulator::setYellowBotCount(int count) {
     if (count<0 || count > 16){
         std::cerr<<"Invalid number of robots"<<std::endl;
     }
     std::cout<<count<<" yellow bots"<<std::endl;
+    simWorld->setRobotCount(count,true);
 }
 
 void Simulator::setVisionIP(const QString &address) {

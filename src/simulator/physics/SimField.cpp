@@ -51,7 +51,9 @@ SimField::SimField(std::shared_ptr<btDynamicsWorld>world, std::shared_ptr<WorldS
 }
 SimField::~SimField() {
     // when we exit from the field we need to destroy all relevant information stored in the dynamics world
+
     for (int i = 0; i < objects.size(); ++i) {
+        dynamicsWorld->removeCollisionObject(objects[i]);
         delete objects[i];
     }
     delete goalSide;

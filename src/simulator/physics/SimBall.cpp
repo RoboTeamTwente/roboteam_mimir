@@ -37,6 +37,7 @@ SimBall::SimBall(std::shared_ptr<btDynamicsWorld> _world, std::shared_ptr<WorldS
     world->addRigidBody(body,COL_BALL,COL_FIELD|COL_ROBOT|COL_BALL);
 }
 SimBall::~SimBall() {
+    world->removeRigidBody(body);
     delete body;
     delete physicsBall;
     delete motionState;

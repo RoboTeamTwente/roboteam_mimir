@@ -28,31 +28,18 @@ SimWorld::SimWorld(std::shared_ptr<WorldSettings> _worldSettings, std::shared_pt
     yellowSettings = std::make_shared<RobotSettings>(*_yellowSettings);
     //Contains default setup for memory and how collisions between different types of objects are handled/calculated
     collisionConfig = std::make_unique<btDefaultCollisionConfiguration>();
-
     //uses the default dispatcher. We might want to use the parallel one down the road.
     collisionDispatcher = std::make_unique<btCollisionDispatcher>(collisionConfig.get());
-
-    collisionDispatcher->setNearCallback(customNearCallback);
+    collisionDispatcher->setNearCallback(customNearCallback); //We use a custom callback so we can change some contact constraints (see CollisionShared)
     //btDbvtBroadphase is a good general purpose broadphase. You can also try out btAxis3Sweep.
     overlappingPairCache = std::make_unique<btDbvtBroadphase>();
-
     //the default constraint solver. For parallel processing you can use a different solver (see Extras/BulletMultiThreaded)
     solver = std::make_unique<btSequentialImpulseConstraintSolver>();
-
     // the world in which all simulation happens
     dynamicsWorld = std::make_shared<btDiscreteDynamicsWorld>(collisionDispatcher.get(), overlappingPairCache.get(), solver.get(), collisionConfig.get());
-    const float SCALE = worldSettings->scale;
-    dynamicsWorld->setGravity(
-            btVector3(SCALE*worldSettings->gravityX, SCALE*worldSettings->gravityY, SCALE*worldSettings->gravityZ));
     // make sure bullet calls our motor commands when relevant every physics tick
     dynamicsWorld->setInternalTickCallback(BulletTickCallback,this,true);
-    //field creates and manages all of the geometry related (static) physics objects in the world
-    field = std::make_shared<SimField>(dynamicsWorld, worldSettings);
-    //create a ball
-    ball = std::make_shared<SimBall>(dynamicsWorld, worldSettings,
-            btVector3(0.3*SCALE, 0, worldSettings->ballRadius*SCALE), btVector3(-SCALE*0.0, 0, 0));
-    cameras.push_back(Camera(btVector3(0.0,0.0,5.0)*SCALE,0.0,0.0,SCALE*14.0,SCALE*11.0,dynamicsWorld.get()));
-    resetRobots();
+    resetWorld();
 }
 SimWorld::~SimWorld() {
     //delete bullet related objects in reverse order of creation!
@@ -236,23 +223,54 @@ void SimWorld::addCommands(std::vector<mimir_robotcommand> commands, bool TeamIs
         blueCommands.insert(blueCommands.begin(),commands.begin(),commands.end());
     }
 }
-void SimWorld::setRobotCount(unsigned int robotsPerTeam) {
-    if (robotsPerTeam!=numRobots){
-        numRobots=robotsPerTeam;
+void SimWorld::setRobotCount(unsigned int numRobots, bool isYellow) {
+    unsigned int current= isYellow ? numYellowBots : numBlueBots;
+    if (current!=numRobots){
+        if (isYellow){
+            numYellowBots = numRobots;
+        }
+        else{
+            numBlueBots = numRobots;
+        }
         resetRobots();
     }
 }
 
-//Reloads and resets all of the robots
 void SimWorld::resetRobots() {
-    yellowBots.clear();
     blueBots.clear();
-    for (unsigned int i = 0; i < numRobots; ++i) {
-//        yellowBots.push_back(
-//                std::make_unique<SimBot>(i,dynamicsWorld, yellowSettings, worldSettings,
-//                        btVector3(0.0,0.0, 0.0)*worldSettings->scale, 0.0));
+    yellowBots.clear();
+    for (unsigned int i = 0; i < numBlueBots; ++i) {
         blueBots.push_back(
                 std::make_unique<SimBot>(i,dynamicsWorld, blueSettings, worldSettings,
                                          btVector3(0.0,0.0, 0.0)*worldSettings->scale, 0.0));
     }
+    for (unsigned int i = 0; i < numYellowBots; ++i) {
+        yellowBots.push_back(
+                std::make_unique<SimBot>(i,dynamicsWorld, yellowSettings, worldSettings,
+                                         btVector3(0.0,0.4, 0.0)*worldSettings->scale, 0.0));
+    }
+}
+void SimWorld::resetWorld() {
+    const btScalar SCALE=worldSettings->scale;
+    dynamicsWorld->setGravity(
+            btVector3(SCALE*worldSettings->gravityX, SCALE*worldSettings->gravityY, SCALE*worldSettings->gravityZ));
+    field = std::make_shared<SimField>(dynamicsWorld, worldSettings);
+    ball = std::make_shared<SimBall>(dynamicsWorld, worldSettings,
+                                     btVector3(0.3*SCALE, 0, worldSettings->ballRadius*SCALE), btVector3(-SCALE*0.5, 0, 0));
+    cameras.clear();
+    cameras.push_back(Camera(btVector3(0.0,0.0,5.0)*SCALE,0.0,0.0,SCALE*14.0,SCALE*11.0,dynamicsWorld.get()));
+    resetRobots();
+}
+void SimWorld::updateWorldConfig(std::shared_ptr<WorldSettings> _worldSettings) {
+    worldSettings = std::make_shared<WorldSettings>(*_worldSettings);//We deference to take ownership as we want consistency!
+    resetWorld();
+}
+void SimWorld::updateRobotConfig(std::shared_ptr<RobotSettings> _robotSettings, bool isYellow) {
+    if (isYellow){
+        yellowSettings=std::make_shared<RobotSettings>(*_robotSettings);
+    }
+    else{
+        blueSettings=std::make_shared<RobotSettings>(*_robotSettings);
+    }
+    resetRobots();
 }

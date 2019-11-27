@@ -96,10 +96,10 @@ void SimBot::addDribbler(const std::shared_ptr<RobotSettings> &settings, const s
     localA.setIdentity();
     localB.setIdentity();
     localA.setOrigin(dribblerCenter);
-    localA.setRotation(btQuaternion(btVector3(1, 0, 0), M_PI_2));
+    localA.setRotation(btQuaternion(btVector3(1, 0, 0), - M_PI_2));
     localB.setRotation(btQuaternion(btVector3(0, 1, 0), M_PI_2));
     dribblerMotor = new btHingeConstraint(*body, *dribbler, localA, localB);
-    dribblerMotor->enableAngularMotor(true, 200, 1000);
+    dribblerMotor->enableAngularMotor(true,0, 1000);
     dynamicsWorld->addConstraint(dribblerMotor, true);
 }
 void

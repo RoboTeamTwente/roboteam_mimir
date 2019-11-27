@@ -24,9 +24,27 @@ public:
     ~Simulator();
     btDiscreteDynamicsWorld* getPhysicsWorld();
     std::shared_ptr<WorldSettings> getWorldSettings();
+    QList<QString> getWorldConfigNames();
+    QList<QString> getRobotConfigNames();
+
 public slots:
     void tick();
+    void setVisionIP(const QString &address);
+    void setVisionPort(int port);
+    void setBlueIP(const QString &address);
+    void setBluePort(int port);
+    void setYellowIP(const QString &address);
+    void setYellowPort(int port);
+
+    void setWorldConfig(const QString &name);
+    void setYellowConfig(const QString &name);
+    void setBlueConfig(const QString &name);
+
+    void setBlueBotCount(int count);
+    void setYellowBotCount(int count);
+
 private:
+    void setRobotConfig(const QString &name, bool isYellow);
     QTimer *timer;
     SimWorld* simWorld;
     ConfigWidget* configWidget;

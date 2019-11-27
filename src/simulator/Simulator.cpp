@@ -63,9 +63,75 @@ void Simulator::tick() {
         publisher->send(packet);
     }
     auto end=std::chrono::high_resolution_clock::now();
-    std::cout<<"loop took "<<std::chrono::duration_cast<std::chrono::microseconds>(end-start).count()<<" us"<<std::endl;
+    //std::cout<<"loop took "<<std::chrono::duration_cast<std::chrono::microseconds>(end-start).count()<<" us"<<std::endl;
 }
 
 std::shared_ptr<WorldSettings> Simulator::getWorldSettings() {
     return configWidget->getCurrentWorldConfig()->settings;
+}
+QList<QString> Simulator::getRobotConfigNames() {
+    return configWidget->getRobotNames();
+}
+QList<QString> Simulator::getWorldConfigNames() {
+    return configWidget->getWorldNames();
+}
+//TODO: signal to simulator to reset certain properties such as robots on the slots here
+void Simulator::setRobotConfig(const QString &name, bool isYellow) {
+    configWidget->setCurrentRobot(name,isYellow);
+}
+void Simulator::setBlueConfig(const QString &name) {
+    std::cerr<<"setting Blue Config to "<< name.toStdString()<<std::endl;
+    setRobotConfig(name,false);
+}
+
+void Simulator::setYellowConfig(const QString &name) {
+    std::cerr<<"setting Yellow Config to "<< name.toStdString()<<std::endl;
+    setRobotConfig(name,true);
+}
+void Simulator::setWorldConfig(const QString &name) {
+    std::cerr<<"setting worldConfig to "<< name.toStdString()<<std::endl;
+    configWidget->setCurrentWorld(name);
+}
+void Simulator::setBlueBotCount(int count) {
+    if (count<0 || count > 16){
+        std::cerr<<"Invalid number of robots"<<std::endl;
+    }
+    std::cout<<count<<" blue bots"<<std::endl;
+}
+void Simulator::setYellowBotCount(int count) {
+    if (count<0 || count > 16){
+        std::cerr<<"Invalid number of robots"<<std::endl;
+    }
+    std::cout<<count<<" yellow bots"<<std::endl;
+}
+
+void Simulator::setVisionIP(const QString &address) {
+    publisher->setIP(QHostAddress(address));
+}
+void Simulator::setVisionPort(int port) {
+    if (port< 0 || port>999999){
+        std::cerr<<"invalid port"<<std::endl;
+        return;
+    }
+    publisher->setPort(port);
+}
+void Simulator::setBluePort(int port) {
+    if (port< 0 || port>999999){
+        std::cerr<<"invalid port"<<std::endl;
+        return;
+    }
+    blueReceiver->setPort(port);
+}
+void Simulator::setYellowPort(int port) {
+    if (port< 0 || port>999999){
+        std::cerr<<"invalid port"<<std::endl;
+        return;
+    }
+    yellowReceiver->setPort(port);
+}
+void Simulator::setBlueIP(const QString &address) {
+    blueReceiver->setIP(QHostAddress(address));
+}
+void Simulator::setYellowIP(const QString &address) {
+    yellowReceiver->setIP(QHostAddress(address));
 }

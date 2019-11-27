@@ -10,7 +10,7 @@ namespace interface {
     MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
         simulator=new Simulator();
         debugVisualization = new DebugVisualization(simulator->getWorldSettings(),simulator->getPhysicsWorld(),this);
-        settingsWidget= new SettingsWidget(this);
+        settingsWidget= new SettingsWidget(simulator,this);
 
         mainLayout = new QVBoxLayout();
         hLayout = new QHBoxLayout();

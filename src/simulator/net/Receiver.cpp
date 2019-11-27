@@ -22,7 +22,7 @@ namespace net {
     void Receiver::start() {
         stop();
         socket = new QUdpSocket(this);
-        socket->bind(IP,port);//TODO: add print with bind status
+        socket->bind(IP,port, QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint);
     }
     void Receiver::stop() {
         delete socket;

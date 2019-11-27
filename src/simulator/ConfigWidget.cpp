@@ -72,7 +72,7 @@ void ConfigWidget::readWorldConfigs(const QDir& worldDir) {
         }
     }
 }
-void ConfigWidget::setCurrentWorld(QString &name) {
+void ConfigWidget::setCurrentWorld(const QString &name) {
     for (const auto& config : worldConfigList) {
         if(config->name()==name){
             currentWorld=config;
@@ -88,9 +88,31 @@ QList<QString> ConfigWidget::getWorldNames() {
     }
     return names;
 }
+QList<QString> ConfigWidget::getRobotNames() {
+    QList<QString> names;
+    for (const auto& config:robotConfigList) {
+        names.push_back(config->name());
+    }
+    return names;
+}
 std::shared_ptr<WorldConfig> ConfigWidget::getCurrentWorldConfig() {
     return currentWorld;
 }
 std::shared_ptr<RobotConfig>ConfigWidget::getRobotConfig(bool isYellow) {
     return isYellow?  yellowRobot : blueRobot;
+}
+
+void ConfigWidget::setCurrentRobot(const QString &name, bool isYellow) {
+    for (const auto& config : robotConfigList) {
+        if(config->name()==name){
+            if (isYellow){
+                yellowRobot = config;
+            }
+            else{
+                blueRobot = config;
+            }
+            return;
+        }
+    }
+    std::cerr<<"Could not find robot config: " <<name.toStdString()<<std::endl;
 }

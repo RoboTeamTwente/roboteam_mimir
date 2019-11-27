@@ -12,11 +12,14 @@
 #include <QtWidgets/QSpinBox>
 #include <QtWidgets/QGroupBox>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QComboBox>
 
+class Simulator;
 namespace interface{
     class SettingsWidget : public QWidget{
     Q_OBJECT
-
+    public:
+        explicit SettingsWidget(Simulator* widget ,QWidget* parent = nullptr);
     private:
         QList<QLabel *> labels;
         QVBoxLayout *vLayout;
@@ -33,9 +36,9 @@ namespace interface{
         QGridLayout *controlsLayout;
         QSpinBox *blueBotCount;
         QSpinBox *yellowBotCount;
-
-    public:
-        explicit SettingsWidget(QWidget* parent = nullptr);
+        QComboBox *blueBotSettings;
+        QComboBox *yellowBotSettings;
+        QComboBox *worldSettings;
 
     };
 }

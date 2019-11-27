@@ -3,8 +3,9 @@
 //
 
 #include "SettingsWidget.h"
+#include "simulator/Simulator.h"
 namespace interface{
-    SettingsWidget::SettingsWidget(QWidget *parent) : QWidget(parent){
+    SettingsWidget::SettingsWidget(Simulator* simulator,QWidget *parent) : QWidget(parent){
         //TODO: connect widgets and initialize values correctly
         vLayout=new QVBoxLayout();
         this->setLayout(vLayout);
@@ -88,8 +89,52 @@ namespace interface{
         controlsLayout->addWidget(yellowBotCount,i,1);
         i++;
 
+        label = new QLabel("Blue robots");
+        labels.push_back(label);
+        blueBotSettings = new QComboBox();
+        for (const auto &configName : simulator->getRobotConfigNames()) {
+            blueBotSettings->addItem(configName);
+        }
+        controlsLayout->addWidget(label,i,0);
+        controlsLayout->addWidget(blueBotSettings,i,1);
+        i++;
+
+        label = new QLabel("Yellow robots");
+        labels.push_back(label);
+        yellowBotSettings = new QComboBox();
+        for (const auto &configName : simulator->getRobotConfigNames()) {
+            yellowBotSettings->addItem(configName);
+        }
+        controlsLayout->addWidget(label,i,0);
+        controlsLayout->addWidget(yellowBotSettings,i,1);
+        i++;
+
+        label = new QLabel("World Settings");
+        labels.push_back(label);
+        worldSettings = new QComboBox();
+        for (const auto &configName : simulator->getWorldConfigNames()) {
+            worldSettings->addItem(configName);
+        }
+        controlsLayout->addWidget(label,i,0);
+        controlsLayout->addWidget(worldSettings,i,1);
+        i++;
+
         controlsGroup->setLayout(controlsLayout);
 
+        connect(visionAddress,&QLineEdit::textChanged,simulator,&Simulator::setVisionIP);
+        connect(visionPort,SIGNAL(valueChanged(int)),simulator,SLOT(setVisionPort(int)));
+        connect(blueIP,&QLineEdit::textChanged,simulator,&Simulator::setBlueIP);
+        connect(bluePort,SIGNAL(valueChanged(int)),simulator,SLOT(setBluePort(int)));
+        connect(yellowIP,&QLineEdit::textChanged,simulator,&Simulator::setYellowIP);
+        connect(yellowPort,SIGNAL(valueChanged(int)),simulator,SLOT(setYellowPort(int)));
+
+        //TODO: test if these work properly and hook up things in Simulator.cpp to actually work
+        connect(blueBotCount, SIGNAL(valueChanged(int)),simulator,SLOT(setBlueBotCount(int)));
+        connect(yellowBotCount,SIGNAL(valueChanged(int)),simulator,SLOT(setYellowBotCount(int)));
+
+        connect(blueBotSettings,&QComboBox::currentTextChanged,simulator,&Simulator::setBlueConfig);
+        connect(yellowBotSettings,&QComboBox::currentTextChanged,simulator,&Simulator::setYellowConfig);
+        connect(worldSettings,&QComboBox::currentTextChanged,simulator,&Simulator::setWorldConfig);
         vLayout->addWidget(controlsGroup);
         vLayout->addWidget(networkGroup);
     }

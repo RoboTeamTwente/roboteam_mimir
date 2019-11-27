@@ -18,7 +18,9 @@ public:
     ConfigWidget();
 
     QList<QString> getWorldNames();
-    void setCurrentWorld(QString &name);
+    QList<QString> getRobotNames();
+    void setCurrentWorld(const QString &name);
+    void setCurrentRobot(const QString &name,bool isYellow);
     std::shared_ptr<WorldConfig> getCurrentWorldConfig();
     std::shared_ptr<RobotConfig> getRobotConfig(bool isYellow);
 private:

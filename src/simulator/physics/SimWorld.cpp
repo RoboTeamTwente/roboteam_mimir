@@ -51,7 +51,7 @@ SimWorld::SimWorld(std::shared_ptr<WorldSettings> _worldSettings, std::shared_pt
     //create a ball
     ball = std::make_shared<SimBall>(dynamicsWorld, worldSettings,
             btVector3(0.3*SCALE, 0, worldSettings->ballRadius*SCALE), btVector3(-SCALE*0.0, 0, 0));
-    cameras.push_back(Camera(btVector3(0.0,0.0,0.4)*SCALE,0.0,0.0,SCALE*14.0,SCALE*11.0,dynamicsWorld.get()));
+    cameras.push_back(Camera(btVector3(0.0,0.0,5.0)*SCALE,0.0,0.0,SCALE*14.0,SCALE*11.0,dynamicsWorld.get()));
     resetRobots();
 }
 SimWorld::~SimWorld() {

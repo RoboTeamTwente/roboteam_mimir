@@ -4,7 +4,7 @@ add_library(interface
         DebugVisualization.cpp
         DebugVisualization.h
         DebugDrawer.cpp
-        DebugDrawer.h)
+        DebugDrawer.h SettingsWidget.cpp SettingsWidget.h)
 target_link_libraries(interface
         PUBLIC Qt5::Core
         PUBLIC Qt5::Widgets

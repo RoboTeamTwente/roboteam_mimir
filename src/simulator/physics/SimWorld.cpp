@@ -179,7 +179,7 @@ std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
         for (int j = 0; j < cameras.size(); ++ j) {
             if (cameras[j].isVisible(botPos.x(),botPos.y())) {
                 SSL_DetectionRobot bot = yellowBot->asDetection();
-                //frames[j].mutable_robots_yellow()->Add()->CopyFrom(bot);
+                frames[j].add_robots_yellow()->CopyFrom(bot);
             }
         }
     }

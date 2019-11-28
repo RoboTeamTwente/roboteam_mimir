@@ -161,7 +161,9 @@ namespace interface {
         //clear buffers so that throw out old visualizations
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the buffers from previous iteration
         setupView();
-        world->debugDrawWorld();//this calls the drawer internally
+        if (world){
+            world->debugDrawWorld();//this calls the drawer internally
+        }
         draw();
     }
     void DebugVisualization::setupShaders() {

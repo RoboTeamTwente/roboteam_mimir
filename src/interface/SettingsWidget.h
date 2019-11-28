@@ -31,6 +31,7 @@ namespace interface{
         QSpinBox *bluePort;
         QLineEdit *yellowIP;
         QSpinBox * yellowPort;
+        QSpinBox * sendGeometryTicks;
 
         QGroupBox *controlsGroup;
         QGridLayout *controlsLayout;

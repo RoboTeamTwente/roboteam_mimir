@@ -29,6 +29,7 @@ public:
 
 public slots:
     void tick();
+
     void setVisionIP(const QString &address);
     void setVisionPort(int port);
     void setBlueIP(const QString &address);
@@ -43,6 +44,7 @@ public slots:
     void setBlueBotCount(int count);
     void setYellowBotCount(int count);
 
+    void setSendGeometryTicks(int ticks);
 private:
     void setRobotConfig(const QString &name, bool isYellow);
     QTimer *timer;

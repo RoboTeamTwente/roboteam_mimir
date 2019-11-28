@@ -139,3 +139,9 @@ void Simulator::setBlueIP(const QString &address) {
 void Simulator::setYellowIP(const QString &address) {
     yellowReceiver->setIP(QHostAddress(address));
 }
+void Simulator::setSendGeometryTicks(int ticks) {
+    if (ticks<0){
+        std::cerr<<"Can't set to a negative number of ticks"<<std::endl;
+    }
+    simWorld->setSendGeometryTicks(ticks);
+}

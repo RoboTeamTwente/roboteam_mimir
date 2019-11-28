@@ -203,7 +203,7 @@ std::vector<SSL_WrapperPacket> SimWorld::getPackets() {
     }
 
     // we add the geometry every x frames
-    if (tickCount%120 == 0) { //TODO: make 120 not hardcoded but through interface/settings
+    if (tickCount%sendGeometryTicks == 0) { //TODO: make 120 not hardcoded but through interface/settings
         if (packets.empty()) {
             SSL_WrapperPacket wrapper;
             packets.push_back(wrapper);
@@ -262,7 +262,7 @@ void SimWorld::resetWorld() {
     resetRobots();
 }
 void SimWorld::updateWorldConfig(std::shared_ptr<WorldSettings> _worldSettings) {
-    worldSettings = std::make_shared<WorldSettings>(*_worldSettings);//We deference to take ownership as we want consistency!
+    worldSettings = std::make_shared<WorldSettings>(*_worldSettings);//We deference to take ownership
     resetWorld();
 }
 void SimWorld::updateRobotConfig(std::shared_ptr<RobotSettings> _robotSettings, bool isYellow) {
@@ -273,4 +273,7 @@ void SimWorld::updateRobotConfig(std::shared_ptr<RobotSettings> _robotSettings, 
         blueSettings=std::make_shared<RobotSettings>(*_robotSettings);
     }
     resetRobots();
+}
+void SimWorld::setSendGeometryTicks(unsigned int ticks) {
+    sendGeometryTicks = ticks;
 }

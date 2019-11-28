@@ -64,6 +64,14 @@ namespace interface{
         yellowPort->setValue(10006);
         networkLayout->addWidget(label,i,0);
         networkLayout->addWidget(yellowPort,i,1);
+        i++;
+        label = new QLabel("Send geometry every x ticks:");
+        labels.push_back(label);
+        sendGeometryTicks = new QSpinBox();
+        sendGeometryTicks->setRange(0,999999);
+        sendGeometryTicks->setValue(109); //TODO: fix initialization
+        networkLayout->addWidget(label,i,0);
+        networkLayout->addWidget(sendGeometryTicks,i,1);
 
         networkGroup->setLayout(networkLayout);
 

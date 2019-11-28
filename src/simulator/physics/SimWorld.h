@@ -37,6 +37,7 @@ public:
     void setRobotCount(unsigned numRobots, bool isYellow);
     void updateWorldConfig(std::shared_ptr<WorldSettings> _worldSettings);
     void updateRobotConfig(std::shared_ptr<RobotSettings> _robotSettings, bool isYellow);
+    void setSendGeometryTicks(unsigned int ticks);
     void resetWorld();
 private:
     void resetRobots();
@@ -63,6 +64,7 @@ private:
 
     unsigned int numBlueBots = 1;
     unsigned int numYellowBots = 1;
+    unsigned int sendGeometryTicks = 120;
     int tickCount = 0;
     double time = 0;
 

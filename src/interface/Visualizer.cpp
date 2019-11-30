@@ -33,6 +33,7 @@ Visualizer::Visualizer(WorldSettings* worldSettings, RobotSettings* yellow, Robo
 void Visualizer::setGeometryData(const SSL_GeometryData &geometry) {
     //Unfortunately there is no pretty way to compare protobuf objects.
     if (geometry.SerializeAsString() != geometryData.SerializeAsString()) {
+        std::cout<<"updated geometry"<<std::endl;
         geometryData = geometry;
         geometryUpdated = true;
         const auto &field = geometry.field();
@@ -40,6 +41,7 @@ void Visualizer::setGeometryData(const SSL_GeometryData &geometry) {
         double width = field.field_width();
         double margin = 0.1*width;
         sceneRect = QRectF(- length*0.5 - margin, - width*0.5 - margin, length + 2*margin, width + 2*margin);
+        showWholeField();
     }
 }
 
@@ -48,7 +50,6 @@ void Visualizer::drawBackground(QPainter* painter, const QRectF &rect) {
     painter->setRenderHint(QPainter::Antialiasing);//turn anti aliasing on
     drawField(painter); //TODO: fix caching to not have to redraw, or put things in items.
     geometryUpdated = false;
-    showWholeField();
     painter->restore();
 
 }
@@ -117,5 +118,9 @@ void Visualizer::drawGoal(QPainter* painter, bool isLeft) {
     path.lineTo(side * (l + field.goal_depth() + d), -w);
     path.lineTo(side * l, -w);
     painter->drawPath(path);
+}
+void Visualizer::resizeEvent(QResizeEvent* event) {
+    showWholeField();
+    QGraphicsView::resizeEvent(event);
 }
 }

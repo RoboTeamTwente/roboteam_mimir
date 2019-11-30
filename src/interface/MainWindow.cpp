@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget* parent)
     settingsWidget = new SettingsWidget(simulator, this);
     visualizer = new Visualizer(simulator->getWorldSettings().get(), simulator->getYellowSettings().get(),
             simulator->getBlueSettings().get(), simulator->getGeometry(), this);
+    connect(simulator,&Simulator::geometryUpdated,visualizer,&Visualizer::setGeometryData);
 
     mainLayout = new QVBoxLayout();
     hLayout = new QHBoxLayout();

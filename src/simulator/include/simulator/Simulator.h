@@ -32,6 +32,8 @@ public:
     QList<QString> getRobotConfigNames();
     SSL_GeometryData getGeometry();
 
+signals:
+    void geometryUpdated(const SSL_GeometryData &geometry);
 public slots:
     void tick();
 

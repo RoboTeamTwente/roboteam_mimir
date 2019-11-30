@@ -99,6 +99,7 @@ void Simulator::setWorldConfig(const QString &name) {
     std::cerr<<"setting worldConfig to "<< name.toStdString()<<std::endl;
     configWidget->setCurrentWorld(name);
     simWorld->updateWorldConfig(configWidget->getCurrentWorldConfig()->settings);
+    emit geometryUpdated(simWorld->getGeometryData());
 }
 void Simulator::setBlueBotCount(int count) {
     if (count<0 || count > 16){

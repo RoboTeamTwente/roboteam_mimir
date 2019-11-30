@@ -15,12 +15,14 @@ class Visualizer : public QGraphicsView {
     public:
         explicit Visualizer(WorldSettings* worldSettings, RobotSettings* yellow, RobotSettings* blue,
                 const SSL_GeometryData &geometry, QWidget* parent = nullptr);
+    public slots:
         void setGeometryData(const SSL_GeometryData &geometry);
-        void setRobotSettings(RobotSettings* settings, bool isYellow);
-        void setWorldSettings(WorldSettings* settings);
+//        void setRobotSettings(RobotSettings* settings, bool isYellow);
+//        void setWorldSettings(WorldSettings* settings);
     protected:
         void drawBackground(QPainter* painter, const QRectF &rect) override;
         //void drawForeground(QPainter *painter, const QRectF &rect) override;
+        void resizeEvent(QResizeEvent *event) override;
     private:
         void drawField(QPainter* painter);
         void drawFieldLines(QPainter* painter);

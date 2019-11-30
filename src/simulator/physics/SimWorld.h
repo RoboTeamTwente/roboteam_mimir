@@ -39,9 +39,10 @@ public:
     void updateRobotConfig(std::shared_ptr<RobotSettings> _robotSettings, bool isYellow);
     void setSendGeometryTicks(unsigned int ticks);
     void resetWorld();
-private:
-    void resetRobots();
     SSL_GeometryData getGeometryData();
+
+    private:
+    void resetRobots();
     std::vector<SSL_DetectionFrame> getDetectionFrames();
 
     std::shared_ptr<SimField> field;

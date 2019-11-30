@@ -12,6 +12,8 @@ class SimWorld;
 class ConfigWidget;
 class btDiscreteDynamicsWorld;
 class WorldSettings;
+class RobotSettings;
+class SSL_GeometryData;
 namespace net{
     class Publisher;
     class Receiver;
@@ -24,8 +26,11 @@ public:
     ~Simulator();
     btDiscreteDynamicsWorld* getPhysicsWorld();
     std::shared_ptr<WorldSettings> getWorldSettings();
+    std::shared_ptr<RobotSettings> getBlueSettings();
+    std::shared_ptr<RobotSettings> getYellowSettings();
     QList<QString> getWorldConfigNames();
     QList<QString> getRobotConfigNames();
+    SSL_GeometryData getGeometry();
 
 public slots:
     void tick();

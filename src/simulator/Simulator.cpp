@@ -10,10 +10,11 @@
 #include "net/Publisher.h"
 #include "net/Receiver.h"
 #include <QTimer>
+#include "proto/messages_robocup_ssl_geometry.pb.h"
 
 Simulator::Simulator() {
     //set up network connections
-    //TODO: make these settings saved in sim and easy to adjust
+    //TODO: make these settings saved in sim
     QHostAddress localIP("224.5.23.2");
     int sendPort=10006;
     int receiveBluePort=10004;
@@ -69,13 +70,18 @@ void Simulator::tick() {
 std::shared_ptr<WorldSettings> Simulator::getWorldSettings() {
     return configWidget->getCurrentWorldConfig()->settings;
 }
+std::shared_ptr<RobotSettings> Simulator::getBlueSettings() {
+    return configWidget->getRobotConfig(false)->settings;
+}
+std::shared_ptr<RobotSettings> Simulator::getYellowSettings() {
+    return configWidget->getRobotConfig(true)->settings;
+}
 QList<QString> Simulator::getRobotConfigNames() {
     return configWidget->getRobotNames();
 }
 QList<QString> Simulator::getWorldConfigNames() {
     return configWidget->getWorldNames();
 }
-//TODO: signal to simulator to reset certain properties such as robots on the slots here
 void Simulator::setRobotConfig(const QString &name, bool isYellow) {
     configWidget->setCurrentRobot(name,isYellow);
     simWorld->updateRobotConfig(configWidget->getRobotConfig(isYellow)->settings,isYellow);
@@ -144,4 +150,7 @@ void Simulator::setSendGeometryTicks(int ticks) {
         std::cerr<<"Can't set to a negative number of ticks"<<std::endl;
     }
     simWorld->setSendGeometryTicks(ticks);
+}
+SSL_GeometryData Simulator::getGeometry() {
+    return simWorld->getGeometryData();
 }

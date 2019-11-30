@@ -4,11 +4,17 @@ add_library(interface
         DebugVisualization.cpp
         DebugVisualization.h
         DebugDrawer.cpp
-        DebugDrawer.h SettingsWidget.cpp SettingsWidget.h)
+        DebugDrawer.h
+        SettingsWidget.cpp
+        SettingsWidget.h
+        Visualizer.cpp
+        Visualizer.h
+        )
 target_link_libraries(interface
         PUBLIC Qt5::Core
         PUBLIC Qt5::Widgets
         PUBLIC simulator
+        PRIVATE mimir_proto
         PRIVATE ${BULLET_LIBRARIES}
         )
 target_include_directories(interface

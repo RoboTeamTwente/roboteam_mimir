@@ -16,6 +16,7 @@ namespace interface {
 
     class SettingsWidget;
 
+    class Visualizer;
     class MainWindow : public QMainWindow {
     Q_OBJECT
     public:
@@ -30,6 +31,7 @@ namespace interface {
         DebugVisualization *debugVisualization;
         Simulator *simulator;
         SettingsWidget *settingsWidget;
+        Visualizer *visualizer;
     };
 }
 

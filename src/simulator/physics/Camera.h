@@ -18,7 +18,7 @@ public:
 private:
     //We use QTvectors/quaternions/matrices here, not bullet, since QT has a lot more convenient camera operations with Quaternions and Vectors
     //which are lacking in Bullet.
-    int id;//TODO: fix ID
+    int id = 0;//TODO: fix ID
     btVector3 position;
     QRectF visibleArea;
     btDynamicsWorld* dynamicsWorld;

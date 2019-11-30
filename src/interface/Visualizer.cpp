@@ -19,8 +19,7 @@ Visualizer::Visualizer(WorldSettings* worldSettings, RobotSettings* yellow, Robo
     setGeometryData(geometry);
     setOptimizationFlag(QGraphicsView::DontSavePainterState);
     setCacheMode(QGraphicsView::CacheBackground);
-
-
+    
 
     setRenderHint(QPainter::Antialiasing, true);
     setRenderHint(QPainter::HighQualityAntialiasing, true);
@@ -84,7 +83,7 @@ void Visualizer::drawFieldLines(QPainter* painter) {
     const SSL_GeometryFieldSize &geometryField = geometryData.field();
     for (int i = 0; i < geometryField.field_lines_size(); ++ i) {
         const SSL_FieldLineSegment &line = geometryField.field_lines(i);
-        QLineF graphicLine(line.p1().x(), line.p1().y(), line.p2().x(), line.p2().y());
+        QLineF graphicLine(line.p1().x(), -line.p1().y(), line.p2().x(), -line.p2().y());//QT mirrors y-axis from normal people
         pen.setWidthF(line.thickness());
         painter->setPen(pen);
         painter->drawLine(graphicLine);
@@ -92,7 +91,7 @@ void Visualizer::drawFieldLines(QPainter* painter) {
     for (int j = 0; j < geometryField.field_arcs_size(); ++ j) {
         const SSL_FieldCicularArc &arc = geometryField.field_arcs(j);
         pen.setWidthF(arc.thickness());
-        QRectF boundingBox(arc.center().x()-arc.radius(),arc.center().y()-arc.radius(),arc.radius()*2,arc.radius()*2);
+        QRectF boundingBox(arc.center().x()-arc.radius(),-(arc.center().y()-arc.radius()),arc.radius()*2,arc.radius()*2);
         const double scaleFactor=180.0/(16.0*3.14159);//qt works with 1/16 of a degree rounded to ints for some unholy reason.
         painter->drawArc(boundingBox,arc.a1(),scaleFactor*arc.radius()*(arc.a2()-arc.a1()));
     }
@@ -101,6 +100,7 @@ void Visualizer::drawFieldLines(QPainter* painter) {
 
 void Visualizer::updateAll() {
     updateField();
+    updateScene(QList{sceneRect});//Not very efficient but gets the job done.
 }
 void Visualizer::updateField() {
 
@@ -120,7 +120,7 @@ void Visualizer::drawGoal(QPainter* painter, bool isLeft) {
     double side = isLeft ? -1.0 : 1.0;
     double d = worldSettings->goalWallThickness* 0.5*1000;
     double l = field.field_length() * 0.5;
-    double w = field.goal_width()* 0.5 + d;
+    double w = field.goal_width()* 0.5 + d; //it's drawn using symmetry so we don't have to mirror the y-axis perse
     pen.setWidthF(2*d);
     painter->setPen(pen);
     path.moveTo(side * l, w);
@@ -139,7 +139,7 @@ void Visualizer::drawRobot(QPainter* painter,const SSL_DetectionRobot &bot, Robo
     const float endAngle=settings->endAngle;
     const float sweepLength=endAngle-startAngle;
     QRectF rect(-radius, -radius, radius*2,radius*2);
-    QPointF botPos(bot.x(),bot.y());
+    QPointF botPos(bot.x(),-bot.y()); //Qt has y-axis definition with positive being further down.
     rect.translate(botPos);
 
     QPainterPath path;
@@ -163,10 +163,10 @@ void Visualizer::drawRobot(QPainter* painter,const SSL_DetectionRobot &bot, Robo
 void Visualizer::drawBall(QPainter* painter, const SSL_DetectionBall &ball) {
     const float radius=worldSettings->ballRadius*1000 ;
     QRectF rect(-radius,-radius,radius*2,radius*2);
-    QPointF ballPos(ball.x(),ball.y());
+    QPointF ballPos(ball.x(),-ball.y());
     rect.translate(ballPos);
     painter->setPen(Qt::NoPen);
-    painter->setBrush(Qt::green);
+    painter->setBrush(QColor(255,185,0));
     painter->setOpacity(0.5);
     painter->drawEllipse(rect);
 

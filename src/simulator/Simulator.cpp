@@ -65,7 +65,7 @@ void Simulator::tick() {
     }
     emit sentPackets(packets);
     auto end=std::chrono::high_resolution_clock::now();
-    //std::cout<<"loop took "<<std::chrono::duration_cast<std::chrono::microseconds>(end-start).count()<<" us"<<std::endl;
+    std::cout<<"loop took "<<std::chrono::duration_cast<std::chrono::microseconds>(end-start).count()<<" us"<<std::endl;
 }
 
 std::shared_ptr<WorldSettings> Simulator::getWorldSettings() {

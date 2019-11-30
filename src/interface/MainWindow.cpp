@@ -18,7 +18,7 @@ MainWindow::MainWindow(QWidget* parent)
     visualizer = new Visualizer(simulator->getWorldSettings().get(), simulator->getYellowSettings().get(),
             simulator->getBlueSettings().get(), simulator->getGeometry(), this);
     connect(simulator,&Simulator::geometryUpdated,visualizer,&Visualizer::setGeometryData);
-
+    connect(simulator,&Simulator::sentPackets,visualizer,&Visualizer::addDetections);
     mainLayout = new QVBoxLayout();
     hLayout = new QHBoxLayout();
 //    userMenus = new QVBoxLayout();
@@ -27,7 +27,7 @@ MainWindow::MainWindow(QWidget* parent)
     splitter = new QSplitter();
     splitter->addWidget(settingsWidget);
     splitter->addWidget(visualizer);
-    splitter->setSizes({100, 700});
+    splitter->setSizes({100, 1800});
 
     setCentralWidget(splitter);
     showMaximized();

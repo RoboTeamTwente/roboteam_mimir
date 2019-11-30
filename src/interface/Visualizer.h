@@ -5,7 +5,7 @@
 #ifndef ROBOTEAM_MIMIR_VISUALIZER_H
 #define ROBOTEAM_MIMIR_VISUALIZER_H
 #include <QGraphicsView>
-#include <proto/messages_robocup_ssl_geometry.pb.h>
+#include <proto/messages_robocup_ssl_wrapper.pb.h>
 #include "../simulator/config/WorldSettings.h"
 #include "../simulator/config/RobotSettings.h"
 namespace interface {
@@ -17,13 +17,17 @@ class Visualizer : public QGraphicsView {
                 const SSL_GeometryData &geometry, QWidget* parent = nullptr);
     public slots:
         void setGeometryData(const SSL_GeometryData &geometry);
-//        void setRobotSettings(RobotSettings* settings, bool isYellow);
-//        void setWorldSettings(WorldSettings* settings);
+        void setBlueSettings(RobotSettings* settings);
+        void setYellowSettings(RobotSettings* settings);
+        void setWorldSettings(WorldSettings* settings);
+        void addDetections(const std::vector<SSL_WrapperPacket>& frames);
     protected:
         void drawBackground(QPainter* painter, const QRectF &rect) override;
-        //void drawForeground(QPainter *painter, const QRectF &rect) override;
+        void drawForeground(QPainter *painter, const QRectF &rect) override;
         void resizeEvent(QResizeEvent *event) override;
     private:
+        void drawRobot(QPainter* painter,const SSL_DetectionRobot &robot, RobotSettings* settings, const QColor& color);
+        void drawBall(QPainter* painter,const SSL_DetectionBall &ball);
         void drawField(QPainter* painter);
         void drawFieldLines(QPainter* painter);
         void drawGoal(QPainter* painter, bool isLeft);
@@ -42,7 +46,8 @@ class Visualizer : public QGraphicsView {
         WorldSettings* worldSettings;
 
         SSL_GeometryData geometryData;
-        bool geometryUpdated;
+        std::unordered_map<int,SSL_DetectionFrame> cameraFrames;
+        bool geometryUpdated=true;
 
 };
 }

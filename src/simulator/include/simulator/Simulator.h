@@ -14,6 +14,7 @@ class btDiscreteDynamicsWorld;
 class WorldSettings;
 class RobotSettings;
 class SSL_GeometryData;
+class SSL_WrapperPacket;
 namespace net{
     class Publisher;
     class Receiver;
@@ -34,6 +35,7 @@ public:
 
 signals:
     void geometryUpdated(const SSL_GeometryData &geometry);
+    void sentPackets(const std::vector<SSL_WrapperPacket> &packets);
 public slots:
     void tick();
 

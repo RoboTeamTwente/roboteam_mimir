@@ -63,6 +63,7 @@ void Simulator::tick() {
     for (const auto& packet: packets){
         publisher->send(packet);
     }
+    emit sentPackets(packets);
     auto end=std::chrono::high_resolution_clock::now();
     //std::cout<<"loop took "<<std::chrono::duration_cast<std::chrono::microseconds>(end-start).count()<<" us"<<std::endl;
 }

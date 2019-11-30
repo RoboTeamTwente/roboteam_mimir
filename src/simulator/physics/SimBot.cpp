@@ -270,8 +270,8 @@ bool SimBot::canKickBall(SimBall *ball) {
 
 SSL_DetectionRobot SimBot::asDetection() const {
     SSL_DetectionRobot robot;
-    robot.set_x(position().x()/SCALE*1000);//TODO: fix mm to m conversion. Do we only get up to mm precision (as integer) or is it double?
-    robot.set_y(position().y()/SCALE*1000);
+    robot.set_x(position().x()/SCALE*1000.0);//TODO: fix mm to m conversion. Do we only get up to mm precision (as integer) or is it double?
+    robot.set_y(position().y()/SCALE*1000.0);
     robot.set_orientation(orientation());
     robot.set_height(0.144); //TODO: compute from robot values.
     robot.set_pixel_x(20.0);

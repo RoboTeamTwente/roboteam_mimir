@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget* parent)
         :QMainWindow(parent) {
 
     simulator = new Simulator();
-    //debugVisualization = new DebugVisualization(simulator->getWorldSettings(), simulator->getPhysicsWorld(), this);
+    debugVisualization = new DebugVisualization(simulator->getWorldSettings(), simulator->getPhysicsWorld(), this);
     settingsWidget = new SettingsWidget(simulator, this);
     visualizer = new Visualizer(simulator->getWorldSettings().get(), simulator->getYellowSettings().get(),
             simulator->getBlueSettings().get(), simulator->getGeometry(), this);
@@ -27,8 +27,8 @@ MainWindow::MainWindow(QWidget* parent)
     splitter = new QSplitter();
     splitter->addWidget(settingsWidget);
     splitter->addWidget(visualizer);
-    splitter->setSizes({100, 1800});
-
+    splitter->addWidget(debugVisualization);
+    splitter->setSizes({100, 900,900});
     setCentralWidget(splitter);
     showMaximized();
 }

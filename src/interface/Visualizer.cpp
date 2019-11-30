@@ -19,7 +19,7 @@ Visualizer::Visualizer(WorldSettings* worldSettings, RobotSettings* yellow, Robo
     setGeometryData(geometry);
     setOptimizationFlag(QGraphicsView::DontSavePainterState);
     setCacheMode(QGraphicsView::CacheBackground);
-    
+
 
     setRenderHint(QPainter::Antialiasing, true);
     setRenderHint(QPainter::HighQualityAntialiasing, true);
@@ -91,7 +91,7 @@ void Visualizer::drawFieldLines(QPainter* painter) {
     for (int j = 0; j < geometryField.field_arcs_size(); ++ j) {
         const SSL_FieldCicularArc &arc = geometryField.field_arcs(j);
         pen.setWidthF(arc.thickness());
-        QRectF boundingBox(arc.center().x()-arc.radius(),-(arc.center().y()-arc.radius()),arc.radius()*2,arc.radius()*2);
+        QRectF boundingBox(arc.center().x()-arc.radius(),arc.center().y()-arc.radius(),arc.radius()*2,arc.radius()*2);
         const double scaleFactor=180.0/(16.0*3.14159);//qt works with 1/16 of a degree rounded to ints for some unholy reason.
         painter->drawArc(boundingBox,arc.a1(),scaleFactor*arc.radius()*(arc.a2()-arc.a1()));
     }
@@ -141,11 +141,12 @@ void Visualizer::drawRobot(QPainter* painter,const SSL_DetectionRobot &bot, Robo
     QRectF rect(-radius, -radius, radius*2,radius*2);
     QPointF botPos(bot.x(),-bot.y()); //Qt has y-axis definition with positive being further down.
     rect.translate(botPos);
-
+    float trueAngle=startAngle+bot.orientation()*180/3.14159;
     QPainterPath path;
-    path.arcMoveTo(rect,startAngle);
-    path.arcTo(rect,startAngle+bot.orientation()*180/3.14159,sweepLength);
+    path.arcMoveTo(rect,trueAngle);
+    path.arcTo(rect,trueAngle,sweepLength);
     path.closeSubpath();
+
 
 
     painter->setPen(Qt::NoPen);

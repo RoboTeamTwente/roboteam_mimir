@@ -8,6 +8,7 @@
 #include <proto/messages_robocup_ssl_wrapper.pb.h>
 #include "../simulator/config/WorldSettings.h"
 #include "../simulator/config/RobotSettings.h"
+#include <unordered_map>
 namespace interface {
 
 class Visualizer : public QGraphicsView {

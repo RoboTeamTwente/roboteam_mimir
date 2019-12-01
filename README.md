@@ -2,7 +2,7 @@
 ## List of dependencies
 * [CMake 3.12+](https://cmake.org/) 
 * [Google Protobuf, version 3.0.0+](https://github.com/protocolbuffers/protobuf) 
-* [Qt5](https://www.qt.io/)
+* [Qt5,Version 5.9+](https://www.qt.io/) 
 * [Bullet3](https://github.com/bulletphysics/bullet3)
 
 To run the unit tests you also need the following:
@@ -14,14 +14,11 @@ To run the unit tests you also need the following:
 sudo apt-get install cmake
 ```
 ### Google Protobuf
-
+Has been built/tested with version 3.11. You will likely need at least 3.0.0 or higher.
 ### Qt5
-
+You need version 5.9+.
 ### Bullet3
-Not yet relevant. Just install the library from https://github.com/bulletphysics/bullet3.
-~~On linux: It's important to have the correct drivers installed. For Nvidia users; run
-```sudo apt-get install nvidia-driver-430``` (as of writing the latest version) and reboot.
-Your application will compile and run without these but if you recompile after installation the physics simulator should utilise your GPU much better.~~
+Install the library from https://github.com/bulletphysics/bullet3. I recommend using the cmake
 
 ### Google Test
 To obtain the library run:

@@ -159,7 +159,7 @@ void Visualizer::drawRobot(QPainter* painter,const SSL_DetectionRobot &bot, Robo
     painter->setFont(f);
     painter->setPen(Qt::white);
     painter->setOpacity(1.0);
-    painter->drawText(botPos+QPointF(-radius*0.2,radius*0.4),QString::number(bot.robot_id()));
+    painter->drawText(botPos+QPointF(-radius*0.4,radius*0.4),QString::number(bot.robot_id()));
 }
 void Visualizer::drawBall(QPainter* painter, const SSL_DetectionBall &ball) {
     const float radius=worldSettings->ballRadius*1000 ;

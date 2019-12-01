@@ -1,0 +1,20 @@
+language: cpp
+compiler:
+  - gcc
+
+matrix:
+  include:
+    - os: linux
+      dist: bionic
+      sudo: required
+
+addons:
+  apt:
+    packages:
+      - cmake
+      - qt5-default
+      - libprotobuf-dev
+      - protobuf-compiler
+
+script:
+  - ls

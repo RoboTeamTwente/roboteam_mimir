@@ -16,7 +16,7 @@ class Visualizer : public QGraphicsView {
         explicit Visualizer(WorldSettings* worldSettings, RobotSettings* yellow, RobotSettings* blue,
                 const SSL_GeometryData &geometry, QWidget* parent = nullptr);
     public slots:
-        void setGeometryData(const SSL_GeometryData &geometry);
+        void setGeometryData(const SSL_GeometryData &geometry, WorldSettings* settings);
         void setBlueSettings(RobotSettings* settings);
         void setYellowSettings(RobotSettings* settings);
         void setWorldSettings(WorldSettings* settings);

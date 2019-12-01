@@ -12,11 +12,10 @@ Visualizer::Visualizer(WorldSettings* worldSettings, RobotSettings* yellow, Robo
         :
         blueSettings(blue),
         yellowSettings(yellow),
-        worldSettings(worldSettings),
         QGraphicsView(parent) {
     scene = new QGraphicsScene(this);
     setScene(scene);
-    setGeometryData(geometry);
+    setGeometryData(geometry,worldSettings);
     setOptimizationFlag(QGraphicsView::DontSavePainterState);
     setCacheMode(QGraphicsView::CacheBackground);
 
@@ -29,8 +28,9 @@ Visualizer::Visualizer(WorldSettings* worldSettings, RobotSettings* yellow, Robo
     timer->start(20);
 
 }
-void Visualizer::setGeometryData(const SSL_GeometryData &geometry) {
+void Visualizer::setGeometryData(const SSL_GeometryData &geometry, WorldSettings* settings) {
     //Unfortunately there is no pretty way to compare protobuf objects.
+    worldSettings=settings;
     if (geometry.SerializeAsString() != geometryData.SerializeAsString()) {
         std::cout<<"updated geometry"<<std::endl;
         geometryData = geometry;

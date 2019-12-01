@@ -86,6 +86,12 @@ QList<QString> Simulator::getWorldConfigNames() {
 void Simulator::setRobotConfig(const QString &name, bool isYellow) {
     configWidget->setCurrentRobot(name,isYellow);
     simWorld->updateRobotConfig(configWidget->getRobotConfig(isYellow)->settings,isYellow);
+    if (isYellow){
+        emit yellowUpdated(getYellowSettings().get());
+    }
+    else{
+        emit blueUpdated(getBlueSettings().get());
+    }
 }
 void Simulator::setBlueConfig(const QString &name) {
     std::cerr<<"setting Blue Config to "<< name.toStdString()<<std::endl;
@@ -100,7 +106,7 @@ void Simulator::setWorldConfig(const QString &name) {
     std::cerr<<"setting worldConfig to "<< name.toStdString()<<std::endl;
     configWidget->setCurrentWorld(name);
     simWorld->updateWorldConfig(configWidget->getCurrentWorldConfig()->settings);
-    emit geometryUpdated(simWorld->getGeometryData());
+    emit geometryUpdated(simWorld->getGeometryData(),getWorldSettings().get());
 }
 void Simulator::setBlueBotCount(int count) {
     if (count<0 || count > 16){

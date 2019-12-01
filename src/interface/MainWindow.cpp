@@ -19,6 +19,8 @@ MainWindow::MainWindow(QWidget* parent)
             simulator->getBlueSettings().get(), simulator->getGeometry(), this);
     connect(simulator,&Simulator::geometryUpdated,visualizer,&Visualizer::setGeometryData);
     connect(simulator,&Simulator::sentPackets,visualizer,&Visualizer::addDetections);
+    connect(simulator,&Simulator::blueUpdated,visualizer,&Visualizer::setBlueSettings);
+    connect(simulator,&Simulator::yellowUpdated,visualizer,&Visualizer::setYellowSettings);
     mainLayout = new QVBoxLayout();
     hLayout = new QHBoxLayout();
 //    userMenus = new QVBoxLayout();

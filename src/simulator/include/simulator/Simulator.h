@@ -34,7 +34,9 @@ public:
     SSL_GeometryData getGeometry();
 
 signals:
-    void geometryUpdated(const SSL_GeometryData &geometry);
+    void geometryUpdated(const SSL_GeometryData &geometry,WorldSettings* settings);
+    void blueUpdated(RobotSettings* settings);
+    void yellowUpdated(RobotSettings* settings);
     void sentPackets(const std::vector<SSL_WrapperPacket> &packets);
 public slots:
     void tick();

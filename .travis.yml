@@ -17,6 +17,7 @@ addons:
       - qt5-default
       - libprotobuf-dev
       - protobuf-compiler
+      - libbullet-dev
 
 script:
   - ls

@@ -39,6 +39,9 @@ SimWorld::SimWorld(std::shared_ptr<WorldSettings> _worldSettings, std::shared_pt
     dynamicsWorld = std::make_shared<btDiscreteDynamicsWorld>(collisionDispatcher.get(), overlappingPairCache.get(), solver.get(), collisionConfig.get());
     // make sure bullet calls our motor commands when relevant every physics tick
     dynamicsWorld->setInternalTickCallback(BulletTickCallback,this,true);
+
+    randomGenerator.seed(0);
+    uniformDist=std::uniform_real_distribution<double>(0.0,1.0);
     resetWorld();
 }
 SimWorld::~SimWorld() {
@@ -276,4 +279,7 @@ void SimWorld::updateRobotConfig(std::shared_ptr<RobotSettings> _robotSettings, 
 }
 void SimWorld::setSendGeometryTicks(unsigned int ticks) {
     sendGeometryTicks = ticks;
+}
+double SimWorld::getRandomUniform() {
+    return uniformDist(randomGenerator);
 }

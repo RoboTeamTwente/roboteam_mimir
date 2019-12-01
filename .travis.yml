@@ -1,6 +1,8 @@
 language: cpp
 compiler:
   - gcc
+notifications:
+  email: false
 
 matrix:
   include:
@@ -18,3 +20,8 @@ addons:
 
 script:
   - ls
+  - cd $TRAVIS_BUILD_DIR
+  - ls
+  - mkdir build && cd build
+  - cmake ..
+  - make

@@ -5,6 +5,8 @@
 #include "Visualizer.h"
 #include <QTimer>
 #include <QWheelEvent>
+#include <iostream>
+
 namespace interface {
 
 Visualizer::Visualizer(WorldSettings* worldSettings, RobotSettings* yellow, RobotSettings* blue,

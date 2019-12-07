@@ -8,8 +8,12 @@
 #include "btBulletDynamicsCommon.h"
 
 class SituationBot {
-    btVector3 position;
-    btVector3 velocity;
+public:
+    SituationBot(unsigned int _id, double x, double y, double ang, double velX, double velY, double velAng);
+private:
+    const unsigned int id;
+    const btVector3 position;
+    const btVector3 velocity;
 };
 
 

@@ -26,7 +26,15 @@ add_library(simulator
         physics/RobotMesh.h
         physics/CollisionShared.cpp
         physics/CollisionShared.h
-        physics/Camera.cpp physics/Camera.h situations/Situation.cpp situations/Situation.h situations/SituationBot.cpp situations/SituationBot.h situations/SituationBall.cpp situations/SituationBall.h)
+        physics/Camera.cpp
+        physics/Camera.h
+        config/SituationWorld.cpp
+        config/SituationWorld.h
+        config/SituationBot.cpp
+        config/SituationBot.h
+        config/SituationBall.cpp
+        config/SituationBall.h
+        config/Situation.cpp config/Situation.h)
 target_link_libraries(simulator
         PRIVATE net
         PRIVATE Qt5::Core

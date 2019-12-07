@@ -7,9 +7,12 @@
 #include "config/RobotConfig.h"
 #include <QCoreApplication>
 #include <iostream>
+#include "config/Situation.h"
+
 ConfigWidget::ConfigWidget() {
     QDir worldDir=findConfigDir();
     QDir robotDir=worldDir;
+    QDir situationDir=worldDir;
     if(worldDir.cd("world")){
         readWorldConfigs(worldDir);
     }
@@ -21,6 +24,12 @@ ConfigWidget::ConfigWidget() {
     }
     else{
         std::cerr<<"Could not find robot subdirectory!"<<std::endl;
+    }
+    if (situationDir.cd("situations")){
+        readSituations(situationDir);
+    }
+    else{
+        std::cerr<<"Could not find the situations subdirectory!"<<std::endl;
     }
 }
 
@@ -72,6 +81,25 @@ void ConfigWidget::readWorldConfigs(const QDir& worldDir) {
         }
     }
 }
+void ConfigWidget::readSituations(const QDir &situationDir) {
+    QList<QString> files=situationDir.entryList(QDir::Filter::Files);
+    for (const auto & fileName : files){
+        QString path = situationDir.absolutePath() +"/" +fileName;
+        Situation * situation = new Situation(path);
+        if (!currentSituation){
+            currentSituation=situation;
+        }
+    }
+}
+void ConfigWidget::setCurrentSituation(const QString &name) {
+    for (const auto& config : situationList){
+        if (config->name()==name){
+            currentSituation=config;
+            return;
+        }
+    }
+    std::cerr<<"Could not find the Situation: " << name.toStdString()<<std::endl;
+}
 void ConfigWidget::setCurrentWorld(const QString &name) {
     for (const auto& config : worldConfigList) {
         if(config->name()==name){
@@ -91,6 +119,13 @@ QList<QString> ConfigWidget::getWorldNames() {
 QList<QString> ConfigWidget::getRobotNames() {
     QList<QString> names;
     for (const auto& config:robotConfigList) {
+        names.push_back(config->name());
+    }
+    return names;
+}
+QList<QString> ConfigWidget::getSituationNames() {
+    QList<QString> names;
+    for (const auto& config:situationList) {
         names.push_back(config->name());
     }
     return names;

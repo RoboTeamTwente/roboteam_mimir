@@ -15,8 +15,8 @@ MainWindow::MainWindow(QWidget* parent)
     simulator = new Simulator();
     debugVisualization = new DebugVisualization(simulator->getWorldSettings(), simulator->getPhysicsWorld(), this);
     settingsWidget = new SettingsWidget(simulator, this);
-    visualizer = new Visualizer(simulator->getWorldSettings().get(), simulator->getYellowSettings().get(),
-            simulator->getBlueSettings().get(), simulator->getGeometry(), this);
+    visualizer = new Visualizer(simulator->getWorldSettings(), simulator->getYellowSettings(),
+            simulator->getBlueSettings(), simulator->getGeometry(), this);
     connect(simulator,&Simulator::geometryUpdated,visualizer,&Visualizer::setGeometryData);
     connect(simulator,&Simulator::sentPackets,visualizer,&Visualizer::addDetections);
     connect(simulator,&Simulator::blueUpdated,visualizer,&Visualizer::setBlueSettings);

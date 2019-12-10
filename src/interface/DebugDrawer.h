@@ -13,7 +13,7 @@ namespace interface{
     class DebugDrawer : public btIDebugDraw {
 
     public:
-        explicit DebugDrawer(DebugVisualization* _visualization,std::shared_ptr<WorldSettings> _settings);
+        explicit DebugDrawer(DebugVisualization* _visualization,WorldSettings* _settings);
         ~DebugDrawer() override;
 
         // virtual functions we need to override from btIDebugDraw in order to implement the interface
@@ -29,7 +29,7 @@ namespace interface{
     private:
         DebugDrawModes debugMode;
         DebugVisualization * visualization=nullptr;
-        std::shared_ptr<WorldSettings> settings=nullptr;
+        WorldSettings* settings=nullptr;
 
 
     };

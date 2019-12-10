@@ -11,7 +11,7 @@
 
 class SimField {
 public:
-    explicit SimField(std::shared_ptr<btDynamicsWorld> world, std::shared_ptr<WorldSettings> cfg);
+    explicit SimField(std::shared_ptr<btDynamicsWorld> world, const std::unique_ptr<WorldSettings>& cfg);
     ~SimField();
 private:
     std::shared_ptr<btDynamicsWorld> dynamicsWorld;

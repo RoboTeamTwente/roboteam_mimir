@@ -7,6 +7,8 @@
 
 #include <QObject>
 #include <memory>
+#include "net/Publisher.h"
+#include "net/Receiver.h"
 
 class SimWorld;
 class ConfigWidget;
@@ -15,16 +17,11 @@ class WorldSettings;
 class RobotSettings;
 class SSL_GeometryData;
 class SSL_WrapperPacket;
-namespace net{
-    class Publisher;
-    class Receiver;
-}
 class QTimer;
 class Simulator :public QObject {
     Q_OBJECT
 public:
     Simulator();
-    ~Simulator();
     btDiscreteDynamicsWorld* getPhysicsWorld();
     WorldSettings * getWorldSettings();
     RobotSettings * getBlueSettings();
@@ -59,8 +56,8 @@ public slots:
 private:
     void setRobotConfig(const QString &name, bool isYellow);
     QTimer *timer;
-    SimWorld* simWorld;
-    ConfigWidget* configWidget;
+    std::unique_ptr<SimWorld> simWorld;
+    ConfigWidget* configWidget; //TODO: how to make this a unique pointer?
     std::unique_ptr<net::Publisher> publisher;
     std::unique_ptr<net::Receiver> blueReceiver;
     std::unique_ptr<net::Receiver> yellowReceiver;

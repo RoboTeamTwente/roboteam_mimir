@@ -9,17 +9,17 @@
 #include <string>
 #include <vector>
 #include <optional>
+#include <QtCore/QString>
 #include "SituationBall.h"
 #include "SituationBot.h"
 
 class SituationWorld {
 public:
-    SituationWorld(std::string _yellowSettings,std::string _blueSettings, std::string _worldSettings,
+    SituationWorld(QString _yellowSettings,QString _blueSettings, QString _worldSettings,
             std::vector<SituationBot> blue, std::vector<SituationBot> yellow, std::optional<SituationBall> ball);
-private:
-    const std::string yellowSettings;
-    const std::string blueSettings;
-    const std::string worldSettings;
+    const QString yellowSettings;
+    const QString blueSettings;
+    const QString worldSettings;
     const std::vector<SituationBot> blueBots;
     const std::vector<SituationBot> yellowBots;
     const std::optional<SituationBall> ball;

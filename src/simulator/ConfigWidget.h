@@ -5,7 +5,6 @@
 #ifndef ROBOTEAM_MIMIR_CONFIGWIDGET_H
 #define ROBOTEAM_MIMIR_CONFIGWIDGET_H
 
-#include <QString>
 #include <QDir>
 #include <QSettings>
 #include <memory>

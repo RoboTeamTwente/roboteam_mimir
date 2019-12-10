@@ -14,6 +14,7 @@ target_link_libraries(interface
         PUBLIC Qt5::Core
         PUBLIC Qt5::Widgets
         PUBLIC simulator
+        PRIVATE net ##TODO Fix this hack for QT autogen whining
         PRIVATE mimir_proto
         PRIVATE ${BULLET_LIBRARIES}
         )

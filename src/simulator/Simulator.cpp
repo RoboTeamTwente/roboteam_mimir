@@ -7,8 +7,7 @@
 #include "ConfigWidget.h"
 #include "config/WorldConfig.h"
 #include "config/RobotConfig.h"
-#include "net/Publisher.h"
-#include "net/Receiver.h"
+
 #include <QTimer>
 #include "proto/messages_robocup_ssl_geometry.pb.h"
 
@@ -25,9 +24,11 @@ Simulator::Simulator() {
     //read all config files and save them in a widget
     configWidget=new ConfigWidget();
     // get the initial config settings and create a physics simulator with them
-    const std::unique_ptr<WorldConfig> &worldConfig = configWidget->getWorldConfig("divisionA");
-    const std::unique_ptr<RobotConfig> &robotConfig = configWidget->getRobotConfig("RTT");
-    simWorld=new SimWorld(worldConfig,robotConfig,robotConfig);
+    const std::unique_ptr<Situation> &situation = configWidget->getSituation("DivAStartFormation");
+    const std::unique_ptr<WorldConfig> &worldConfig = configWidget->getWorldConfig(situation->situation->worldSettings);
+    const std::unique_ptr<RobotConfig> &yellowConfig = configWidget->getRobotConfig(situation->situation->yellowSettings);
+    const std::unique_ptr<RobotConfig> &blueConfig = configWidget->getRobotConfig(situation->situation->blueSettings);
+    simWorld=std::make_unique<SimWorld>(worldConfig,blueConfig,yellowConfig,situation->situation);
 
     //start simulator logic loop
     timer= new QTimer();
@@ -35,10 +36,6 @@ Simulator::Simulator() {
     connect(timer,&QTimer::timeout,this,&Simulator::tick);
     timer->start(5);
 
-}
-Simulator::~Simulator() {
-    delete simWorld;
-    delete configWidget;
 }
 
 //needed for 3d visualization
@@ -64,7 +61,7 @@ void Simulator::tick() {
     }
     emit sentPackets(packets);
     auto end=std::chrono::high_resolution_clock::now();
-    std::cout<<"loop took "<<std::chrono::duration_cast<std::chrono::microseconds>(end-start).count()<<" us"<<std::endl;
+    //std::cout<<"loop took "<<std::chrono::duration_cast<std::chrono::microseconds>(end-start).count()<<" us"<<std::endl;
 }
 
 WorldSettings * Simulator::getWorldSettings() {

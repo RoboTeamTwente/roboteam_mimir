@@ -12,8 +12,9 @@
 #include "SimWorld.h"
 #include "SimField.h"
 #include "SimBall.h"
-#include "../config/WorldConfig.h"
+#include "../config/WorldConfig.h" //TODO: fix these includes
 #include "../config/RobotConfig.h"
+#include "../config/Situation.h"
 #include "CollisionShared.h"
 
 static void BulletTickCallback(btDynamicsWorld *world, btScalar dt) {
@@ -23,11 +24,13 @@ static void BulletTickCallback(btDynamicsWorld *world, btScalar dt) {
 
 SimWorld::SimWorld(const std::unique_ptr<WorldConfig> &_worldSettings,
                    const std::unique_ptr<RobotConfig> &_blueSettings,
-                   const std::unique_ptr<RobotConfig> &_yellowSettings) {
-    //We create local copies of the settings to ensure we are always sending the data back as the simulator sees it
+                   const std::unique_ptr<RobotConfig> &_yellowSettings,
+                   const std::unique_ptr<SituationWorld> &_situation) {
+    //We create local copies of all the inputs to ensure we are always sending the data back as the simulator sees it.
     worldSettings = std::make_unique<WorldSettings>(*_worldSettings->settings);
     blueSettings = std::make_unique<RobotSettings>(*_blueSettings->settings);
     yellowSettings = std::make_unique<RobotSettings>(*_yellowSettings->settings);
+    situation = std::make_unique<SituationWorld>(*_situation);
     //Contains default setup for memory and how collisions between different types of objects are handled/calculated
     collisionConfig = std::make_unique<btDefaultCollisionConfiguration>();
     //uses the default dispatcher. We might want to use the parallel one down the road.
@@ -210,7 +213,7 @@ std::vector<SSL_WrapperPacket> SimWorld::getPackets() {
     }
 
     // we add the geometry every x frames
-    if (tickCount % sendGeometryTicks == 0) { //TODO: make 120 not hardcoded but through interface/settings
+    if (tickCount % sendGeometryTicks == 0) {
         if (packets.empty()) {
             SSL_WrapperPacket wrapper;
             packets.push_back(wrapper);
@@ -261,10 +264,7 @@ void SimWorld::resetWorld() {
             btVector3(SCALE * worldSettings->gravityX, SCALE * worldSettings->gravityY,
                       SCALE * worldSettings->gravityZ));
     field = std::make_unique<SimField>(dynamicsWorld, worldSettings);
-    ball = std::make_unique<SimBall>(dynamicsWorld, worldSettings,
-                                     btVector3(0.3 * SCALE, 0, worldSettings->ballRadius * SCALE),
-                                     btVector3(-SCALE * 0.5, 0, 0));
-    cameras.clear();
+    cameras.clear();//TODO: fix multiple camera's
     cameras.push_back(
             Camera(btVector3(0.0, 0.0, 5.0) * SCALE, 0.0, 0.0, SCALE * 14.0, SCALE * 11.0, dynamicsWorld.get()));
     resetRobots();

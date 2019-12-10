@@ -6,7 +6,7 @@
 
 #include <utility>
 
-SituationWorld::SituationWorld( std::string _blueSettings, std::string _yellowSettings, std::string _worldSettings,
+SituationWorld::SituationWorld( QString  _blueSettings, QString _yellowSettings, QString _worldSettings,
                                std::vector<SituationBot> blue, std::vector<SituationBot> yellow,
                                std::optional<SituationBall> ball) :
                                yellowSettings{std::move(_yellowSettings)},

@@ -24,13 +24,17 @@ class RobotConfig;
 
 class WorldConfig;
 
+class Situation;
+
+class SituationWorld;
+
 class SimWorld : public QObject {
     Q_OBJECT
     public slots:
         void stepSimulation();
     public:
         SimWorld(const std::unique_ptr<WorldConfig>& _worldSettings, const std::unique_ptr<RobotConfig>& _blueSettings,
-                const std::unique_ptr<RobotConfig>& _yellowSettings);
+                const std::unique_ptr<RobotConfig>& _yellowSettings, const std::unique_ptr<SituationWorld>& _situation);
         ~SimWorld() override;
         btDiscreteDynamicsWorld* getWorld();
         std::vector<SSL_WrapperPacket> getPackets();
@@ -42,11 +46,11 @@ class SimWorld : public QObject {
         WorldSettings *getWorldSettings();
         RobotSettings *getRobotSettings(bool isYellow);
         void setSendGeometryTicks(unsigned int ticks);
-        void resetWorld();
         SSL_GeometryData getGeometryData();
 
     private:
         void resetRobots();
+        void resetWorld();
         std::vector<SSL_DetectionFrame> getDetectionFrames();
 
         std::unique_ptr<SimField> field;
@@ -66,6 +70,7 @@ class SimWorld : public QObject {
         std::unique_ptr<RobotSettings> blueSettings;
         std::unique_ptr<RobotSettings> yellowSettings;
         std::unique_ptr<WorldSettings> worldSettings;
+        std::unique_ptr<SituationWorld> situation;
 
     //TODO: perhaps make this it's own class.
         double getRandomUniform();

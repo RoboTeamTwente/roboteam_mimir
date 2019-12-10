@@ -60,9 +60,9 @@ Situation::Situation(const QString &filepath) {
         double vy = situationFile->value(ballString + "/" + yVelString, 0.0).toDouble();
         ball.emplace(SituationBall(x, y, vx, vy));
     }
-    std::string yellowSettings = situationFile->value("YellowSettings", "").toString().toStdString();
-    std::string blueSettings = situationFile->value("BlueSettings", "").toString().toStdString();
-    std::string worldSettings = situationFile->value("WorldSettings", "").toString().toStdString();
+    QString yellowSettings = situationFile->value("YellowSettings", "").toString();
+    QString blueSettings = situationFile->value("BlueSettings", "").toString();
+    QString worldSettings = situationFile->value("WorldSettings", "").toString();
     situation = std::make_unique<SituationWorld>(yellowSettings, blueSettings, worldSettings, blueBots, yellowBots,
                                                  ball);
 }

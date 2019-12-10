@@ -39,7 +39,7 @@ SimWorld::SimWorld(const std::unique_ptr<WorldConfig> &_worldSettings,
     //the default constraint solver. For parallel processing you can use a different solver (see Extras/BulletMultiThreaded)
     solver = std::make_unique<btSequentialImpulseConstraintSolver>();
     // the world in which all simulation happens
-    dynamicsWorld = std::make_shared<btDiscreteDynamicsWorld>(collisionDispatcher.get(), overlappingPairCache.get(),
+    dynamicsWorld = std::make_unique<btDiscreteDynamicsWorld>(collisionDispatcher.get(), overlappingPairCache.get(),
                                                               solver.get(), collisionConfig.get());
     // make sure bullet calls our motor commands when relevant every physics tick
     dynamicsWorld->setInternalTickCallback(BulletTickCallback, this, true);
@@ -245,14 +245,14 @@ void SimWorld::resetRobots() {
     blueBots.clear();
     yellowBots.clear();
     for (unsigned int i = 0; i < numBlueBots; ++i) {
-        blueBots.push_back(
+        blueBots.push_back(std::move(
                 std::make_unique<SimBot>(i, dynamicsWorld, blueSettings, worldSettings,
-                                         btVector3(0.0, 0.0, 0.0) * worldSettings->scale, 0.0));
+                                         btVector3(0.0, 0.0, 0.0) * worldSettings->scale, 0.0)));
     }
     for (unsigned int i = 0; i < numYellowBots; ++i) {
-        yellowBots.push_back(
+        yellowBots.push_back(std::move(
                 std::make_unique<SimBot>(i, dynamicsWorld, yellowSettings, worldSettings,
-                                         btVector3(0.0, 0.4, 0.0) * worldSettings->scale, 0.0));
+                                         btVector3(0.0, 0.4, 0.0) * worldSettings->scale, 0.0)));
     }
 }
 void SimWorld::resetWorld() {
@@ -260,8 +260,8 @@ void SimWorld::resetWorld() {
     dynamicsWorld->setGravity(
             btVector3(SCALE * worldSettings->gravityX, SCALE * worldSettings->gravityY,
                       SCALE * worldSettings->gravityZ));
-    field = std::make_shared<SimField>(dynamicsWorld, worldSettings);
-    ball = std::make_shared<SimBall>(dynamicsWorld, worldSettings,
+    field = std::make_unique<SimField>(dynamicsWorld, worldSettings);
+    ball = std::make_unique<SimBall>(dynamicsWorld, worldSettings,
                                      btVector3(0.3 * SCALE, 0, worldSettings->ballRadius * SCALE),
                                      btVector3(-SCALE * 0.5, 0, 0));
     cameras.clear();

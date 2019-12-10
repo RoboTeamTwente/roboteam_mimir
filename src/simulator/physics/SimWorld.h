@@ -49,8 +49,8 @@ class SimWorld : public QObject {
         void resetRobots();
         std::vector<SSL_DetectionFrame> getDetectionFrames();
 
-        std::shared_ptr<SimField> field;
-        std::shared_ptr<SimBall> ball;
+        std::unique_ptr<SimField> field;
+        std::unique_ptr<SimBall> ball;
         std::vector<std::unique_ptr<SimBot>> blueBots;
         std::vector<std::unique_ptr<SimBot>> yellowBots;
         std::vector<Camera> cameras;
@@ -61,7 +61,7 @@ class SimWorld : public QObject {
         std::unique_ptr<btCollisionDispatcher> collisionDispatcher;
         std::unique_ptr<btBroadphaseInterface> overlappingPairCache;
         std::unique_ptr<btConstraintSolver> solver;
-        std::shared_ptr<btDiscreteDynamicsWorld> dynamicsWorld; // is publicly accessible through getWorld() for debugDrawing purposes
+        std::unique_ptr<btDiscreteDynamicsWorld> dynamicsWorld; // is publicly accessible through getWorld() for debugDrawing purposes
 
         std::unique_ptr<RobotSettings> blueSettings;
         std::unique_ptr<RobotSettings> yellowSettings;

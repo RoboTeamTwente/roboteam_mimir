@@ -5,9 +5,9 @@
 #include "SimField.h"
 #include "CollisionShared.h"
 
-SimField::SimField(std::shared_ptr<btDynamicsWorld>world, const std::unique_ptr<WorldSettings> &cfg)
+SimField::SimField(std::unique_ptr<btDiscreteDynamicsWorld>&world, const std::unique_ptr<WorldSettings> &cfg)
+: dynamicsWorld(world)
 {
-    dynamicsWorld = world;
     const float SCALE=cfg->scale;
     const float halfGoalHeight = cfg->goalHeight*0.5f*SCALE;
     const float halfGoalWidth = cfg->goalWidth*0.5f*SCALE;

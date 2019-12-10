@@ -13,7 +13,6 @@ public:
      */
     SituationBall(double x, double y, double xVel, double yVel);
     SituationBall(double x, double y, double z, double xVel, double yVel, double zVel);
-private:
     const btVector3 position;
     const btVector3 velocity;
     const bool isRolling;

@@ -49,7 +49,7 @@ SimWorld::SimWorld(const std::unique_ptr<WorldConfig> &_worldSettings,
 
     randomGenerator.seed(0);
     uniformDist = std::uniform_real_distribution<double>(0.0, 1.0);
-    resetWorld();
+    reloadSituation();
 }
 SimWorld::~SimWorld() {
     //delete bullet related objects in reverse order of creation!
@@ -193,11 +193,12 @@ std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
             }
         }
     }
-
-    const btVector3 &ballPos = ball->position();
-    for (int k = 0; k < cameras.size(); ++k) {
-        if (cameras[k].isBallVisible(ballPos)) {
-            frames[k].mutable_balls()->Add()->CopyFrom(ball->asDetection());
+    if(ball){
+        const btVector3 &ballPos = ball->position();
+        for (int k = 0; k < cameras.size(); ++k) {
+            if (cameras[k].isBallVisible(ballPos)) {
+                frames[k].mutable_balls()->Add()->CopyFrom(ball->asDetection());
+            }
         }
     }
 
@@ -264,16 +265,47 @@ void SimWorld::resetWorld() {
             btVector3(SCALE * worldSettings->gravityX, SCALE * worldSettings->gravityY,
                       SCALE * worldSettings->gravityZ));
     field = std::make_unique<SimField>(dynamicsWorld, worldSettings);
+    ball = std::make_unique<SimBall>(dynamicsWorld, worldSettings);
     cameras.clear();//TODO: fix multiple camera's
     cameras.push_back(
             Camera(btVector3(0.0, 0.0, 5.0) * SCALE, 0.0, 0.0, SCALE * 14.0, SCALE * 11.0, dynamicsWorld.get()));
     resetRobots();
 }
-void SimWorld::updateWorldConfig(const std::unique_ptr<WorldConfig>& _worldSettings) {
+void SimWorld::reloadSituation() {
+    const btScalar SCALE = worldSettings->scale;
+    dynamicsWorld->setGravity(
+            btVector3(SCALE * worldSettings->gravityX, SCALE * worldSettings->gravityY,
+                      SCALE * worldSettings->gravityZ));
+    field = std::make_unique<SimField>(dynamicsWorld, worldSettings);
+    if (situation->ball) {
+        ball = std::make_unique<SimBall>(dynamicsWorld, worldSettings, situation->ball->position*worldSettings->scale,
+                                         situation->ball->velocity*worldSettings->scale);
+        //TODO: make options for angular velocity e.g. rolling and such for ball construction
+    }
+    cameras.clear();//TODO: fix multiple camera's
+    cameras.push_back(
+            Camera(btVector3(0.0, 0.0, 5.0) * SCALE, 0.0, 0.0, SCALE * 14.0, SCALE * 11.0, dynamicsWorld.get()));
+
+    blueBots.clear();
+    yellowBots.clear();
+    for (const auto &bot : situation->blueBots) {
+        blueBots.push_back(std::move(
+                std::make_unique<SimBot>(bot.id,dynamicsWorld,blueSettings,worldSettings,bot.position *worldSettings->scale,bot.position.z())
+        ));
+    }
+    for (const auto &bot : situation->yellowBots) {
+        yellowBots.push_back(std::move(
+                std::make_unique<SimBot>(bot.id,dynamicsWorld,blueSettings,worldSettings,bot.position*worldSettings->scale,bot.position.z())
+        ));
+    }
+    numBlueBots=situation->blueBots.size(); //TODO: fix communication with interface and interactions between Simulator.
+    numYellowBots=situation->yellowBots.size();
+}
+void SimWorld::updateWorldConfig(const std::unique_ptr<WorldConfig> &_worldSettings) {
     worldSettings = std::make_unique<WorldSettings>(*_worldSettings->settings);
     resetWorld();
 }
-void SimWorld::updateRobotConfig(const std::unique_ptr<RobotConfig>& _robotSettings, bool isYellow) {
+void SimWorld::updateRobotConfig(const std::unique_ptr<RobotConfig> &_robotSettings, bool isYellow) {
     if (isYellow) {
         yellowSettings = std::make_unique<RobotSettings>(*_robotSettings->settings);
     } else {
@@ -287,9 +319,9 @@ void SimWorld::setSendGeometryTicks(unsigned int ticks) {
 double SimWorld::getRandomUniform() {
     return uniformDist(randomGenerator);
 }
-WorldSettings * SimWorld::getWorldSettings() {
+WorldSettings *SimWorld::getWorldSettings() {
     return worldSettings.get();
 }
-RobotSettings* SimWorld::getRobotSettings(bool isYellow) {
+RobotSettings *SimWorld::getRobotSettings(bool isYellow) {
     return isYellow ? yellowSettings.get() : blueSettings.get();
 }

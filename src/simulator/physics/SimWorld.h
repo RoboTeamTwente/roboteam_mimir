@@ -51,6 +51,7 @@ class SimWorld : public QObject {
     private:
         void resetRobots();
         void resetWorld();
+        void reloadSituation();
         std::vector<SSL_DetectionFrame> getDetectionFrames();
 
         std::unique_ptr<SimField> field;

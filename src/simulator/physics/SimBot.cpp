@@ -252,7 +252,7 @@ void SimBot::update(SimBall *ball, double time) {
     }
     //Kicker
     //TODO: listen to commands properly
-    if (canKickBall(ball)){
+    if (ball && canKickBall(ball)){
         std::cout<<"KICKING BALL"<<std::endl;
         btVector3 force=(ball->position()-body->getCenterOfMassPosition()).normalized()*1000;
         ball->kick(force);

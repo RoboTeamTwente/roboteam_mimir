@@ -60,30 +60,7 @@ namespace {
 }
 RobotConfig::RobotConfig(const QString &path) {
     settingsFile = std::make_unique<QSettings>(path, QSettings::IniFormat);
-    settings =  std::make_shared<RobotSettings>(
-            get(radiusStr),
-            get(startAngleStr),
-            get(endAngleStr),
-            get(totalHeightStr),
-            get(wheelAngle0Str),
-            get(wheelAngle1Str),
-            get(wheelAngle2Str),
-            get(wheelAngle3Str),
-            get(wheelCenterRadiusStr),
-            get(wheelCenterHeightStr),
-            get(wheelRadiusStr),
-            get(wheelThicknessStr),
-            get(bottomPlateHeightStr),
-            get(kickerWidthStr),
-            get(kickerThicknessStr),
-            get(kickerHeightStr),
-            get(kickerGroundDistStr),
-            get(bodyMassStr),
-            get(wheelMassStr)
-    );
-}
-void RobotConfig::reloadSettings() {
-    settings = std::make_shared<RobotSettings>(
+    settings =  std::make_unique<RobotSettings>(
             get(radiusStr),
             get(startAngleStr),
             get(endAngleStr),

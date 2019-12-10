@@ -15,10 +15,10 @@
 class SimBall;
 class SimBot : public BaseSimBot {
 public:
-    SimBot(unsigned int _id, std::shared_ptr<btDynamicsWorld> world, std::shared_ptr<RobotSettings> settings,
-           std::shared_ptr<WorldSettings> worldSettings);
-    SimBot(unsigned int _id, std::shared_ptr<btDynamicsWorld> world, const std::shared_ptr<RobotSettings> &settings,
-           const std::shared_ptr<WorldSettings> &worldSettings, const btVector3 &initialPos, btScalar dir);
+    SimBot(unsigned int _id, std::shared_ptr<btDynamicsWorld> world, const std::unique_ptr<RobotSettings> &settings,
+           const std::unique_ptr<WorldSettings>& worldSettings);
+    SimBot(unsigned int _id, std::shared_ptr<btDynamicsWorld> world, const std::unique_ptr<RobotSettings> &settings,
+           const std::unique_ptr<WorldSettings>& worldSettings, const btVector3 &initialPos, btScalar dir);
     ~SimBot();
     btVector3 position() const override;
     btScalar orientation() const override;
@@ -37,12 +37,11 @@ private:
     btDefaultMotionState *motionState = nullptr;
     btRigidBody *wheels[4];
     btHingeConstraint *wheelMotor[4];
-    std::shared_ptr<RobotSettings> robSettings;
+    const std::unique_ptr<RobotSettings>& robSettings;
 
-    void addWheels(const std::shared_ptr<RobotSettings> settings, const std::shared_ptr<WorldSettings> worldSettings,
+    void addWheels(const std::unique_ptr<WorldSettings>& worldSettings,
                    btTransform hullTransform);
-    void addWheel(int wheelLabel, btScalar wheelAngleD, btCollisionShape *wheelShape,
-                  const std::shared_ptr<RobotSettings> settings, const std::shared_ptr<WorldSettings> worldSettings,
+    void addWheel(int wheelLabel, btScalar wheelAngleD, btCollisionShape *wheelShape, const std::unique_ptr<WorldSettings>& worldSettings,
                   btTransform hullTransform);
     void wheelControl(btScalar wheel0, btScalar wheel1, btScalar wheel2, btScalar wheel3) override;
     void localControl(btScalar velTangent, btScalar velNormal, btScalar velAngle) override;
@@ -63,7 +62,7 @@ private:
     bool canKickBall(SimBall* Ball);
 
     void
-    addDribbler(const std::shared_ptr<RobotSettings> &settings, const std::shared_ptr<WorldSettings> &worldSettings,
+    addDribbler(const std::unique_ptr<WorldSettings> &worldSettings,
                 btScalar dir, const btVector3 &originPos);
 };
 

@@ -20,25 +20,27 @@ class SimField;
 
 class SimBall;
 
-class RobotSettings;
+class RobotConfig;
 
-class WorldSettings;
+class WorldConfig;
 
 class SimWorld : public QObject {
     Q_OBJECT
     public slots:
         void stepSimulation();
     public:
-        SimWorld(std::shared_ptr<WorldSettings> _worldSettings, std::shared_ptr<RobotSettings> _blueSettings,
-                std::shared_ptr<RobotSettings> _yellowSettings);
+        SimWorld(const std::unique_ptr<WorldConfig>& _worldSettings, const std::unique_ptr<RobotConfig>& _blueSettings,
+                const std::unique_ptr<RobotConfig>& _yellowSettings);
         ~SimWorld() override;
         btDiscreteDynamicsWorld* getWorld();
         std::vector<SSL_WrapperPacket> getPackets();
         void doCommands(btScalar dt);
         void addCommands(std::vector<mimir_robotcommand> commands, bool TeamIsYellow); //TODO: fix copying
         void setRobotCount(unsigned numRobots, bool isYellow);
-        void updateWorldConfig(std::shared_ptr<WorldSettings> _worldSettings);
-        void updateRobotConfig(std::shared_ptr<RobotSettings> _robotSettings, bool isYellow);
+        void updateWorldConfig(const std::unique_ptr<WorldConfig>& _worldSettings);
+        void updateRobotConfig(const std::unique_ptr<RobotConfig>& _robotSettings, bool isYellow);
+        WorldSettings *getWorldSettings();
+        RobotSettings *getRobotSettings(bool isYellow);
         void setSendGeometryTicks(unsigned int ticks);
         void resetWorld();
         SSL_GeometryData getGeometryData();
@@ -60,12 +62,12 @@ class SimWorld : public QObject {
         std::unique_ptr<btBroadphaseInterface> overlappingPairCache;
         std::unique_ptr<btConstraintSolver> solver;
         std::shared_ptr<btDiscreteDynamicsWorld> dynamicsWorld; // is publicly accessible through getWorld() for debugDrawing purposes
-        // we create a local copy of the settings
-        std::shared_ptr<RobotSettings> blueSettings = nullptr;
-        std::shared_ptr<RobotSettings> yellowSettings = nullptr;
-        std::shared_ptr<WorldSettings> worldSettings = nullptr;
 
-        //TODO: perhaps make this it's own class.
+        std::unique_ptr<RobotSettings> blueSettings;
+        std::unique_ptr<RobotSettings> yellowSettings;
+        std::unique_ptr<WorldSettings> worldSettings;
+
+    //TODO: perhaps make this it's own class.
         double getRandomUniform();
         std::mt19937 randomGenerator;
         std::uniform_real_distribution<double> uniformDist;

@@ -12,9 +12,8 @@
 class RobotConfig {
 public:
     explicit RobotConfig(const QString &filepath);
-    void reloadSettings();
     QString name() const;
-    std::shared_ptr<RobotSettings> settings;
+    std::unique_ptr<RobotSettings> settings;
 private:
     float get(const QString &valueString) const; //only used to load the const variables into the settings format
     std::unique_ptr<QSettings> settingsFile;

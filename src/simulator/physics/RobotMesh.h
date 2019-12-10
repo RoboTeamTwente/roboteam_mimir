@@ -12,7 +12,7 @@
 
 class RobotMesh {
 public:
-    explicit RobotMesh(std::shared_ptr<RobotSettings> settings);
+    explicit RobotMesh(const std::unique_ptr<RobotSettings>& settings);
     const QList<btVector3> &hull() const;
 private:
 

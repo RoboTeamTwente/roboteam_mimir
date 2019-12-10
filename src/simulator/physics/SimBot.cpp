@@ -22,17 +22,19 @@ btScalar SimBot::orientation() const {
     return yaw;
 }
 //TODO: add option of initializing with wheel velocities
-SimBot::SimBot(unsigned int _id, std::shared_ptr<btDynamicsWorld> world, const std::shared_ptr<RobotSettings> &settings,
-               const std::shared_ptr<WorldSettings> &worldSettings, const btVector3 &initialPos, btScalar dir) :
+SimBot::SimBot(unsigned int _id, std::shared_ptr<btDynamicsWorld> world, const std::unique_ptr<RobotSettings> &settings,
+               const std::unique_ptr<WorldSettings>& worldSettings, const btVector3 &initialPos, btScalar dir) :
         id{_id},
-        SCALE(worldSettings->scale){
+        SCALE(worldSettings->scale),
+        robSettings{settings}
+        {
     dynamicsWorld = world;
     btCompoundShape *wholeShape = new btCompoundShape();
     btTransform shapeTransform;
     shapeTransform.setIdentity();
 
     //Create the outer hull of the robot
-    RobotMesh mesh(settings);
+    RobotMesh mesh(robSettings);
     btConvexHullShape *convexHullShape = new btConvexHullShape();
     shapes.push_back(convexHullShape);
     for (btVector3 point : mesh.hull()) {
@@ -62,12 +64,11 @@ SimBot::SimBot(unsigned int _id, std::shared_ptr<btDynamicsWorld> world, const s
     dynamicsWorld->addRigidBody(body,COL_ROBOT,COL_EVERYTHING);
 
     worldTransform.setOrigin(btVector3(initialPos.x(), initialPos.y(), 0.0));
-    addWheels(settings, worldSettings, worldTransform);
-    addDribbler(settings, worldSettings, dir, originPos);
-    robSettings = settings;
+    addWheels(worldSettings, worldTransform);
+    addDribbler( worldSettings, dir, originPos);
 
 }
-void SimBot::addDribbler(const std::shared_ptr<RobotSettings> &settings, const std::shared_ptr<WorldSettings> &worldSettings,
+void SimBot::addDribbler(const std::unique_ptr<WorldSettings> &worldSettings,
                     btScalar dir, const btVector3 &originPos) {
     //TODO: fix dimensions and offsets to be accurate
 //TODO: put constants in settings
@@ -75,15 +76,15 @@ void SimBot::addDribbler(const std::shared_ptr<RobotSettings> &settings, const s
             btVector3(0.1 / 2.0f, 0.007f, 0.007f) * SCALE);
     shapes.push_back(dribblerShape);
     btVector3 dribblerCenter =
-            btVector3(settings->radius - 0.015, 0, -settings->totalHeight / 2.0f + 0.03f) * SCALE;
+            btVector3(robSettings->radius - 0.015, 0, -robSettings->totalHeight / 2.0f + 0.03f) * SCALE;
     btTransform dribblerStartTransform;
     dribblerStartTransform.setIdentity();
     dribblerStartTransform.setOrigin(dribblerCenter + originPos);
     dribblerStartTransform.setRotation(btQuaternion(btVector3(0, 0, 1), dir + M_PI_2));
 
     btVector3 dribblerInertia(0, 0, 0);
-    dribblerShape->calculateLocalInertia(0.02 * settings->bodyMass, dribblerInertia);
-    btRigidBody::btRigidBodyConstructionInfo rbDribInfo(0.02 * settings->bodyMass, nullptr, dribblerShape,
+    dribblerShape->calculateLocalInertia(0.02 * robSettings->bodyMass, dribblerInertia);
+    btRigidBody::btRigidBodyConstructionInfo rbDribInfo(0.02 * robSettings->bodyMass, nullptr, dribblerShape,
                                                         dribblerInertia);
     rbDribInfo.m_startWorldTransform = dribblerStartTransform;
 
@@ -103,40 +104,39 @@ void SimBot::addDribbler(const std::shared_ptr<RobotSettings> &settings, const s
     dynamicsWorld->addConstraint(dribblerMotor, true);
 }
 void
-SimBot::addWheels(const std::shared_ptr<RobotSettings> settings, const std::shared_ptr<WorldSettings> worldSettings,
+SimBot::addWheels(const std::unique_ptr<WorldSettings>& worldSettings,
                   btTransform hullTransform) {
     //we don't want to construct the same shape 4 times
     btCylinderShapeX *wheelShape = new btCylinderShapeX(
-            btVector3(settings->wheelThickness * 0.5, settings->wheelRadius, settings->wheelRadius) *
+            btVector3(robSettings->wheelThickness * 0.5, robSettings->wheelRadius, robSettings->wheelRadius) *
             SCALE);
-    addWheel(0, settings->wheelAngle0, wheelShape, settings, worldSettings, hullTransform);
-    addWheel(1, settings->wheelAngle1, wheelShape, settings, worldSettings, hullTransform);
-    addWheel(2, settings->wheelAngle2, wheelShape, settings, worldSettings, hullTransform);
-    addWheel(3, settings->wheelAngle3, wheelShape, settings, worldSettings, hullTransform);
+    addWheel(0, robSettings->wheelAngle0, wheelShape,  worldSettings, hullTransform);
+    addWheel(1, robSettings->wheelAngle1, wheelShape,  worldSettings, hullTransform);
+    addWheel(2, robSettings->wheelAngle2, wheelShape,  worldSettings, hullTransform);
+    addWheel(3, robSettings->wheelAngle3, wheelShape,  worldSettings, hullTransform);
 }
 void SimBot::addWheel(int wheelLabel, btScalar wheelAngleD, btCollisionShape *wheelShape,
-                      const std::shared_ptr<RobotSettings> settings,
-                      const std::shared_ptr<WorldSettings> worldSettings, btTransform hullTransform) {
+                      const std::unique_ptr<WorldSettings>& worldSettings, btTransform hullTransform) {
     btScalar angleR = wheelAngleD / 180.0 * M_PI;//convert to radians
     // find the centre of the wheel position
     btTransform wheelTransform;
     wheelTransform.setRotation(btQuaternion(btVector3(0.0f, 0.0f, 1.0f), angleR));
     btVector3 wheelPos =
-            btVector3(cos(angleR) * settings->radius, sin(angleR) * settings->radius, settings->wheelRadius) *
+            btVector3(cos(angleR) * robSettings->radius, sin(angleR) * robSettings->radius, robSettings->wheelRadius) *
             SCALE;
     wheelTransform.setOrigin(wheelPos);
     //calculate moments of inertia of wheel
     btVector3 wheelInertia;
-    wheelShape->calculateLocalInertia(settings->wheelMass, wheelInertia);
+    wheelShape->calculateLocalInertia(robSettings->wheelMass, wheelInertia);
     // cosntruct rigid body
     //we need to multiply by body transform to construct the objects in the right places
     btDefaultMotionState *motionState = new btDefaultMotionState(hullTransform * wheelTransform);
-    btRigidBody::btRigidBodyConstructionInfo wheelInfo(settings->wheelMass, motionState, wheelShape, wheelInertia);
+    btRigidBody::btRigidBodyConstructionInfo wheelInfo(robSettings->wheelMass, motionState, wheelShape, wheelInertia);
     btRigidBody *wheel = new btRigidBody(wheelInfo);
     wheel->setUserIndex(bodyType::WHEEL);
     wheels[wheelLabel] = wheel;
     //construct joint/motor
-    btVector3 heightOffset = btVector3(0, 0, -(settings->totalHeight + 3 * settings->bottomPlateHeight) * 0.5) *
+    btVector3 heightOffset = btVector3(0, 0, -(robSettings->totalHeight + 3 * robSettings->bottomPlateHeight) * 0.5) *
                              SCALE; //TODO fix offsets and transforms (also wheel construction)
     btHingeConstraint *constraint = new btHingeConstraint(*body, *wheel, wheelPos + heightOffset,
                                                           btVector3(0.0, 0.0, 0),
@@ -171,8 +171,8 @@ void SimBot::localControl(btScalar velTangent, btScalar velNormal, btScalar velA
         wheelMotor[i]->setMotorTargetVelocity(wheelVel);
     }
 }
-SimBot::SimBot(unsigned int id, std::shared_ptr<btDynamicsWorld> world, std::shared_ptr<RobotSettings> settings,
-               std::shared_ptr<WorldSettings> worldSettings) : SimBot(id, world, settings, worldSettings,
+SimBot::SimBot(unsigned int id, std::shared_ptr<btDynamicsWorld> world, const std::unique_ptr<RobotSettings> &settings,
+               const std::unique_ptr<WorldSettings>& worldSettings) : SimBot(id, world, settings, worldSettings,
                                                                       btVector3(0, 0, 0), 0.0) {
 }
 SimBot::~SimBot() {

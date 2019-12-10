@@ -26,9 +26,9 @@ public:
     Simulator();
     ~Simulator();
     btDiscreteDynamicsWorld* getPhysicsWorld();
-    std::shared_ptr<WorldSettings> getWorldSettings();
-    std::shared_ptr<RobotSettings> getBlueSettings();
-    std::shared_ptr<RobotSettings> getYellowSettings();
+    WorldSettings * getWorldSettings();
+    RobotSettings * getBlueSettings();
+    RobotSettings * getYellowSettings();
     QList<QString> getWorldConfigNames();
     QList<QString> getRobotConfigNames();
     SSL_GeometryData getGeometry();

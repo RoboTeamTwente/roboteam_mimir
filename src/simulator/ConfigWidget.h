@@ -9,10 +9,10 @@
 #include <QDir>
 #include <QSettings>
 #include <memory>
+#include "config/WorldConfig.h"
+#include "config/RobotConfig.h"
+#include "config/Situation.h"
 
-class WorldConfig;
-class RobotConfig;
-class Situation;
 class ConfigWidget {
 public:
     ConfigWidget();
@@ -21,26 +21,19 @@ public:
     QList<QString> getRobotNames();
     QList<QString> getSituationNames();
 
-    void setCurrentSituation(const QString &name);
-    void setCurrentWorld(const QString &name);
-    void setCurrentRobot(const QString &name,bool isYellow);
-
-    std::shared_ptr<WorldConfig> getCurrentWorldConfig();
-    std::shared_ptr<RobotConfig> getRobotConfig(bool isYellow);
-    Situation getSituation();
+    const std::unique_ptr<WorldConfig>& getWorldConfig(const QString &name);
+    const std::unique_ptr<RobotConfig>& getRobotConfig(const QString &name);
+    const std::unique_ptr<Situation>& getSituation(const QString &name);
 private:
     static QDir findConfigDir();
     void readWorldConfigs(const QDir &worldDir);
     void readRobotConfigs(const QDir &robotDir);
     void readSituations(const QDir &situationDir);
 
-    QList<Situation *> situationList;
-    QList<std::shared_ptr<RobotConfig>> robotConfigList;
-    QList<std::shared_ptr<WorldConfig>> worldConfigList;
-    std::shared_ptr<WorldConfig> currentWorld = nullptr;
-    std::shared_ptr<RobotConfig> blueRobot = nullptr;
-    std::shared_ptr<RobotConfig> yellowRobot = nullptr;
-    Situation* currentSituation = nullptr; //TODO: fix pointer hell
+    std::vector<std::unique_ptr<Situation>> situationList;
+    std::vector<std::unique_ptr<RobotConfig>> robotConfigList;
+    std::vector<std::unique_ptr<WorldConfig>> worldConfigList;
+
 };
 
 

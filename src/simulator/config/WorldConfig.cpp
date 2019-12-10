@@ -45,27 +45,7 @@ namespace {
 
 WorldConfig::WorldConfig(const QString &path) {
     settingsFile = std::make_unique<QSettings>(path, QSettings::IniFormat);
-    settings = std::make_shared<WorldSettings>(
-            get(fieldLengthStr),
-            get(fieldWidthStr),
-            get(boundaryWidthStr),
-            get(lineWidthStr),
-            get(ceilingHeightStr),
-            get(goalWidthStr),
-            get(goalWallThicknessStr),
-            get(goalDepthStr),
-            get(goalHeightStr),
-            get(ballRadiusStr),
-            get(ballMassStr),
-            get(gravityXStr),
-            get(gravityYStr),
-            get(gravityZStr),
-            get(centerCircleRadiusStr),
-            get(scaleStr)
-    );
-}
-void WorldConfig::reloadSettings() {
-    settings = std::make_shared<WorldSettings>(
+    settings = std::make_unique<WorldSettings>(
             get(fieldLengthStr),
             get(fieldWidthStr),
             get(boundaryWidthStr),

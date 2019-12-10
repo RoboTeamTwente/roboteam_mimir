@@ -13,9 +13,8 @@
 class WorldConfig {
 public:
     explicit WorldConfig(const QString& filepath);
-    void reloadSettings();
     QString name() const;
-    std::shared_ptr<WorldSettings> settings;
+    std::unique_ptr<WorldSettings> settings;
 private:
     float get(const QString& valueString) const;
 

@@ -10,5 +10,6 @@ find_package(Qt5 COMPONENTS Widgets)
 # Instruct Cmake to run the meta-object-compiler for qt5's signal slot system automatically when needed
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS  "-O3 -Wall -Wextra")
 add_subdirectory(src)
 add_subdirectory(test)

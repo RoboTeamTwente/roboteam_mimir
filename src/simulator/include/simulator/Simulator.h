@@ -9,6 +9,7 @@
 #include <memory>
 #include "net/Publisher.h"
 #include "net/Receiver.h"
+#include "../../utilities/Timer.h"//TODO: Fix include
 
 class SimWorld;
 class ConfigWidget;
@@ -18,6 +19,8 @@ class RobotSettings;
 class SSL_GeometryData;
 class SSL_WrapperPacket;
 class QTimer;
+
+
 class Simulator :public QObject {
     Q_OBJECT
 public:
@@ -56,6 +59,8 @@ public slots:
 private:
     void setRobotConfig(const QString &name, bool isYellow);
     QTimer *timer;
+    std::unique_ptr<Timer> timingManager;
+    std::unique_ptr<Timing> currentTiming;
     std::unique_ptr<SimWorld> simWorld;
     ConfigWidget* configWidget; //TODO: how to make this a unique pointer?
     std::unique_ptr<net::Publisher> publisher;

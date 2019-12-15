@@ -21,7 +21,7 @@ namespace interface {
     }
     void DebugDrawer::drawContactPoint(const btVector3 &PointOnB, const btVector3 &normalOnB, btScalar distance,
                                        int lifeTime, const btVector3 &color) {
-        drawLine(PointOnB,PointOnB+normalOnB*0.1*settings->scale,color);
+        drawLine(PointOnB,PointOnB+normalOnB*1.0*settings->scale,color);
     }
     //sets the debug mode; what is drawn by the drawer
     int DebugDrawer::getDebugMode() const {

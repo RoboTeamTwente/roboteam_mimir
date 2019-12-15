@@ -34,7 +34,10 @@ add_library(simulator
         config/SituationBot.h
         config/SituationBall.cpp
         config/SituationBall.h
-        config/Situation.cpp config/Situation.h)
+        config/Situation.cpp
+        config/Situation.h
+        utilities/Timer.cpp
+        utilities/Timer.h)
 target_link_libraries(simulator
         PRIVATE net
         PRIVATE Qt5::Core

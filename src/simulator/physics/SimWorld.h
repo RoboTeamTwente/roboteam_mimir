@@ -29,9 +29,7 @@ class Situation;
 class SituationWorld;
 
 class SimWorld : public QObject {
-    Q_OBJECT
-    public slots:
-        void stepSimulation();
+    Q_OBJECT //TODO: figure out why this is necessary for compilation
     public:
         SimWorld(const std::unique_ptr<WorldConfig>& _worldSettings, const std::unique_ptr<RobotConfig>& _blueSettings,
                 const std::unique_ptr<RobotConfig>& _yellowSettings, const std::unique_ptr<SituationWorld>& _situation);
@@ -47,8 +45,9 @@ class SimWorld : public QObject {
         RobotSettings *getRobotSettings(bool isYellow);
         void setSendGeometryTicks(unsigned int ticks);
         SSL_GeometryData getGeometryData();
+        void stepSimulation(double dt);
 
-    private:
+private:
         void resetRobots();
         void resetWorld();
         void reloadSituation();

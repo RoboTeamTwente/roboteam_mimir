@@ -10,6 +10,7 @@
 
 #include <QTimer>
 #include "proto/messages_robocup_ssl_geometry.pb.h"
+#include "utilities/Timer.h"
 
 Simulator::Simulator() {
     //set up network connections
@@ -30,11 +31,13 @@ Simulator::Simulator() {
     const std::unique_ptr<RobotConfig> &blueConfig = configWidget->getRobotConfig(situation->situation->blueSettings);
     simWorld=std::make_unique<SimWorld>(worldConfig,blueConfig,yellowConfig,situation->situation);
 
+    timingManager=std::make_unique<Timer>();
+    currentTiming=std::make_unique<Timing>(timingManager->getTimer("Realtime 250hz"));
     //start simulator logic loop
     timer= new QTimer();
     timer->setTimerType(Qt::PreciseTimer);
     connect(timer,&QTimer::timeout,this,&Simulator::tick);
-    timer->start(5);
+    timer->start(currentTiming->millisecWaitTime);
 
 }
 
@@ -54,14 +57,14 @@ void Simulator::tick() {
     if (yellowMsgs.size()>0){
         simWorld->addCommands(yellowMsgs,true);
     }
-    simWorld->stepSimulation();
+    simWorld->stepSimulation(currentTiming->timeStepLength);
     std::vector<SSL_WrapperPacket> packets=simWorld->getPackets();
     for (const auto& packet: packets){
         publisher->send(packet);
     }
     emit sentPackets(packets);
     auto end=std::chrono::high_resolution_clock::now();
-    //std::cout<<"loop took "<<std::chrono::duration_cast<std::chrono::microseconds>(end-start).count()<<" us"<<std::endl;
+    std::cout<<"loop took "<<std::chrono::duration_cast<std::chrono::microseconds>(end-start).count()<<" us"<<std::endl;
 }
 
 WorldSettings * Simulator::getWorldSettings() {

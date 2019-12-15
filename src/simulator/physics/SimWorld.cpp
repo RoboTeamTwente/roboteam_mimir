@@ -57,8 +57,8 @@ SimWorld::~SimWorld() {
 btDiscreteDynamicsWorld *SimWorld::getWorld() {
     return dynamicsWorld.get(); // Raw as we don't want to share ownership of the world with e.g. visual interfaces
 }
-void SimWorld::stepSimulation() {
-    dynamicsWorld->stepSimulation(1 / 200.0, 10, 1 / 200.0);
+void SimWorld::stepSimulation(double dt) {
+    dynamicsWorld->stepSimulation(dt, 10, dt);
 }
 //helper functions for creating geometry
 inline int scale(const float &meas) {

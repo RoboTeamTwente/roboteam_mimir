@@ -178,10 +178,11 @@ std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
     }
 
     //TODO: add noise
+    const double vanishProb=0.1;
     for (const auto &blueBot: blueBots) {
         const btVector3 botPos = blueBot->position();
         for (int i = 0; i < cameras.size(); ++ i) {
-            if (cameras[i].isVisible(botPos.x(), botPos.y())) {
+            if (random->getVanishing()>vanishProb&&cameras[i].isVisible(botPos.x(), botPos.y())) {
                 SSL_DetectionRobot bot = blueBot->asDetection();
                 bot.set_x(bot.x()+random->getX());
                 bot.set_y(bot.y()+random->getY());
@@ -193,7 +194,7 @@ std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
     for (const auto &yellowBot: yellowBots) {
         const btVector3 botPos = yellowBot->position();
         for (int j = 0; j < cameras.size(); ++ j) {
-            if (cameras[j].isVisible(botPos.x(), botPos.y())) {
+            if (random->getVanishing()>vanishProb&&cameras[j].isVisible(botPos.x(), botPos.y())) {
                 SSL_DetectionRobot bot = yellowBot->asDetection();
                 bot.set_x(bot.x()+random->getX());
                 bot.set_y(bot.y()+random->getY());

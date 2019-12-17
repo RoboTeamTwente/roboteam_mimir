@@ -49,8 +49,6 @@ SimWorld::SimWorld(const std::unique_ptr<WorldConfig> &_worldSettings,
 
     delay = 0.0;
 
-    randomGenerator.seed(0);
-    uniformDist = std::uniform_real_distribution<double>(0.0, 1.0);
     reloadSituation();
 }
 SimWorld::~SimWorld() {
@@ -92,9 +90,7 @@ void addArc(const std::string &name, float centerx, float centery, float radius,
 void SimWorld::doCommands(btScalar dt) {
     dynamicsWorld->clearForces();//according to wiki
     //TODO: options for local, global velocity and angular control mode.
-    //TODO: add delay options
     time += dt;
-
     for (const auto &command: blueCommands) {
         if (time >= command.simulatorReceiveTime + delay) {
             for (auto &robot : blueBots) {
@@ -121,7 +117,7 @@ void SimWorld::doCommands(btScalar dt) {
     for (auto &bot : yellowBots) {
         bot->update(ball.get(), time);
     }
-    dynamicsWorld->applyGravity();
+    dynamicsWorld->applyGravity();// has to be done after everything else according to bullet wiki.
 }
 SSL_GeometryData SimWorld::getGeometryData() {
     //TODO: add camera calibration info
@@ -325,9 +321,7 @@ void SimWorld::updateRobotConfig(const std::unique_ptr<RobotConfig> &_robotSetti
 void SimWorld::setSendGeometryTicks(unsigned int ticks) {
     sendGeometryTicks = ticks;
 }
-double SimWorld::getRandomUniform() {
-    return uniformDist(randomGenerator);
-}
+
 WorldSettings* SimWorld::getWorldSettings() {
     return worldSettings.get();
 }

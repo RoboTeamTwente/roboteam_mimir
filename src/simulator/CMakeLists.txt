@@ -37,7 +37,7 @@ add_library(simulator
         config/Situation.cpp
         config/Situation.h
         utilities/Timer.cpp
-        utilities/Timer.h)
+        utilities/Timer.h utilities/Random.cpp utilities/Random.h)
 target_link_libraries(simulator
         PRIVATE net
         PRIVATE Qt5::Core

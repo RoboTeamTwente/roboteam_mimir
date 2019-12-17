@@ -1,5 +1,3 @@
-#include <utility>
-
 //
 // Created by rolf on 19-09-19.
 //
@@ -16,7 +14,6 @@
 #include "proto/mimir_robotcommand.pb.h"
 #include "SimBot.h"
 #include "Camera.h"
-#include <random>
 
 class SimField;
 
@@ -83,10 +80,7 @@ private:
         std::unique_ptr<SituationWorld> situation;
 
     //TODO: perhaps make this it's own class.
-        double getRandomUniform();
         double delay;
-        std::mt19937 randomGenerator;
-        std::uniform_real_distribution<double> uniformDist;
 
         unsigned int numBlueBots = 1;
         unsigned int numYellowBots = 1;

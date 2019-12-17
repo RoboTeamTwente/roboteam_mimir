@@ -49,7 +49,7 @@ SimWorld::SimWorld(const std::unique_ptr<WorldConfig> &_worldSettings,
     dynamicsWorld->setInternalTickCallback(BulletTickCallback, this, true);
 
     delay = 0.0;
-    random=std::make_unique<Random>(4.5,4.5,0.03);//TODO: set these in interface and link to CMVision paper
+    random=std::make_unique<Random>(6.0,6.0,0.01);//TODO: set these in interface : see http://www.cs.cmu.edu/~mmv/papers/03icra-jim.pdf for values
     reloadSituation();
 }
 SimWorld::~SimWorld() {

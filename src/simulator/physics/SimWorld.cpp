@@ -12,6 +12,7 @@
 #include "SimWorld.h"
 #include "SimField.h"
 #include "SimBall.h"
+#include "../utilities/Random.h"
 #include "../config/WorldConfig.h" //TODO: fix these includes
 #include "../config/RobotConfig.h"
 #include "../config/Situation.h"
@@ -48,7 +49,7 @@ SimWorld::SimWorld(const std::unique_ptr<WorldConfig> &_worldSettings,
     dynamicsWorld->setInternalTickCallback(BulletTickCallback, this, true);
 
     delay = 0.0;
-
+    random=std::make_unique<Random>(4.5,4.5,0.03);//TODO: set these in interface and link to CMVision paper
     reloadSituation();
 }
 SimWorld::~SimWorld() {
@@ -182,6 +183,9 @@ std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
         for (int i = 0; i < cameras.size(); ++ i) {
             if (cameras[i].isVisible(botPos.x(), botPos.y())) {
                 SSL_DetectionRobot bot = blueBot->asDetection();
+                bot.set_x(bot.x()+random->getX());
+                bot.set_y(bot.y()+random->getY());
+                bot.set_orientation(bot.orientation()+random->getOrientation());
                 frames[i].add_robots_blue()->CopyFrom(bot);
             }
         }
@@ -191,6 +195,9 @@ std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
         for (int j = 0; j < cameras.size(); ++ j) {
             if (cameras[j].isVisible(botPos.x(), botPos.y())) {
                 SSL_DetectionRobot bot = yellowBot->asDetection();
+                bot.set_x(bot.x()+random->getX());
+                bot.set_y(bot.y()+random->getY());
+                bot.set_orientation(bot.orientation()+random->getOrientation());
                 frames[j].add_robots_yellow()->CopyFrom(bot);
             }
         }

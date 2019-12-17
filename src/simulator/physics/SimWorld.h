@@ -27,6 +27,8 @@ class Situation;
 
 class SituationWorld;
 
+class Random;
+
 struct RobotCommand{
   RobotCommand(mimir_robotcommand command,double time) :
   command(std::move(command)),
@@ -79,7 +81,7 @@ private:
         std::unique_ptr<WorldSettings> worldSettings;
         std::unique_ptr<SituationWorld> situation;
 
-    //TODO: perhaps make this it's own class.
+        std::unique_ptr<Random> random;
         double delay;
 
         unsigned int numBlueBots = 1;

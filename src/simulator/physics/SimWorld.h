@@ -1,3 +1,5 @@
+#include <utility>
+
 //
 // Created by rolf on 19-09-19.
 //
@@ -28,6 +30,13 @@ class Situation;
 
 class SituationWorld;
 
+struct RobotCommand{
+  RobotCommand(mimir_robotcommand command,double time) :
+  command(std::move(command)),
+  simulatorReceiveTime(time){}
+  mimir_robotcommand command;
+  double simulatorReceiveTime;
+};
 class SimWorld : public QObject {
     Q_OBJECT //TODO: figure out why this is necessary for compilation
     public:
@@ -37,7 +46,7 @@ class SimWorld : public QObject {
         btDiscreteDynamicsWorld* getWorld();
         std::vector<SSL_WrapperPacket> getPackets();
         void doCommands(btScalar dt);
-        void addCommands(std::vector<mimir_robotcommand> commands, bool TeamIsYellow); //TODO: fix copying
+        void addCommands(const std::vector<mimir_robotcommand>& commands, bool TeamIsYellow); //TODO: fix copying
         void setRobotCount(unsigned numRobots, bool isYellow);
         void updateWorldConfig(const std::unique_ptr<WorldConfig>& _worldSettings);
         void updateRobotConfig(const std::unique_ptr<RobotConfig>& _robotSettings, bool isYellow);
@@ -46,6 +55,7 @@ class SimWorld : public QObject {
         void setSendGeometryTicks(unsigned int ticks);
         SSL_GeometryData getGeometryData();
         void stepSimulation(double dt);
+        void setDelay(double _delay);
 
 private:
         void resetRobots();
@@ -58,8 +68,8 @@ private:
         std::vector<std::unique_ptr<SimBot>> blueBots;
         std::vector<std::unique_ptr<SimBot>> yellowBots;
         std::vector<Camera> cameras;
-        std::vector<mimir_robotcommand> blueCommands;
-        std::vector<mimir_robotcommand> yellowCommands;
+        std::vector<RobotCommand> blueCommands;
+        std::vector<RobotCommand> yellowCommands;
         // these make up the total physics simulator together
         std::unique_ptr<btDefaultCollisionConfiguration> collisionConfig;
         std::unique_ptr<btCollisionDispatcher> collisionDispatcher;
@@ -74,6 +84,7 @@ private:
 
     //TODO: perhaps make this it's own class.
         double getRandomUniform();
+        double delay;
         std::mt19937 randomGenerator;
         std::uniform_real_distribution<double> uniformDist;
 

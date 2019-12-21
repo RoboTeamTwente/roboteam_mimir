@@ -17,7 +17,6 @@ addons:
       - qt5-default
       - libprotobuf-dev
       - protobuf-compiler
-      - libbullet-dev
       - git
 install:
   - cd ~/

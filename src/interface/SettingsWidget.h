@@ -42,6 +42,7 @@ namespace interface{
         QComboBox *worldSettings;
         QDoubleSpinBox *robotXNoise;
         QDoubleSpinBox *robotYNoise;
+        QDoubleSpinBox *robotOrNoise;
         QDoubleSpinBox *robotVanishing;
         QDoubleSpinBox *ballXNoise;
         QDoubleSpinBox *ballYNoise;

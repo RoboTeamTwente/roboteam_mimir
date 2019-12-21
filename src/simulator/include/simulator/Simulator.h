@@ -61,6 +61,7 @@ public slots:
 
     void setRobotXNoise(double noise);
     void setRobotYNoise(double noise);
+    void setRobotOrNoise(double noise);
     void setRobotVanishing(double vanishingProb);
 
     void setDelay(double delay);

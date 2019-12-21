@@ -155,6 +155,16 @@ namespace interface{
         controlsLayout->addWidget(robotYNoise,i,1);
         i++;
 
+        label = new QLabel("Robot orientation "+QString(QChar(0x03C3))+" (rad)");
+        labels.push_back(label);
+        robotOrNoise = new QDoubleSpinBox();
+        robotOrNoise->setRange(0,0.5);
+        robotOrNoise->setSingleStep(0.005);
+        robotOrNoise->setDecimals(3);
+        controlsLayout->addWidget(label,i,0);
+        controlsLayout->addWidget(robotOrNoise,i,1);
+        i++;
+
         label = new QLabel("Robot Vanishing");
         labels.push_back(label);
         robotVanishing = new QDoubleSpinBox();
@@ -212,6 +222,7 @@ namespace interface{
 
         connect(robotXNoise,SIGNAL(valueChanged(double)),simulator,SLOT(setRobotXNoise(double)));
         connect(robotYNoise,SIGNAL(valueChanged(double)),simulator,SLOT(setRobotYNoise(double)));
+        connect(robotOrNoise,SIGNAL(valueChanged(double)),simulator,SLOT(setRobotOrNoise(double)));
         connect(robotVanishing,SIGNAL(valueChanged(double)),simulator,SLOT(setRobotVanishing(double)));
 
         connect(ballXNoise,SIGNAL(valueChanged(double)),simulator,SLOT(setBallXNoise(double)));

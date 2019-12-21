@@ -174,6 +174,9 @@ void Simulator::setRobotXNoise(double noise) {
 void Simulator::setRobotYNoise(double noise) {
     simWorld->setRobotYNoise(noise);
 }
+void Simulator::setRobotOrNoise(double noise) {
+    simWorld->setRobotOrNoise(noise);
+}
 void Simulator::setRobotVanishing(double vanishingProb) {
     simWorld->setRobotVanishing(vanishingProb);
 }

@@ -356,6 +356,9 @@ void SimWorld::setRobotXNoise(double noise) {
 void SimWorld::setRobotYNoise(double noise) {
     random->setYRange(noise*1000);
 }
+void SimWorld::setRobotOrNoise(double noise) {
+    random->setOrientationRange(noise);
+}
 void SimWorld::setRobotVanishing(double prob) {
     robotVanishingProb = prob;
 }

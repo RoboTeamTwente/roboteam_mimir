@@ -58,6 +58,7 @@ class SimWorld : public QObject {
 
         void setRobotXNoise(double noise);
         void setRobotYNoise(double noise);
+        void setRobotOrNoise(double noise);
         void setRobotVanishing(double prob);
 
         void setBallXNoise(double noise);

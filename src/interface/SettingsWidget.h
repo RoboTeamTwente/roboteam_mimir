@@ -47,6 +47,8 @@ namespace interface{
         QDoubleSpinBox *ballYNoise;
         QDoubleSpinBox *ballVanishing;
 
+        QDoubleSpinBox *delay;
+
     };
 }
 

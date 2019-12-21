@@ -63,6 +63,7 @@ public slots:
     void setRobotYNoise(double noise);
     void setRobotVanishing(double vanishingProb);
 
+    void setDelay(double delay);
     void setSendGeometryTicks(int ticks);
 private:
     void setRobotConfig(const QString &name, bool isYellow);

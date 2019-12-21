@@ -51,7 +51,8 @@ SimWorld::SimWorld(const std::unique_ptr<WorldConfig> &_worldSettings,
     delay = 0.0;
     robotVanishingProb = 0.1;
     ballVanishingProb = 0.1;
-    random=std::make_unique<Random>(6.0,6.0,0.01,6.0,6.0);//TODO: set these in interface : see http://www.cs.cmu.edu/~mmv/papers/03icra-jim.pdf for values
+    random = std::make_unique<Random>(6.0, 6.0, 0.01, 6.0,
+            6.0);//TODO: set these in interface : see http://www.cs.cmu.edu/~mmv/papers/03icra-jim.pdf for values
     reloadSituation();
 }
 SimWorld::~SimWorld() {
@@ -94,26 +95,33 @@ void SimWorld::doCommands(btScalar dt) {
     dynamicsWorld->clearForces();//according to wiki
     //TODO: options for local, global velocity and angular control mode.
     time += dt;
-    for (const auto &command: blueCommands) {
-        if (time >= command.simulatorReceiveTime + delay) {
+    for (auto command = blueCommands.begin(); command != blueCommands.end();) {
+        if (time >= command->simulatorReceiveTime + delay) {
             for (auto &robot : blueBots) {
-                if (robot->getId() == command.command.id()) {
-                    robot->receiveCommand(command.command, time);
+                if (robot->getId() == command->command.id()) {
+                    robot->receiveCommand(command->command, time);
                 }
             }
+            command = blueCommands.erase(command);
+        }
+        else {
+            command ++;
         }
     }
-    for (const auto &command: yellowCommands) {
-        if (time >= command.simulatorReceiveTime + delay) {
+    for (auto command = yellowCommands.begin(); command != yellowCommands.end();) {
+        if (time >= command->simulatorReceiveTime + delay) {
             for (auto &robot : yellowBots) {
-                if (robot->getId() == command.command.id()) {
-                    robot->receiveCommand(command.command, time);
+                if (robot->getId() == command->command.id()) {
+                    robot->receiveCommand(command->command, time);
                 }
             }
+            command = yellowCommands.erase(command);
+        }
+        else {
+            command ++;
         }
     }
-    blueCommands.clear();
-    yellowCommands.clear();
+
     for (auto &bot : blueBots) {
         bot->update(ball.get(), time);
     }
@@ -182,11 +190,11 @@ std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
     for (const auto &blueBot: blueBots) {
         const btVector3 botPos = blueBot->position();
         for (int i = 0; i < cameras.size(); ++ i) {
-            if (random->getVanishing()>robotVanishingProb&&cameras[i].isVisible(botPos.x(), botPos.y())) {
+            if (random->getVanishing() > robotVanishingProb && cameras[i].isVisible(botPos.x(), botPos.y())) {
                 SSL_DetectionRobot bot = blueBot->asDetection();
-                bot.set_x(bot.x()+random->getX());
-                bot.set_y(bot.y()+random->getY());
-                bot.set_orientation(bot.orientation()+random->getOrientation());
+                bot.set_x(bot.x() + random->getX());
+                bot.set_y(bot.y() + random->getY());
+                bot.set_orientation(bot.orientation() + random->getOrientation());
                 frames[i].add_robots_blue()->CopyFrom(bot);
             }
         }
@@ -194,11 +202,11 @@ std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
     for (const auto &yellowBot: yellowBots) {
         const btVector3 botPos = yellowBot->position();
         for (int j = 0; j < cameras.size(); ++ j) {
-            if (random->getVanishing()>robotVanishingProb&&cameras[j].isVisible(botPos.x(), botPos.y())) {
+            if (random->getVanishing() > robotVanishingProb && cameras[j].isVisible(botPos.x(), botPos.y())) {
                 SSL_DetectionRobot bot = yellowBot->asDetection();
-                bot.set_x(bot.x()+random->getX());
-                bot.set_y(bot.y()+random->getY());
-                bot.set_orientation(bot.orientation()+random->getOrientation());
+                bot.set_x(bot.x() + random->getX());
+                bot.set_y(bot.y() + random->getY());
+                bot.set_orientation(bot.orientation() + random->getOrientation());
                 frames[j].add_robots_yellow()->CopyFrom(bot);
             }
         }
@@ -206,10 +214,10 @@ std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
     if (ball) {
         const btVector3 &ballPos = ball->position();
         for (int k = 0; k < cameras.size(); ++ k) {
-            if (random->getVanishing()>ballVanishingProb&&cameras[k].isBallVisible(ballPos)) {
-                SSL_DetectionBall detBall=ball->asDetection();
-                detBall.set_x(detBall.x()+random->getBallX());
-                detBall.set_y(detBall.y()+random->getBallY());
+            if (random->getVanishing() > ballVanishingProb && cameras[k].isBallVisible(ballPos)) {
+                SSL_DetectionBall detBall = ball->asDetection();
+                detBall.set_x(detBall.x() + random->getBallX());
+                detBall.set_y(detBall.y() + random->getBallY());
                 frames[k].mutable_balls()->Add()->CopyFrom(detBall);
             }
         }
@@ -340,7 +348,7 @@ RobotSettings* SimWorld::getRobotSettings(bool isYellow) {
     return isYellow ? yellowSettings.get() : blueSettings.get();
 }
 void SimWorld::setDelay(double _delay) {
-    delay=_delay;
+    delay = _delay/1000.0;// delay comes in in ms
 }
 void SimWorld::setRobotXNoise(double noise) {
     random->setXRange(noise*1000); //TODO: fix scaling
@@ -349,7 +357,7 @@ void SimWorld::setRobotYNoise(double noise) {
     random->setYRange(noise*1000);
 }
 void SimWorld::setRobotVanishing(double prob) {
-    robotVanishingProb=prob;
+    robotVanishingProb = prob;
 }
 void SimWorld::setBallXNoise(double noise) {
     random->setBallXRange(noise*1000);
@@ -358,5 +366,5 @@ void SimWorld::setBallYNoise(double noise) {
     random->setBallYRange(noise*1000);
 }
 void SimWorld::setBallVanishing(double prob) {
-    ballVanishingProb=prob;
+    ballVanishingProb = prob;
 }

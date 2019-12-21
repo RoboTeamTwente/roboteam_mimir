@@ -72,6 +72,14 @@ namespace interface{
         sendGeometryTicks->setValue(109); //TODO: fix initialization
         networkLayout->addWidget(label,i,0);
         networkLayout->addWidget(sendGeometryTicks,i,1);
+        i++;
+        label = new QLabel("Delay (ms)");
+        labels.push_back(label);
+        delay = new QDoubleSpinBox();
+        delay->setRange(0.0,200.0);
+        delay->setDecimals(1);
+        networkLayout->addWidget(label,i,0);
+        networkLayout->addWidget(delay,i,1);
 
         networkGroup->setLayout(networkLayout);
 
@@ -209,6 +217,8 @@ namespace interface{
         connect(ballXNoise,SIGNAL(valueChanged(double)),simulator,SLOT(setBallXNoise(double)));
         connect(ballYNoise,SIGNAL(valueChanged(double)),simulator,SLOT(setBallYNoise(double)));
         connect(ballVanishing,SIGNAL(valueChanged(double)),simulator,SLOT(setBallVanishing(double)));
+
+        connect(delay,SIGNAL(valueChanged(double)),simulator,SLOT(setDelay(double)));
         vLayout->addWidget(controlsGroup);
         vLayout->addWidget(networkGroup);
     }

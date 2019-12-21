@@ -17,7 +17,7 @@ Simulator::Simulator() {
     //TODO: make these settings saved in sim
     QHostAddress localIP("224.5.23.2");
     int sendPort=10006;
-    int receiveBluePort=10004;
+    int receiveBluePort=20011;
     int receiveYellowPort=10007;
     publisher=std::make_unique<net::Publisher>(localIP,sendPort);
     blueReceiver=std::make_unique<net::Receiver>(QHostAddress("127.0.0.1"),receiveBluePort);//TODO: change back to localIP
@@ -64,7 +64,7 @@ void Simulator::tick() {
     }
     emit sentPackets(packets);
     auto end=std::chrono::high_resolution_clock::now();
-    std::cout<<"loop took "<<std::chrono::duration_cast<std::chrono::microseconds>(end-start).count()<<" us"<<std::endl;
+    //std::cout<<"loop took "<<std::chrono::duration_cast<std::chrono::microseconds>(end-start).count()<<" us"<<std::endl;
 }
 
 WorldSettings * Simulator::getWorldSettings() {
@@ -176,4 +176,7 @@ void Simulator::setRobotYNoise(double noise) {
 }
 void Simulator::setRobotVanishing(double vanishingProb) {
     simWorld->setRobotVanishing(vanishingProb);
+}
+void Simulator::setDelay(double delay) {
+    simWorld->setDelay(delay);
 }

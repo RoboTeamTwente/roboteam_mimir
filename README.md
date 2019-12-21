@@ -3,7 +3,7 @@
 * [CMake 3.12+](https://cmake.org/) 
 * [Google Protobuf, version 3.0.0+](https://github.com/protocolbuffers/protobuf) 
 * [Qt5,Version 5.9+](https://www.qt.io/) 
-* [Bullet3](https://github.com/bulletphysics/bullet3)
+* [Bullet 2.89+](https://github.com/bulletphysics/bullet3)
 
 To run the unit tests you also need the following:
 * [Google Test](https://github.com/google/googletest)
@@ -17,9 +17,8 @@ sudo apt-get install cmake
 Has been built/tested with version 3.11. You will likely need at least 3.0.0 or higher.
 ### Qt5
 You need version 5.9+.
-### Bullet3
-Install the library from https://github.com/bulletphysics/bullet3. I recommend using the cmake
-
+### Bullet 2.89
+Is installed as external dependency.
 ### Google Test
 To obtain the library run:
  

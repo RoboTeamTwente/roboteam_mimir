@@ -49,7 +49,7 @@ SimWorld::SimWorld(const std::unique_ptr<WorldConfig> &_worldSettings,
     dynamicsWorld->setInternalTickCallback(BulletTickCallback, this, true);
 
     delay = 0.0;
-    random=std::make_unique<Random>(6.0,6.0,0.01);//TODO: set these in interface : see http://www.cs.cmu.edu/~mmv/papers/03icra-jim.pdf for values
+    random=std::make_unique<Random>(6.0,6.0,0.01,6.0,6.0);//TODO: set these in interface : see http://www.cs.cmu.edu/~mmv/papers/03icra-jim.pdf for values
     reloadSituation();
 }
 SimWorld::~SimWorld() {
@@ -203,11 +203,15 @@ std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
             }
         }
     }
+    const double ballVanishProb=vanishProb;
     if (ball) {
         const btVector3 &ballPos = ball->position();
         for (int k = 0; k < cameras.size(); ++ k) {
-            if (cameras[k].isBallVisible(ballPos)) {
-                frames[k].mutable_balls()->Add()->CopyFrom(ball->asDetection());
+            if (random->getVanishing()>ballVanishProb&&cameras[k].isBallVisible(ballPos)) {
+                SSL_DetectionBall detBall=ball->asDetection();
+                detBall.set_x(detBall.x()+random->getBallX());
+                detBall.set_y(detBall.y()+random->getBallY());
+                frames[k].mutable_balls()->Add()->CopyFrom(detBall);
             }
         }
     }

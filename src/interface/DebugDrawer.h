@@ -5,7 +5,7 @@
 #ifndef ROBOTEAM_MIMIR_DEBUGDRAWER_H
 #define ROBOTEAM_MIMIR_DEBUGDRAWER_H
 
-#include <bullet/btBulletDynamicsCommon.h>
+#include <btBulletDynamicsCommon.h>
 #include "../simulator/config/WorldSettings.h" //TODO: fix includes
 #include <memory>
 namespace interface{

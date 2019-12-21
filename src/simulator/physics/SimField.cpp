@@ -20,16 +20,16 @@ SimField::SimField(std::unique_ptr<btDiscreteDynamicsWorld>&world, const std::un
     const float ceilingHeight = cfg->ceilingHeight*SCALE;
 
     //create ground
-    plane = new btStaticPlaneShape(btVector3(0.0f, 0.0f, 1.0f), 0.0f);
+    plane = new btStaticPlaneShape(btVector3(0.0, 0.0, 1.0),0);
     addObject(plane, btTransform(btQuaternion(btVector3(1, 0, 0), 0), btVector3(0, 0, 0)));
     //ceiling
     addObject(plane, btTransform(btQuaternion(btVector3(1, 0, 0), M_PI), btVector3(0, 0, ceilingHeight)));
 
-    addObject(plane, btTransform(btQuaternion(btVector3(0.0f, 1.0f, 0.0f), M_PI_2), btVector3(-(halfFieldLength + boundaryWidth), 0.0f, 0.0f)));
-    addObject(plane, btTransform(btQuaternion(btVector3(0.0f, 1.0f, 0.0f), -M_PI_2), btVector3(halfFieldLength + boundaryWidth, 0.0f, 0.0f)));
+    addObject(plane, btTransform(btQuaternion(btVector3(0.0, 1.0, 0.0), M_PI_2), btVector3(-(halfFieldLength + boundaryWidth), 0.0, 0.0)));
+    addObject(plane, btTransform(btQuaternion(btVector3(0.0, 1.0, 0.0), -M_PI_2), btVector3(halfFieldLength + boundaryWidth, 0.0, 0.0)));
 
-    addObject(plane, btTransform(btQuaternion(btVector3(1.0f, 0.0f, 0.0f), -M_PI_2), btVector3(0.0f, -(halfFieldWidth + boundaryWidth), 0)));
-    addObject(plane, btTransform(btQuaternion(btVector3(1.0f, 0.0f, 0.0f), M_PI_2), btVector3(0.0f, halfFieldWidth + boundaryWidth, 0)));
+    addObject(plane, btTransform(btQuaternion(btVector3(1.0, 0.0, 0.0), -M_PI_2), btVector3(0.0f, -(halfFieldWidth + boundaryWidth), 0)));
+    addObject(plane, btTransform(btQuaternion(btVector3(1.0, 0.0, 0.0), M_PI_2), btVector3(0.0f, halfFieldWidth + boundaryWidth, 0)));
 
 
     //Create back of goal box

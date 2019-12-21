@@ -41,7 +41,7 @@ add_library(simulator
 target_link_libraries(simulator
         PRIVATE net
         PRIVATE Qt5::Core
-        PRIVATE ${BULLET_LIBRARIES}
+        PRIVATE lib::bullet
         )
 target_include_directories(simulator
         INTERFACE include

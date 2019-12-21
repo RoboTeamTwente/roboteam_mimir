@@ -12,9 +12,9 @@
 
 struct Timing {
     Timing(QString name, int waitTime, double timeStepSize);
-    const QString name;
-    const int millisecWaitTime;
-    const double timeStepLength;
+    QString name;
+    int millisecWaitTime;
+    double timeStepLength;
     [[nodiscard]] double realTimeFactor() const;
     [[nodiscard]] double worldHz() const;
 };

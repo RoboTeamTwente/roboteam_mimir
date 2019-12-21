@@ -40,6 +40,12 @@ namespace interface{
         QComboBox *blueBotSettings;
         QComboBox *yellowBotSettings;
         QComboBox *worldSettings;
+        QDoubleSpinBox *robotXNoise;
+        QDoubleSpinBox *robotYNoise;
+        QDoubleSpinBox *robotVanishing;
+        QDoubleSpinBox *ballXNoise;
+        QDoubleSpinBox *ballYNoise;
+        QDoubleSpinBox *ballVanishing;
 
     };
 }

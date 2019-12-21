@@ -127,6 +127,66 @@ namespace interface{
         controlsLayout->addWidget(worldSettings,i,1);
         i++;
 
+        label = new QLabel("Robot X "+QString(QChar(0x03C3))+" (m)");
+        labels.push_back(label);
+        robotXNoise = new QDoubleSpinBox();
+        robotXNoise->setRange(0,0.2);
+        robotXNoise->setSingleStep(0.005);
+        robotXNoise->setDecimals(3);
+        controlsLayout->addWidget(label,i,0);
+        controlsLayout->addWidget(robotXNoise,i,1);
+        i++;
+
+        label = new QLabel("Robot Y "+QString(QChar(0x03C3))+" (m)");
+        labels.push_back(label);
+        robotYNoise = new QDoubleSpinBox();
+        robotYNoise->setRange(0,0.2);
+        robotYNoise->setSingleStep(0.005);
+        robotYNoise->setDecimals(3);
+        controlsLayout->addWidget(label,i,0);
+        controlsLayout->addWidget(robotYNoise,i,1);
+        i++;
+
+        label = new QLabel("Robot Vanishing");
+        labels.push_back(label);
+        robotVanishing = new QDoubleSpinBox();
+        robotVanishing->setRange(0,1.0);
+        robotVanishing->setSingleStep(0.005);
+        robotVanishing->setDecimals(3);
+        controlsLayout->addWidget(label,i,0);
+        controlsLayout->addWidget(robotVanishing,i,1);
+        i++;
+
+        label = new QLabel("Ball X "+QString(QChar(0x03C3))+" (m)");
+        labels.push_back(label);
+        ballXNoise = new QDoubleSpinBox();
+        ballXNoise->setRange(0,0.2);
+        ballXNoise->setSingleStep(0.005);
+        ballXNoise->setDecimals(3);
+        controlsLayout->addWidget(label,i,0);
+        controlsLayout->addWidget(ballXNoise,i,1);
+        i++;
+
+        label = new QLabel("Ball Y "+QString(QChar(0x03C3))+" (m)");
+        labels.push_back(label);
+        ballYNoise = new QDoubleSpinBox();
+        ballYNoise->setRange(0,0.2);
+        ballYNoise->setSingleStep(0.005);
+        ballYNoise->setDecimals(3);
+        controlsLayout->addWidget(label,i,0);
+        controlsLayout->addWidget(ballYNoise,i,1);
+        i++;
+
+        label = new QLabel("Ball Vanishing");
+        labels.push_back(label);
+        ballVanishing = new QDoubleSpinBox();
+        ballVanishing->setRange(0,1.0);
+        ballVanishing->setSingleStep(0.005);
+        ballVanishing->setDecimals(3);
+        controlsLayout->addWidget(label,i,0);
+        controlsLayout->addWidget(ballVanishing,i,1);
+
+
         controlsGroup->setLayout(controlsLayout);
 
         connect(visionAddress,&QLineEdit::textChanged,simulator,&Simulator::setVisionIP);

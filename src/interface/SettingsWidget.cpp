@@ -186,7 +186,6 @@ namespace interface{
         controlsLayout->addWidget(label,i,0);
         controlsLayout->addWidget(ballVanishing,i,1);
 
-
         controlsGroup->setLayout(controlsLayout);
 
         connect(visionAddress,&QLineEdit::textChanged,simulator,&Simulator::setVisionIP);
@@ -196,13 +195,20 @@ namespace interface{
         connect(yellowIP,&QLineEdit::textChanged,simulator,&Simulator::setYellowIP);
         connect(yellowPort,SIGNAL(valueChanged(int)),simulator,SLOT(setYellowPort(int)));
 
-        //TODO: test if these work properly and hook up things in Simulator.cpp to actually work
         connect(blueBotCount, SIGNAL(valueChanged(int)),simulator,SLOT(setBlueBotCount(int)));
         connect(yellowBotCount,SIGNAL(valueChanged(int)),simulator,SLOT(setYellowBotCount(int)));
 
         connect(blueBotSettings,&QComboBox::currentTextChanged,simulator,&Simulator::setBlueConfig);
         connect(yellowBotSettings,&QComboBox::currentTextChanged,simulator,&Simulator::setYellowConfig);
         connect(worldSettings,&QComboBox::currentTextChanged,simulator,&Simulator::setWorldConfig);
+
+        connect(robotXNoise,SIGNAL(valueChanged(double)),simulator,SLOT(setRobotXNoise(double)));
+        connect(robotYNoise,SIGNAL(valueChanged(double)),simulator,SLOT(setRobotYNoise(double)));
+        connect(robotVanishing,SIGNAL(valueChanged(double)),simulator,SLOT(setRobotVanishing(double)));
+
+        connect(ballXNoise,SIGNAL(valueChanged(double)),simulator,SLOT(setBallXNoise(double)));
+        connect(ballYNoise,SIGNAL(valueChanged(double)),simulator,SLOT(setBallYNoise(double)));
+        connect(ballVanishing,SIGNAL(valueChanged(double)),simulator,SLOT(setBallVanishing(double)));
         vLayout->addWidget(controlsGroup);
         vLayout->addWidget(networkGroup);
     }

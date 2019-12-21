@@ -56,6 +56,14 @@ class SimWorld : public QObject {
         void stepSimulation(double dt);
         void setDelay(double _delay);
 
+        void setRobotXNoise(double noise);
+        void setRobotYNoise(double noise);
+        void setRobotVanishing(double prob);
+
+        void setBallXNoise(double noise);
+        void setBallYNoise(double noise);
+        void setBallVanishing(double prob);
+
 private:
         void resetRobots();
         void resetWorld();
@@ -82,6 +90,8 @@ private:
         std::unique_ptr<SituationWorld> situation;
 
         std::unique_ptr<Random> random;
+        double ballVanishingProb;
+        double robotVanishingProb;
         double delay;
 
         unsigned int numBlueBots = 1;

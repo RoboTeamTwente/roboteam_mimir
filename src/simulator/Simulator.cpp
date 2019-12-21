@@ -159,3 +159,21 @@ void Simulator::setSendGeometryTicks(int ticks) {
 SSL_GeometryData Simulator::getGeometry() {
     return simWorld->getGeometryData();
 }
+void Simulator::setBallXNoise(double noise) {
+    simWorld->setBallXNoise(noise);
+}
+void Simulator::setBallYNoise(double noise) {
+    simWorld->setBallYNoise(noise);
+}
+void Simulator::setBallVanishing(double vanishingProb) {
+    simWorld->setBallVanishing(vanishingProb);
+}
+void Simulator::setRobotXNoise(double noise) {
+    simWorld->setRobotXNoise(noise);
+}
+void Simulator::setRobotYNoise(double noise) {
+    simWorld->setRobotYNoise(noise);
+}
+void Simulator::setRobotVanishing(double vanishingProb) {
+    simWorld->setRobotVanishing(vanishingProb);
+}

@@ -55,6 +55,14 @@ public slots:
     void setBlueBotCount(int count);
     void setYellowBotCount(int count);
 
+    void setBallXNoise(double noise);
+    void setBallYNoise(double noise);
+    void setBallVanishing(double vanishingProb);
+
+    void setRobotXNoise(double noise);
+    void setRobotYNoise(double noise);
+    void setRobotVanishing(double vanishingProb);
+
     void setSendGeometryTicks(int ticks);
 private:
     void setRobotConfig(const QString &name, bool isYellow);

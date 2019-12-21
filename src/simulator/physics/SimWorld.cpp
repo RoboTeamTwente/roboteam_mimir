@@ -49,6 +49,8 @@ SimWorld::SimWorld(const std::unique_ptr<WorldConfig> &_worldSettings,
     dynamicsWorld->setInternalTickCallback(BulletTickCallback, this, true);
 
     delay = 0.0;
+    robotVanishingProb = 0.1;
+    ballVanishingProb = 0.1;
     random=std::make_unique<Random>(6.0,6.0,0.01,6.0,6.0);//TODO: set these in interface : see http://www.cs.cmu.edu/~mmv/papers/03icra-jim.pdf for values
     reloadSituation();
 }
@@ -177,12 +179,10 @@ std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
         frames.push_back(frame);
     }
 
-    //TODO: add noise
-    const double vanishProb=0.1;
     for (const auto &blueBot: blueBots) {
         const btVector3 botPos = blueBot->position();
         for (int i = 0; i < cameras.size(); ++ i) {
-            if (random->getVanishing()>vanishProb&&cameras[i].isVisible(botPos.x(), botPos.y())) {
+            if (random->getVanishing()>robotVanishingProb&&cameras[i].isVisible(botPos.x(), botPos.y())) {
                 SSL_DetectionRobot bot = blueBot->asDetection();
                 bot.set_x(bot.x()+random->getX());
                 bot.set_y(bot.y()+random->getY());
@@ -194,7 +194,7 @@ std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
     for (const auto &yellowBot: yellowBots) {
         const btVector3 botPos = yellowBot->position();
         for (int j = 0; j < cameras.size(); ++ j) {
-            if (random->getVanishing()>vanishProb&&cameras[j].isVisible(botPos.x(), botPos.y())) {
+            if (random->getVanishing()>robotVanishingProb&&cameras[j].isVisible(botPos.x(), botPos.y())) {
                 SSL_DetectionRobot bot = yellowBot->asDetection();
                 bot.set_x(bot.x()+random->getX());
                 bot.set_y(bot.y()+random->getY());
@@ -203,11 +203,10 @@ std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
             }
         }
     }
-    const double ballVanishProb=vanishProb;
     if (ball) {
         const btVector3 &ballPos = ball->position();
         for (int k = 0; k < cameras.size(); ++ k) {
-            if (random->getVanishing()>ballVanishProb&&cameras[k].isBallVisible(ballPos)) {
+            if (random->getVanishing()>ballVanishingProb&&cameras[k].isBallVisible(ballPos)) {
                 SSL_DetectionBall detBall=ball->asDetection();
                 detBall.set_x(detBall.x()+random->getBallX());
                 detBall.set_y(detBall.y()+random->getBallY());
@@ -342,5 +341,22 @@ RobotSettings* SimWorld::getRobotSettings(bool isYellow) {
 }
 void SimWorld::setDelay(double _delay) {
     delay=_delay;
-
+}
+void SimWorld::setRobotXNoise(double noise) {
+    random->setXRange(noise*1000); //TODO: fix scaling
+}
+void SimWorld::setRobotYNoise(double noise) {
+    random->setYRange(noise*1000);
+}
+void SimWorld::setRobotVanishing(double prob) {
+    robotVanishingProb=prob;
+}
+void SimWorld::setBallXNoise(double noise) {
+    random->setBallXRange(noise*1000);
+}
+void SimWorld::setBallYNoise(double noise) {
+    random->setBallYRange(noise*1000);
+}
+void SimWorld::setBallVanishing(double prob) {
+    ballVanishingProb=prob;
 }

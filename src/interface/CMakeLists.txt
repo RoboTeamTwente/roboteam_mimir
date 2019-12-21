@@ -16,7 +16,7 @@ target_link_libraries(interface
         PUBLIC simulator
         PRIVATE net ##TODO Fix this hack for QT autogen whining
         PRIVATE mimir_proto
-        PRIVATE ${BULLET_LIBRARIES}
+        PRIVATE lib::bullet
         )
 target_include_directories(interface
         INTERFACE include

@@ -6,7 +6,7 @@
 #define ROBOTEAM_MIMIR_ROBOTMESH_H
 
 #include <QList>
-#include "bullet/btBulletDynamicsCommon.h"
+#include <btBulletDynamicsCommon.h>
 #include "../config/RobotSettings.h"
 #include <memory>
 

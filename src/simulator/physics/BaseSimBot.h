@@ -5,7 +5,7 @@
 #ifndef ROBOTEAM_MIMIR_BASESIMBOT_H
 #define ROBOTEAM_MIMIR_BASESIMBOT_H
 
-#include "bullet/btBulletDynamicsCommon.h"
+#include <btBulletDynamicsCommon.h>
 
 // A template class for any type of robot. Any class describing a robot object should inherit and implement the functions here
 class BaseSimBot {

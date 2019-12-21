@@ -5,7 +5,7 @@
 #ifndef ROBOTEAM_MIMIR_SIMFIELD_H
 #define ROBOTEAM_MIMIR_SIMFIELD_H
 
-#include <bullet/btBulletDynamicsCommon.h>
+#include <btBulletDynamicsCommon.h>
 #include "../config/WorldSettings.h"
 #include <memory>
 

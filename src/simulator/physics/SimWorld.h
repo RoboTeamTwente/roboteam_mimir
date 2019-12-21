@@ -9,7 +9,7 @@
 #include "iostream"
 //end
 
-#include <bullet/btBulletDynamicsCommon.h>
+#include <btBulletDynamicsCommon.h>
 #include "proto/messages_robocup_ssl_wrapper.pb.h"
 #include "proto/mimir_robotcommand.pb.h"
 #include "SimBot.h"

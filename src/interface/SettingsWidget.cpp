@@ -87,24 +87,6 @@ namespace interface{
         controlsLayout = new QGridLayout();
         i=0;
 
-        label = new QLabel("Blue Robot Count");
-        labels.push_back(label);
-        blueBotCount = new QSpinBox();
-        blueBotCount->setRange(0,16);
-        blueBotCount->setValue(0);
-        controlsLayout->addWidget(label,i,0);
-        controlsLayout->addWidget(blueBotCount,i,1);
-        i++;
-
-        label = new QLabel("Yellow Robot Count");
-        labels.push_back(label);
-        yellowBotCount = new QSpinBox();
-        yellowBotCount->setRange(0,16);
-        yellowBotCount->setValue(0);
-        controlsLayout->addWidget(label,i,0);
-        controlsLayout->addWidget(yellowBotCount,i,1);
-        i++;
-
         label = new QLabel("Blue robots");
         labels.push_back(label);
         blueBotSettings = new QComboBox();
@@ -133,6 +115,24 @@ namespace interface{
         }
         controlsLayout->addWidget(label,i,0);
         controlsLayout->addWidget(worldSettings,i,1);
+        i++;
+
+        label = new QLabel("Blue Robot Count");
+        labels.push_back(label);
+        blueBotCount = new QSpinBox();
+        blueBotCount->setRange(0,16);
+        blueBotCount->setValue(0);
+        controlsLayout->addWidget(label,i,0);
+        controlsLayout->addWidget(blueBotCount,i,1);
+        i++;
+
+        label = new QLabel("Yellow Robot Count");
+        labels.push_back(label);
+        yellowBotCount = new QSpinBox();
+        yellowBotCount->setRange(0,16);
+        yellowBotCount->setValue(0);
+        controlsLayout->addWidget(label,i,0);
+        controlsLayout->addWidget(yellowBotCount,i,1);
         i++;
 
         label = new QLabel("Robot X "+QString(QChar(0x03C3))+" (m)");

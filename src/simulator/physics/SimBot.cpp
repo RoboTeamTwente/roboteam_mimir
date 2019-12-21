@@ -176,11 +176,7 @@ SimBot::SimBot(unsigned int id, std::unique_ptr<btDiscreteDynamicsWorld>& world,
                                                                       btVector3(0, 0, 0), 0.0) {
 }
 SimBot::~SimBot() {
-    dynamicsWorld->removeRigidBody(body);
-    delete body;
-    delete motionState;
-    int x = shapes.size();
-    for (int i = x - 1; i >= 0; --i) {
+    for (int i = shapes.size() - 1; i >= 0; --i) {
         delete shapes[i];
     }
     for (int j = 0; j < 4; ++j) {
@@ -189,10 +185,15 @@ SimBot::~SimBot() {
         delete wheels[j];
         delete wheelMotor[j];
     }
-    dynamicsWorld->removeRigidBody(dribbler);
     dynamicsWorld->removeConstraint(dribblerMotor);
-    delete dribbler;
+    dynamicsWorld->removeRigidBody(dribbler);
     delete dribblerMotor;
+    delete dribbler;
+    dynamicsWorld->removeRigidBody(body);
+    delete body;
+    delete motionState;
+
+
 }
 unsigned int SimBot::getId() {
     return id;

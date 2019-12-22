@@ -172,7 +172,6 @@ SSL_GeometryData SimWorld::getGeometryData() {
     return data;
 }
 std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
-    // check if center of ball visible from camPoint (raycast) by intersections with robots
     // compute area in pixels as a function from distance to Camera. TODO: figure out if area computation takes into account the skew/distortion or if it's literally the raw pixel area
     //for later; add motionState interpolation
 
@@ -246,7 +245,7 @@ std::vector<SSL_WrapperPacket> SimWorld::getPackets() {
     return packets;
 }
 
-//TODO: use move semantics
+//TODO: use move semantics?
 void SimWorld::addCommands(const std::vector<mimir_robotcommand> &commands, bool TeamIsYellow) {
     std::vector<RobotCommand> &commandVector = TeamIsYellow ? yellowCommands : blueCommands;
     for (const auto &command : commands) {

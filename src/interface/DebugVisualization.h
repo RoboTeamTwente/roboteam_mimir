@@ -25,7 +25,7 @@ namespace interface {
     class DebugVisualization : public QOpenGLWidget, QOpenGLFunctions {
     Q_OBJECT
     public:
-        explicit DebugVisualization(WorldSettings* settings,btDiscreteDynamicsWorld *world, QWidget *parent = nullptr);
+        explicit DebugVisualization(double scale,btDiscreteDynamicsWorld *world, QWidget *parent = nullptr);
         ~DebugVisualization();
         void addLine(const btVector3 &from, const btVector3 &to, const btVector3 &color);
         void addLine(const btVector3 &from, const btVector3 &to, const btVector3 &fromColor,const btVector3 &toColor);

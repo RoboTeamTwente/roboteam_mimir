@@ -13,7 +13,7 @@ namespace interface{
     class DebugDrawer : public btIDebugDraw {
 
     public:
-        explicit DebugDrawer(DebugVisualization* _visualization,WorldSettings* _settings);
+        explicit DebugDrawer(DebugVisualization* _visualization, double scale);
         ~DebugDrawer() override;
 
         // virtual functions we need to override from btIDebugDraw in order to implement the interface
@@ -29,9 +29,7 @@ namespace interface{
     private:
         DebugDrawModes debugMode;
         DebugVisualization * visualization=nullptr;
-        WorldSettings* settings=nullptr;
-
-
+        double scale;
     };
 }
 

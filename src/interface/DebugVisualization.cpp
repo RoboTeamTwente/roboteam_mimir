@@ -13,9 +13,9 @@
 
 namespace interface {
 
-    DebugVisualization::DebugVisualization(WorldSettings* settings,btDiscreteDynamicsWorld *_world, QWidget *parent) : QOpenGLWidget(parent) {
+    DebugVisualization::DebugVisualization(double scale,btDiscreteDynamicsWorld *_world, QWidget *parent) : QOpenGLWidget(parent) {
         //connect debug drawer to the world.
-        drawer=new DebugDrawer(this,settings);
+        drawer=new DebugDrawer(this,scale);
         world=_world;
         world->setDebugDrawer(drawer);
         setFocusPolicy(Qt::ClickFocus);

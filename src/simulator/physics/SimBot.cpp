@@ -69,8 +69,7 @@ SimBot::SimBot(unsigned int _id, std::unique_ptr<btDiscreteDynamicsWorld>& world
 }
 void SimBot::addDribbler(const std::unique_ptr<WorldSettings> &worldSettings,
                     btScalar dir, const btVector3 &originPos) {
-    //TODO: fix dimensions and offsets to be accurate
-//TODO: put constants in settings
+    //TODO: put constants in settings
     btCylinderShape *dribblerShape = new btCylinderShapeX(
             btVector3(0.1 / 2.0f, 0.007f, 0.007f) * SCALE);
     shapes.push_back(dribblerShape);
@@ -233,7 +232,7 @@ void SimBot::update(SimBall *ball, double time) {
         case mimir_robotcommand::kGlobalVel: {
             if (lastCommand.globalvel().angleControl_case() == lastCommand.globalvel().kAngle) {
                 const auto &g = lastCommand.globalvel();
-                //globalControlAngle(g.velx(),g.vely(),g.angle());
+                //globalControlAngle(g.velx(),g.vely(),g.angle()); //TODO: add/fix
             } else {
                 const auto &g = lastCommand.globalvel();
                 globalControl(g.velx(), g.vely(), g.anglevel());
@@ -246,7 +245,7 @@ void SimBot::update(SimBall *ball, double time) {
             break;
         }
         case mimir_robotcommand::CONTROL_NOT_SET: {
-            std::cerr << "You shouldn't be seeing this!" << std::endl;
+            std::cerr << "No control set in command!" << std::endl;
             break; //TODO: fix this error on startup
         }
     }

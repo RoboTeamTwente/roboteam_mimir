@@ -55,7 +55,7 @@ class SimBot : public BaseSimBot {
         btRigidBody* dribbler;
 
         mimir_robotcommand lastCommand;
-        double lastCommandTime;
+        double lastCommandTime = 0.0; //TODO: fix
         bool isActive;
 
         bool kickerCharged = true;

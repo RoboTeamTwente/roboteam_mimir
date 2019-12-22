@@ -66,7 +66,6 @@ SimBot::SimBot(unsigned int _id, std::unique_ptr<btDiscreteDynamicsWorld>& world
     worldTransform.setOrigin(btVector3(initialPos.x(), initialPos.y(), 0.0));
     addWheels(worldSettings, worldTransform);
     addDribbler( worldSettings, dir, originPos);
-
 }
 void SimBot::addDribbler(const std::unique_ptr<WorldSettings> &worldSettings,
                     btScalar dir, const btVector3 &originPos) {
@@ -136,8 +135,8 @@ void SimBot::addWheel(int wheelLabel, btScalar wheelAngleD, btCollisionShape *wh
     wheel->setUserIndex(bodyType::WHEEL);
     wheels[wheelLabel] = wheel;
     //construct joint/motor
-    btVector3 heightOffset = btVector3(0, 0, -(robSettings->totalHeight + 3 * robSettings->bottomPlateHeight) * 0.5) *
-                             SCALE; //TODO fix offsets and transforms (also wheel construction)
+    btVector3 heightOffset = btVector3(0, 0, -(robSettings->totalHeight+robSettings->bottomPlateHeight) * 0.5) *
+                             SCALE;
     btHingeConstraint *constraint = new btHingeConstraint(*body, *wheel, wheelPos + heightOffset,
                                                           btVector3(0.0, 0.0, 0),
                                                           btVector3(wheelPos.x(), wheelPos.y(), 0),

@@ -25,14 +25,14 @@ Simulator::Simulator() {
     //read all config files and save them in a widget
     configWidget=new ConfigWidget();
     // get the initial config settings and create a physics simulator with them
-    const std::unique_ptr<Situation> &situation = configWidget->getSituation("DivAStartFormation");
+    const std::unique_ptr<Situation> &situation = configWidget->getSituation("BallTestFormation");
     const std::unique_ptr<WorldConfig> &worldConfig = configWidget->getWorldConfig(situation->situation->worldSettings);
     const std::unique_ptr<RobotConfig> &yellowConfig = configWidget->getRobotConfig(situation->situation->yellowSettings);
     const std::unique_ptr<RobotConfig> &blueConfig = configWidget->getRobotConfig(situation->situation->blueSettings);
     simWorld=std::make_unique<SimWorld>(worldConfig,blueConfig,yellowConfig,situation->situation);
 
     timingManager=std::make_unique<Timer>();
-    currentTiming=std::make_unique<Timing>(timingManager->getTimer("Realtime 250hz"));
+    currentTiming=std::make_unique<Timing>(timingManager->getTimer("Halftime 2000hz"));
     //start simulator logic loop
     timer= new QTimer();
     timer->setTimerType(Qt::PreciseTimer);

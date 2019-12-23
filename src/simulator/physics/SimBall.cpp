@@ -5,7 +5,7 @@
 #include <iostream>
 #include "SimBall.h"
 #include "CollisionShared.h"
-
+#include "BulletDynamics/Featherstone/btMultiBody.h"
 SimBall::SimBall(std::unique_ptr<btDiscreteDynamicsWorld>& _world, const std::unique_ptr<WorldSettings> &settings, const btVector3 &initialPos,
                  const btVector3 &initialVel) :
         world(_world),
@@ -19,7 +19,7 @@ SimBall::SimBall(std::unique_ptr<btDiscreteDynamicsWorld>& _world, const std::un
     worldTransform.setIdentity();
     worldTransform.setOrigin(initialPos);
     motionState = new btDefaultMotionState(worldTransform);
-    //construct the rigid body for collisions
+    //construct the rigid body for collisions. For now we are forced to use btMultiBody to get friction to work properly due to a bug with rolling friction in btRigidBody
     btRigidBody::btRigidBodyConstructionInfo rbInfo(settings->ballMass, motionState, physicsBall, inertia);
     body = new btRigidBody(rbInfo);
     // TODO: set restitution/friction

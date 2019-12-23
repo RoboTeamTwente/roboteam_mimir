@@ -14,6 +14,7 @@
 #include "proto/mimir_robotcommand.pb.h"
 #include "SimBot.h"
 #include "Camera.h"
+#include "BulletDynamics/Featherstone/btMultiBodyDynamicsWorld.h"
 
 class SimField;
 

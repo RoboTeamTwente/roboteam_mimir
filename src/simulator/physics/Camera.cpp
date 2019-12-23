@@ -13,7 +13,7 @@ Camera::Camera(btVector3 camPos, double cx, double cy, double length, double wid
     std::cout << visibleArea.topLeft().x() << " " << visibleArea.topLeft().y() << " "
               << visibleArea.topRight().x() << " " << visibleArea.topRight().y() << " "
               << visibleArea.bottomRight().x() << " " << visibleArea.bottomRight().y() << " "
-              << visibleArea.bottomLeft().x() << " " << visibleArea.bottomLeft().y();
+              << visibleArea.bottomLeft().x() << " " << visibleArea.bottomLeft().y()<<std::endl;
 }
 bool Camera::isVisible(double x, double y) const {
     return visibleArea.contains(x, y);

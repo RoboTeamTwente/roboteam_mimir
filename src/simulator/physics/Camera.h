@@ -8,7 +8,6 @@
 #include <QRectF>
 #include "btBulletDynamicsCommon.h"
 
-//TODO: add pinhole model for camera (with distortion later possibly)
 class Camera {
     public:
         Camera(btVector3 camPos, double cx, double cy, double length, double width, btDynamicsWorld* world);
@@ -34,13 +33,12 @@ class Camera {
         static double rayPlaneIntersect(btVector3 pOrigin, btVector3 pNormal, btVector3 rOrigin, btVector3 rVector){
             return (-pNormal).dot(rOrigin-pOrigin)/ (pNormal.dot(rVector));
         }
-
-        //    double focalLength;
-//    double principalPointX;
-//    double principalPointY;
-//    double distortion;
-//    btVector3 t;
-//    btQuaternion q;
+    double focalLength;
+    double principalPointX;
+    double principalPointY;
+    double distortion;
+    btVector3 t;
+    btQuaternion q;
 
 };
 

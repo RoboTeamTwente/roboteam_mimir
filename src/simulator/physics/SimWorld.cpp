@@ -306,7 +306,6 @@ void SimWorld::reloadSituation() {
     cameras.clear();//TODO: fix multiple camera's
     cameras.push_back(
             Camera(btVector3(0.0, 0.0, 5.0)*SCALE, 0.0, 0.0, SCALE*14.0, SCALE*11.0, dynamicsWorld.get()));
-
     blueBots.clear();
     yellowBots.clear();
     for (const auto &bot : situation->blueBots) {

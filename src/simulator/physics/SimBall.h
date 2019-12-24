@@ -6,6 +6,7 @@
 #define ROBOTEAM_MIMIR_SIMBALL_H
 
 #include <btBulletDynamicsCommon.h>
+#include <btBulletCollisionCommon.h>
 #include <proto/messages_robocup_ssl_detection.pb.h>
 #include "../config/WorldConfig.h"
 

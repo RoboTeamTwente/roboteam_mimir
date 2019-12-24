@@ -41,9 +41,9 @@ SimWorld::SimWorld(const std::unique_ptr<WorldConfig> &_worldSettings,
     //btDbvtBroadphase is a good general purpose broadphase. You can also try out btAxis3Sweep.
     overlappingPairCache = std::make_unique<btDbvtBroadphase>();
     //the default constraint solver. For parallel processing you can use a different solver (see Extras/BulletMultiThreaded)
-    solver = std::make_unique<btSequentialImpulseConstraintSolver>();
+    solver = std::make_unique<btMultiBodyConstraintSolver>();
     // the world in which all simulation happens
-    dynamicsWorld = std::make_unique<btDiscreteDynamicsWorld>(collisionDispatcher.get(), overlappingPairCache.get(),
+    dynamicsWorld = std::make_unique<btMultiBodyDynamicsWorld>(collisionDispatcher.get(), overlappingPairCache.get(),
             solver.get(), collisionConfig.get());
     // make sure bullet calls our motor commands when relevant every physics tick
     dynamicsWorld->setInternalTickCallback(BulletTickCallback, this, true);

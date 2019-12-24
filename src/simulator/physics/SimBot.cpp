@@ -22,7 +22,7 @@ btScalar SimBot::orientation() const {
     return yaw;
 }
 //TODO: add option of initializing with wheel velocities
-SimBot::SimBot(unsigned int _id, std::unique_ptr<btDiscreteDynamicsWorld>& world, const std::unique_ptr<RobotSettings> &settings,
+SimBot::SimBot(unsigned int _id, std::unique_ptr<btMultiBodyDynamicsWorld>& world, const std::unique_ptr<RobotSettings> &settings,
                const std::unique_ptr<WorldSettings>& worldSettings, const btVector3 &initialPos, btScalar dir) :
         id{_id},
         SCALE(worldSettings->scale),
@@ -32,7 +32,6 @@ SimBot::SimBot(unsigned int _id, std::unique_ptr<btDiscreteDynamicsWorld>& world
     btCompoundShape *wholeShape = new btCompoundShape();
     btTransform shapeTransform;
     shapeTransform.setIdentity();
-
     //Create the outer hull of the robot
     RobotMesh mesh(robSettings);
     btConvexHullShape *convexHullShape = new btConvexHullShape();
@@ -169,7 +168,7 @@ void SimBot::localControl(btScalar velTangent, btScalar velNormal, btScalar velA
         wheelMotor[i]->setMotorTargetVelocity(wheelVel);
     }
 }
-SimBot::SimBot(unsigned int id, std::unique_ptr<btDiscreteDynamicsWorld>& world, const std::unique_ptr<RobotSettings> &settings,
+SimBot::SimBot(unsigned int id, std::unique_ptr<btMultiBodyDynamicsWorld>& world, const std::unique_ptr<RobotSettings> &settings,
                const std::unique_ptr<WorldSettings>& worldSettings) : SimBot(id, world, settings, worldSettings,
                                                                       btVector3(0, 0, 0), 0.0) {
 }

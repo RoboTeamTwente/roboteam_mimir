@@ -373,8 +373,8 @@ void SimWorld::addBallToFrames(std::vector<SSL_DetectionFrame> &frames) {
     for (int i = 0; i < cameras.size(); ++i) {
         btVector3 imagePos = cameras[i].fieldToImage(ball->position());
         if (random->getVanishing() > ballVanishingProb &&
-            cameras[i].isBallVisible(ballPos) &&
-            cameras[i].isInImage(imagePos.x(), imagePos.y())) {
+            cameras[i].isInImage(imagePos.x(), imagePos.y()) &&
+            cameras[i].isBallVisible(ballPos)){
             SSL_DetectionBall detBall = ball->asDetection();
             btVector3 computedPos = cameras[i].imageToField(imagePos, ball->radius()) / worldSettings->scale * 1000;
             detBall.set_x(computedPos.x() + random->getBallX());

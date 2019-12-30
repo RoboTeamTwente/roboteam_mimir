@@ -21,15 +21,16 @@ Camera::Camera(CameraSettings settings, btDynamicsWorld *world, double worldScal
     id = settings.cameraID;
     resolutionX = settings.camResolutionX;
     resolutionY = settings.camResolutionY;
+    scale=worldScale;
 }
 
 bool Camera::isBallVisible(btVector3 ballPos) const {
-
-    btCollisionWorld::AllHitsRayResultCallback ray(position, ballPos);
+    //Raytests need to be done in world coordinates
+    btCollisionWorld::AllHitsRayResultCallback ray(position*scaleFromCamera(), ballPos);
     ray.m_collisionFilterGroup = COL_CAMERARAY;
-    //ray.m_collisionFilterMask= COL_ROBOT|COL_FIELD;
+    ray.m_collisionFilterMask= COL_ROBOT|COL_FIELD; //TODO: fix or remove
     // we only want to check for collisions with robots and field elements
-    dynamicsWorld->rayTest(position, ballPos, ray);
+    dynamicsWorld->rayTest(position*scaleFromCamera(), ballPos, ray);
     return !ray.hasHit();
 
 }
@@ -38,6 +39,7 @@ int Camera::getId() const {
 }
 
 btVector3 Camera::fieldToImage(btVector3 fieldPoint) const {
+    fieldPoint*=scaleToCamera();
     btQuaternion fieldToCam = q.normalized();
     btVector3 translation = t;
 
@@ -55,6 +57,8 @@ btVector3 Camera::fieldToImage(btVector3 fieldPoint) const {
     return p_i;
 }
 //AGAIN btVector3 used as both 2d/3d vector! be warned!
+// Assumed height is in WORLD coordinates
+// This returns in WORLD coordinates (not camera coordinates!)
 btVector3 Camera::imageToField(btVector3 imagePoint, double assumedHeight) const {
     //undo scaling and offset
     btVector3 p_d = btVector3((imagePoint.x() - principalPointX) / focalLength,
@@ -71,9 +75,9 @@ btVector3 Camera::imageToField(btVector3 imagePoint, double assumedHeight) const
     btQuaternion fieldToCamInv = fieldToCam.inverse();
     btVector3 v_in_w = rotateVectorByQuaternion(v, fieldToCamInv);
     btVector3 zero_in_w = rotateVectorByQuaternion(-translation, fieldToCamInv);
-    double t = rayPlaneIntersect(btVector3(0, 0, assumedHeight), btVector3(0, 0, 1), zero_in_w, v_in_w.normalized());
+    double t = rayPlaneIntersect(btVector3(0, 0, assumedHeight*scaleToCamera()), btVector3(0, 0, 1), zero_in_w, v_in_w.normalized());
     btVector3 p_f = zero_in_w + v_in_w.normalized() * t;
-    return p_f;
+    return p_f*scaleFromCamera();
 }
 btVector3 Camera::rotateVectorByQuaternion(btVector3 vec, btQuaternion quat) {
     btScalar x2 = quat.x() * quat.x();
@@ -126,4 +130,10 @@ bool Camera::isInImage(double x, double y) const {
 bool Camera::isVisible(btVector3 point) const {
     btVector3 imagePoint=fieldToImage(point);
     return isInImage(imagePoint.x(),imagePoint.y());
+}
+double Camera::scaleToCamera() const {
+    return 1000.0/scale;
+}
+double Camera::scaleFromCamera() const {
+    return scale/1000.0;
 }

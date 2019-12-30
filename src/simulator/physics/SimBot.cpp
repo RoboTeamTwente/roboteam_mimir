@@ -269,14 +269,14 @@ bool SimBot::canKickBall(SimBall *ball) {
     return (body->getCenterOfMassPosition() - ball->position()).norm() < 0.3 *SCALE;//TODO: fix actual kicker area
 }
 
+//Position/orientation info is done on a higher level in combination with the camera info.
 SSL_DetectionRobot SimBot::asDetection() const {
     SSL_DetectionRobot robot;
-    robot.set_x(position().x()/SCALE*1000.0);//TODO: fix mm to m conversion. Do we only get up to mm precision (as integer) or is it double?
-    robot.set_y(position().y()/SCALE*1000.0);
-    robot.set_orientation(orientation());
-    robot.set_height(0.144); //TODO: compute from robot values.
-    robot.set_pixel_x(20.0);
-    robot.set_pixel_y(24.0);
+    robot.set_height(height());
     robot.set_robot_id(id);
+    robot.set_confidence(1.0);
     return robot;
+}
+btScalar SimBot::height() const {
+    return robSettings->totalHeight;
 }

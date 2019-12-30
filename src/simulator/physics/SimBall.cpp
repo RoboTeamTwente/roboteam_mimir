@@ -71,17 +71,16 @@ void SimBall::kick(const btVector3 &force) {
     multiBody->addBaseForce(force); //TODO: test this and maybe activate base?
 }
 
+btScalar SimBall::radius() const {
+    return physicsBall->getRadius();
+}
+
+//Positions are added by the camera
 SSL_DetectionBall SimBall::asDetection() const {
     SSL_DetectionBall ball;
-    const btVector3 &pos = position();
-    ball.set_x(1000*pos.x()/SCALE);//TODO: check what SSL-Vision sends, rounded to integer?
-    ball.set_y(1000*pos.y()/SCALE);
     ball.set_area(0.0);//TODO: fix below 4 vars
     ball.set_confidence(1.0);
-    ball.set_pixel_x(0);
-    ball.set_pixel_y(0);
-    ball.set_z(physicsBall->getRadius()/SCALE);//TODO: is
-    //TODO: figure out what's actually being sent by SSL-vision in this field and what units it has
+    //ball.set_z(physicsBall->getRadius()/SCALE);//TODO:  in replays we see this is not being set by SSL-vision Is this deprecated?
 
     return ball;
 }

@@ -18,10 +18,11 @@ class SimBall {
         SimBall(std::unique_ptr <btMultiBodyDynamicsWorld>& _world, const std::unique_ptr<WorldSettings> &settings,
                 const btVector3 &initialPos, const btVector3 &initialVel = btVector3(0.0f, 0.0f, 0.0f));
         ~SimBall();
-        btVector3 position() const;
-        btVector3 velocity() const;
+        [[nodiscard]] btVector3 position() const;
+        [[nodiscard]] btVector3 velocity() const;
+        [[nodiscard]] btScalar radius() const;
         void kick(const btVector3 &force);
-        SSL_DetectionBall asDetection() const;
+        [[nodiscard]] SSL_DetectionBall asDetection() const;
     private:
         const double SCALE;
         std::unique_ptr<btMultiBodyDynamicsWorld>& world;

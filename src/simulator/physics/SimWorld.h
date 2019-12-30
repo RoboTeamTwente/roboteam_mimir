@@ -71,7 +71,8 @@ private:
         void resetWorld();
         void reloadSituation();
         std::vector<SSL_DetectionFrame> getDetectionFrames();
-
+        void addRobotToFrames(std::vector<SSL_DetectionFrame> &frames,const std::unique_ptr<SimBot>&bot,const btVector3 &botPos,bool isYellow);
+        void addBallToFrames(std::vector<SSL_DetectionFrame> &frames);
         std::unique_ptr<SimField> field;
         std::unique_ptr<SimBall> ball;
         std::vector<std::unique_ptr<SimBot>> blueBots;

@@ -12,15 +12,16 @@
 class Camera {
 public:
     Camera(CameraSettings settings, btDynamicsWorld *world, double worldScale);
-    bool isBallVisible(btVector3 ballPos) const;
-    bool isVisible(btVector3 point) const;
-    bool isInImage(double x, double y) const;
-    int getId() const;
-    btVector3 fieldToImage(btVector3 fieldPoint) const;
-    btVector3 imageToField(btVector3 imagePoint, double assumedHeight) const;
+    [[nodiscard]] bool isBallVisible(btVector3 ballPos) const;
+    [[nodiscard]] bool isVisible(btVector3 point) const;
+    [[nodiscard]] bool isInImage(double x, double y) const;
+    [[nodiscard]] int getId() const;
+    [[nodiscard]] btVector3 fieldToImage(btVector3 fieldPoint) const;
+    [[nodiscard]] btVector3 imageToField(btVector3 imagePoint, double assumedHeight) const;
 
 private:
-
+    double scaleToCamera() const;
+    double scaleFromCamera() const;
     int id = 0;
     btVector3 position;
     btDynamicsWorld *dynamicsWorld;
@@ -28,6 +29,7 @@ private:
     double principalPointX;
     double principalPointY;
     double distortion;
+    double scale;
     btVector3 t;
     btQuaternion q;
     int resolutionX;

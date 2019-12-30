@@ -18,15 +18,18 @@
 #include "../config/Situation.h"
 #include "CollisionShared.h"
 
-static void BulletTickCallback(btDynamicsWorld* world, btScalar dt) {
-    SimWorld* simWorld = (SimWorld*) (world->getWorldUserInfo());// This is how it's done in the example. Seems like black magic
+void printVector(btVector3 vector) {
+    std::cout << vector.x() << " " << vector.y() << " " << vector.z() << std::endl;
+}
+static void BulletTickCallback(btDynamicsWorld *world, btScalar dt) {
+    SimWorld *simWorld = (SimWorld *) (world->getWorldUserInfo());// This is how it's done in the example. Seems like black magic
     simWorld->doCommands(dt);
 }
 
 SimWorld::SimWorld(const std::unique_ptr<WorldConfig> &_worldSettings,
-        const std::unique_ptr<RobotConfig> &_blueSettings,
-        const std::unique_ptr<RobotConfig> &_yellowSettings,
-        const std::unique_ptr<SituationWorld> &_situation) {
+                   const std::unique_ptr<RobotConfig> &_blueSettings,
+                   const std::unique_ptr<RobotConfig> &_yellowSettings,
+                   const std::unique_ptr<SituationWorld> &_situation) {
     //We create local copies of all the inputs to ensure we are always sending the data back as the simulator sees it.
     worldSettings = std::make_unique<WorldSettings>(*_worldSettings->settings);
     blueSettings = std::make_unique<RobotSettings>(*_blueSettings->settings);
@@ -44,21 +47,21 @@ SimWorld::SimWorld(const std::unique_ptr<WorldConfig> &_worldSettings,
     solver = std::make_unique<btMultiBodyConstraintSolver>();
     // the world in which all simulation happens
     dynamicsWorld = std::make_unique<btMultiBodyDynamicsWorld>(collisionDispatcher.get(), overlappingPairCache.get(),
-            solver.get(), collisionConfig.get());
+                                                               solver.get(), collisionConfig.get());
     // make sure bullet calls our motor commands when relevant every physics tick
     dynamicsWorld->setInternalTickCallback(BulletTickCallback, this, true);
 
     delay = 0.0;
-    robotVanishingProb = 0.1;
-    ballVanishingProb = 0.1;
+    robotVanishingProb = 0.0;
+    ballVanishingProb = 0.0;
     random = std::make_unique<Random>(6.0, 6.0, 0.01, 6.0,
-            6.0);//TODO: set these in interface : see http://www.cs.cmu.edu/~mmv/papers/03icra-jim.pdf for values
+                                      6.0);//TODO: set these in interface : see http://www.cs.cmu.edu/~mmv/papers/03icra-jim.pdf for values
     reloadSituation();
 }
 SimWorld::~SimWorld() {
     //delete bullet related objects in reverse order of creation!
 }
-btDiscreteDynamicsWorld* SimWorld::getWorld() {
+btDiscreteDynamicsWorld *SimWorld::getWorld() {
     return dynamicsWorld.get(); // Raw as we don't want to share ownership of the world with e.g. visual interfaces
 }
 void SimWorld::stepSimulation(double dt) {
@@ -66,10 +69,10 @@ void SimWorld::stepSimulation(double dt) {
 }
 //helper functions for creating geometry
 inline int scale(const float &meas) {
-    return (int) (1000*meas);
+    return (int) (1000 * meas);
 }
-void addLine(const std::string &name, float p1x, float p1y, float p2x, float p2y, SSL_GeometryFieldSize* field,
-        float lineThickness) {
+void addLine(const std::string &name, float p1x, float p1y, float p2x, float p2y, SSL_GeometryFieldSize *field,
+             float lineThickness) {
     SSL_FieldLineSegment segment;
     segment.set_name(name);
     segment.mutable_p1()->set_x(scale(p1x));
@@ -80,7 +83,7 @@ void addLine(const std::string &name, float p1x, float p1y, float p2x, float p2y
     field->add_field_lines()->CopyFrom(segment);
 }
 void addArc(const std::string &name, float centerx, float centery, float radius, float angle1, float angle2,
-        SSL_GeometryFieldSize* field, float lineThickness) {
+            SSL_GeometryFieldSize *field, float lineThickness) {
     SSL_FieldCicularArc arc;
     arc.set_name(name);
     arc.mutable_center()->set_x(scale(centerx));
@@ -103,9 +106,8 @@ void SimWorld::doCommands(btScalar dt) {
                 }
             }
             command = blueCommands.erase(command);
-        }
-        else {
-            command ++;
+        } else {
+            command++;
         }
     }
     for (auto command = yellowCommands.begin(); command != yellowCommands.end();) {
@@ -116,9 +118,8 @@ void SimWorld::doCommands(btScalar dt) {
                 }
             }
             command = yellowCommands.erase(command);
-        }
-        else {
-            command ++;
+        } else {
+            command++;
         }
     }
 
@@ -133,7 +134,7 @@ void SimWorld::doCommands(btScalar dt) {
 SSL_GeometryData SimWorld::getGeometryData() {
     //TODO: add camera calibration info
     SSL_GeometryData data;
-    SSL_GeometryFieldSize* geomField = data.mutable_field();
+    SSL_GeometryFieldSize *geomField = data.mutable_field();
     //SSL geometry is sent in mm not in m
     //the names of the variables in the settings should correspond exactly with how the measurements from SSL-vision are done
     geomField->set_goal_depth(scale(worldSettings->goalDepth));
@@ -142,33 +143,33 @@ SSL_GeometryData SimWorld::getGeometryData() {
     geomField->set_field_width(scale(worldSettings->fieldWidth));
     geomField->set_goal_width(scale(worldSettings->goalWidth));
 
-    const float hWidth = worldSettings->fieldWidth*0.5f;
-    const float hLength = worldSettings->fieldLength*0.5f;
+    const float hWidth = worldSettings->fieldWidth * 0.5f;
+    const float hLength = worldSettings->fieldLength * 0.5f;
     const float defense = worldSettings->goalWidth;
-    addLine("TopTouchLine", - hLength, hWidth, hLength, hWidth, geomField, worldSettings->lineWidth);
-    addLine("BottomTouchLine", - hLength, - hWidth, hLength, - hWidth, geomField, worldSettings->lineWidth);
-    addLine("LeftGoalLine", - hLength, - hWidth, - hLength, hWidth, geomField, worldSettings->lineWidth);
-    addLine("RightGoalLine", hLength, - hWidth, hLength, hWidth, geomField, worldSettings->lineWidth);
-    addLine("HalfwayLine", 0.0f, - hWidth, 0.0f, hWidth, geomField,
+    addLine("TopTouchLine", -hLength, hWidth, hLength, hWidth, geomField, worldSettings->lineWidth);
+    addLine("BottomTouchLine", -hLength, -hWidth, hLength, -hWidth, geomField, worldSettings->lineWidth);
+    addLine("LeftGoalLine", -hLength, -hWidth, -hLength, hWidth, geomField, worldSettings->lineWidth);
+    addLine("RightGoalLine", hLength, -hWidth, hLength, hWidth, geomField, worldSettings->lineWidth);
+    addLine("HalfwayLine", 0.0f, -hWidth, 0.0f, hWidth, geomField,
             worldSettings->lineWidth);//TODO: check if HalfwayLine and CenterLine are not accidentally swapped
-    addLine("CenterLine", - hLength, 0.0f, hLength, 0.0f, geomField, worldSettings->lineWidth);
+    addLine("CenterLine", -hLength, 0.0f, hLength, 0.0f, geomField, worldSettings->lineWidth);
 
-    addLine("LeftPenaltyStretch", - hLength + defense, - defense, - hLength + defense, defense, geomField,
+    addLine("LeftPenaltyStretch", -hLength + defense, -defense, -hLength + defense, defense, geomField,
             worldSettings->lineWidth);
-    addLine("LeftFieldLeftPenaltyStretch", - hLength, defense, - hLength + defense, defense, geomField,
+    addLine("LeftFieldLeftPenaltyStretch", -hLength, defense, -hLength + defense, defense, geomField,
             worldSettings->lineWidth); //TODO: check what left/right mean in this context (w.r.t what view is this 'left'?)
-    addLine("LeftFieldRightPenaltyStretch", - hLength, - defense, - hLength + defense, - defense, geomField,
+    addLine("LeftFieldRightPenaltyStretch", -hLength, -defense, -hLength + defense, -defense, geomField,
             worldSettings->lineWidth);
 
-    addLine("RightPenaltyStretch", hLength - defense, - defense, hLength - defense, defense, geomField,
+    addLine("RightPenaltyStretch", hLength - defense, -defense, hLength - defense, defense, geomField,
             worldSettings->lineWidth);
-    addLine("RightFieldLeftPenaltyStretch", hLength - defense, - defense, hLength, - defense, geomField,
+    addLine("RightFieldLeftPenaltyStretch", hLength - defense, -defense, hLength, -defense, geomField,
             worldSettings->lineWidth);
     addLine("RightFieldRightPenaltyStretch", hLength - defense, defense, hLength, defense, geomField,
             worldSettings->lineWidth);
 
-    addArc("CenterCircle", 0.0f, 0.0f, worldSettings->centerCircleRadius, 0.0f, 2*M_PI, geomField,
-            worldSettings->lineWidth);
+    addArc("CenterCircle", 0.0f, 0.0f, worldSettings->centerCircleRadius, 0.0f, 2 * M_PI, geomField,
+           worldSettings->lineWidth);
     return data;
 }
 std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
@@ -188,41 +189,36 @@ std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
 
     for (const auto &blueBot: blueBots) {
         const btVector3 botPos = blueBot->position();
-        for (int i = 0; i < cameras.size(); ++ i) {
-            if (random->getVanishing() > robotVanishingProb && cameras[i].isVisible(botPos)) {
-                SSL_DetectionRobot bot = blueBot->asDetection();
-                bot.set_x(bot.x() + random->getX());
-                bot.set_y(bot.y() + random->getY());
-                bot.set_orientation(bot.orientation() + random->getOrientation());
-                frames[i].add_robots_blue()->CopyFrom(bot);
-            }
-        }
+        addRobotToFrames(frames, blueBot, botPos, false);
     }
     for (const auto &yellowBot: yellowBots) {
         const btVector3 botPos = yellowBot->position();
-        for (int j = 0; j < cameras.size(); ++ j) {
-            if (random->getVanishing() > robotVanishingProb && cameras[j].isVisible(botPos)) {
-                SSL_DetectionRobot bot = yellowBot->asDetection();
-                bot.set_x(bot.x() + random->getX());
-                bot.set_y(bot.y() + random->getY());
-                bot.set_orientation(bot.orientation() + random->getOrientation());
-                frames[j].add_robots_yellow()->CopyFrom(bot);
-            }
-        }
+        addRobotToFrames(frames, yellowBot, botPos, true);
     }
-    if (ball) {
-        const btVector3 &ballPos = ball->position();
-        for (int k = 0; k < cameras.size(); ++ k) {
-            if (random->getVanishing() > ballVanishingProb && cameras[k].isBallVisible(ballPos) && cameras[k].isVisible(ballPos)) {
-                SSL_DetectionBall detBall = ball->asDetection();
-                detBall.set_x(detBall.x() + random->getBallX());
-                detBall.set_y(detBall.y() + random->getBallY());
-                frames[k].mutable_balls()->Add()->CopyFrom(detBall);
-            }
-        }
-    }
+    addBallToFrames(frames);
 
     return frames;
+}
+void SimWorld::addRobotToFrames(std::vector<SSL_DetectionFrame> &frames, const std::unique_ptr<SimBot> &bot,
+                                const btVector3 &botPos, bool isYellow) {
+    for (int i = 0; i < cameras.size(); ++i) {
+        btVector3 imagePos = cameras[i].fieldToImage(botPos);
+        if (random->getVanishing() > robotVanishingProb && cameras[i].isInImage(imagePos.x(), imagePos.y())) {
+            SSL_DetectionRobot detection = bot->asDetection();
+            detection.set_pixel_x(imagePos.x());
+            detection.set_pixel_y(imagePos.y());
+            btVector3 computedPos = cameras[i].imageToField(imagePos, bot->height()) / worldSettings->scale *
+                                    1000;//in SSL-vision the robots are assumed to be on the ground
+            detection.set_x(computedPos.x() + random->getX());
+            detection.set_y(computedPos.y() + random->getY());
+            detection.set_orientation(bot->orientation() + random->getOrientation());
+            if (isYellow) {
+                frames[i].add_robots_yellow()->CopyFrom(detection);
+            } else {
+                frames[i].add_robots_blue()->CopyFrom(detection);
+            }
+        }
+    }
 }
 std::vector<SSL_WrapperPacket> SimWorld::getPackets() {
     std::vector<SSL_WrapperPacket> packets;
@@ -234,14 +230,14 @@ std::vector<SSL_WrapperPacket> SimWorld::getPackets() {
     }
 
     // we add the geometry every x frames
-    if (tickCount%sendGeometryTicks == 0) {
+    if (tickCount % sendGeometryTicks == 0) {
         if (packets.empty()) {
             SSL_WrapperPacket wrapper;
             packets.push_back(wrapper);
         }
         packets[0].mutable_geometry()->CopyFrom(getGeometryData());
     }
-    tickCount ++;
+    tickCount++;
     return packets;
 }
 
@@ -257,8 +253,7 @@ void SimWorld::setRobotCount(unsigned int numRobots, bool isYellow) {
     if (current != numRobots) {
         if (isYellow) {
             numYellowBots = numRobots;
-        }
-        else {
+        } else {
             numBlueBots = numRobots;
         }
         resetRobots();
@@ -268,57 +263,57 @@ void SimWorld::setRobotCount(unsigned int numRobots, bool isYellow) {
 void SimWorld::resetRobots() {
     blueBots.clear();
     yellowBots.clear();
-    for (unsigned int i = 0; i < numBlueBots; ++ i) {
+    for (unsigned int i = 0; i < numBlueBots; ++i) {
         blueBots.push_back(std::move(
                 std::make_unique<SimBot>(i, dynamicsWorld, blueSettings, worldSettings,
-                        btVector3(0.0, 0.0, 0.0)*worldSettings->scale, 0.0)));
+                                         btVector3(0.0, 0.0, 0.0) * worldSettings->scale, 0.0)));
     }
-    for (unsigned int i = 0; i < numYellowBots; ++ i) {
+    for (unsigned int i = 0; i < numYellowBots; ++i) {
         yellowBots.push_back(std::move(
                 std::make_unique<SimBot>(i, dynamicsWorld, yellowSettings, worldSettings,
-                        btVector3(0.0, 0.4, 0.0)*worldSettings->scale, 0.0)));
+                                         btVector3(0.0, 0.4, 0.0) * worldSettings->scale, 0.0)));
     }
 }
 void SimWorld::resetWorld() {
     const btScalar SCALE = worldSettings->scale;
     dynamicsWorld->setGravity(
-            btVector3(SCALE*worldSettings->gravityX, SCALE*worldSettings->gravityY,
-                    SCALE*worldSettings->gravityZ));
+            btVector3(SCALE * worldSettings->gravityX, SCALE * worldSettings->gravityY,
+                      SCALE * worldSettings->gravityZ));
     field = std::make_unique<SimField>(dynamicsWorld, worldSettings);
     ball = std::make_unique<SimBall>(dynamicsWorld, worldSettings);
     cameras.clear();//TODO: fix multiple camera's
-    for (auto camerasettings : worldSettings->cameras){
-        cameras.emplace_back(camerasettings,dynamicsWorld.get(),SCALE);
+    for (auto camerasettings : worldSettings->cameras) {
+        cameras.emplace_back(camerasettings, dynamicsWorld.get(), SCALE);
     }
     resetRobots();
 }
 void SimWorld::reloadSituation() {
     const btScalar SCALE = worldSettings->scale;
     dynamicsWorld->setGravity(
-            btVector3(SCALE*worldSettings->gravityX, SCALE*worldSettings->gravityY,
-                    SCALE*worldSettings->gravityZ));
+            btVector3(SCALE * worldSettings->gravityX, SCALE * worldSettings->gravityY,
+                      SCALE * worldSettings->gravityZ));
     field = std::make_unique<SimField>(dynamicsWorld, worldSettings);
     if (situation->ball) {
-        ball = std::make_unique<SimBall>(dynamicsWorld, worldSettings, situation->ball->position*worldSettings->scale,
-                situation->ball->velocity*worldSettings->scale);
+        ball = std::make_unique<SimBall>(dynamicsWorld, worldSettings, situation->ball->position * worldSettings->scale,
+                                         situation->ball->velocity * worldSettings->scale);
         //TODO: make options for angular velocity e.g. rolling and such for ball construction
     }
     cameras.clear();//TODO: fix multiple camera's
-    for (auto camerasettings : worldSettings->cameras){
-        cameras.emplace_back(camerasettings,dynamicsWorld.get(),SCALE);
+    for (auto camerasettings : worldSettings->cameras) {
+        cameras.emplace_back(camerasettings, dynamicsWorld.get(), SCALE);
     }
     blueBots.clear();
     yellowBots.clear();
     for (const auto &bot : situation->blueBots) {
         blueBots.push_back(std::move(
                 std::make_unique<SimBot>(bot.id, dynamicsWorld, blueSettings, worldSettings,
-                        bot.position*worldSettings->scale, bot.position.z())
+                                         bot.position * worldSettings->scale, bot.position.z())
         ));
     }
     for (const auto &bot : situation->yellowBots) {
         yellowBots.push_back(std::move(
                 std::make_unique<SimBot>(bot.id, dynamicsWorld, blueSettings, worldSettings,
-                        bot.position*worldSettings->scale, bot.position.z())
+                                         bot.position * worldSettings->scale, bot.position.z())
         ));
     }
     numBlueBots = situation->blueBots.size(); //TODO: fix communication with interface and interactions between Simulator.
@@ -331,8 +326,7 @@ void SimWorld::updateWorldConfig(const std::unique_ptr<WorldConfig> &_worldSetti
 void SimWorld::updateRobotConfig(const std::unique_ptr<RobotConfig> &_robotSettings, bool isYellow) {
     if (isYellow) {
         yellowSettings = std::make_unique<RobotSettings>(*_robotSettings->settings);
-    }
-    else {
+    } else {
         blueSettings = std::make_unique<RobotSettings>(*_robotSettings->settings);
     }
     resetRobots();
@@ -341,20 +335,20 @@ void SimWorld::setSendGeometryTicks(unsigned int ticks) {
     sendGeometryTicks = ticks;
 }
 
-WorldSettings* SimWorld::getWorldSettings() {
+WorldSettings *SimWorld::getWorldSettings() {
     return worldSettings.get();
 }
-RobotSettings* SimWorld::getRobotSettings(bool isYellow) {
+RobotSettings *SimWorld::getRobotSettings(bool isYellow) {
     return isYellow ? yellowSettings.get() : blueSettings.get();
 }
 void SimWorld::setDelay(double _delay) {
-    delay = _delay/1000.0;// delay comes in in ms
+    delay = _delay / 1000.0;// delay comes in in ms
 }
 void SimWorld::setRobotXNoise(double noise) {
-    random->setXRange(noise*1000); //TODO: fix scaling
+    random->setXRange(noise * 1000); //TODO: fix scaling
 }
 void SimWorld::setRobotYNoise(double noise) {
-    random->setYRange(noise*1000);
+    random->setYRange(noise * 1000);
 }
 void SimWorld::setRobotOrNoise(double noise) {
     random->setOrientationRange(noise);
@@ -363,11 +357,31 @@ void SimWorld::setRobotVanishing(double prob) {
     robotVanishingProb = prob;
 }
 void SimWorld::setBallXNoise(double noise) {
-    random->setBallXRange(noise*1000);
+    random->setBallXRange(noise * 1000);
 }
 void SimWorld::setBallYNoise(double noise) {
-    random->setBallYRange(noise*1000);
+    random->setBallYRange(noise * 1000);
 }
 void SimWorld::setBallVanishing(double prob) {
     ballVanishingProb = prob;
+}
+void SimWorld::addBallToFrames(std::vector<SSL_DetectionFrame> &frames) {
+    if (!ball) {
+        return;
+    }
+    const btVector3 &ballPos = ball->position();
+    for (int i = 0; i < cameras.size(); ++i) {
+        btVector3 imagePos = cameras[i].fieldToImage(ball->position());
+        if (random->getVanishing() > ballVanishingProb &&
+            cameras[i].isBallVisible(ballPos) &&
+            cameras[i].isInImage(imagePos.x(), imagePos.y())) {
+            SSL_DetectionBall detBall = ball->asDetection();
+            btVector3 computedPos = cameras[i].imageToField(imagePos, ball->radius()) / worldSettings->scale * 1000;
+            detBall.set_x(computedPos.x() + random->getBallX());
+            detBall.set_y(computedPos.y() + random->getBallY());
+            detBall.set_pixel_x(imagePos.x());
+            detBall.set_pixel_y(imagePos.y());
+            frames[i].mutable_balls()->Add()->CopyFrom(detBall);
+        }
+    }
 }

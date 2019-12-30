@@ -11,7 +11,10 @@
 btVector3 SimBot::position() const {
     btTransform transform;
     motionState->getWorldTransform(transform);
-    return transform.getOrigin();
+    btVector3 origin=transform.getOrigin();
+    transform.setOrigin(btVector3(0,0,0));
+    btVector3 topPos= origin+transform*(btVector3(0,0,robSettings->totalHeight-robSettings->bottomPlateHeight)*0.5*SCALE);
+    return topPos;
 }
 
 btScalar SimBot::orientation() const {

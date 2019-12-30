@@ -63,6 +63,11 @@ btDiscreteDynamicsWorld* SimWorld::getWorld() {
 }
 void SimWorld::stepSimulation(double dt) {
     dynamicsWorld->stepSimulation(dt, 10, dt);
+    static btVector3 prevBallPos=btVector3();
+    std::cout<<(ball->position()-prevBallPos).norm()/dt<<std::endl;
+    std::cout<<(ball->velocity()).norm()<<std::endl;
+    std::cout<<"____________"<<std::endl;
+    prevBallPos=ball->position();
 }
 //helper functions for creating geometry
 inline int scale(const float &meas) {

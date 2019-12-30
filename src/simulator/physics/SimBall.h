@@ -26,7 +26,6 @@ class SimBall {
         const double SCALE;
         std::unique_ptr<btMultiBodyDynamicsWorld>& world;
         btSphereShape* physicsBall;
-        btRigidBody* body;
         btMultiBody* multiBody;
         btMotionState* motionState;
 

@@ -29,43 +29,25 @@ SimBall::SimBall(std::unique_ptr<btMultiBodyDynamicsWorld> &_world, const std::u
     multiBody->finalizeMultiDof();
 
     world->addMultiBody(multiBody);
-    motionState = new btDefaultMotionState(worldTransform);
-    btMultiBodyLinkCollider* col = new btMultiBodyLinkCollider(multiBody,-1);
+    motionState = new btDefaultMotionState(worldTransform); //TODO: use motionState?
+    btMultiBodyLinkCollider* col = new btMultiBodyLinkCollider(multiBody, - 1);
     col->setCollisionShape(physicsBall);
     col->setWorldTransform(worldTransform);
 
-
-    world->addCollisionObject(col, COL_BALL, COL_FIELD | COL_ROBOT |COL_BALL);
+    world->addCollisionObject(col, COL_BALL, COL_FIELD | COL_ROBOT | COL_BALL);
+    // TODO: set restitution/friction
+    //TODO: ang vel option+spinning friction and setting lin vel to 0
     col->setFriction(0.35);
     col->setRestitution(0.0);
     col->setRollingFriction(0.0357*7*0.2*settings->ballRadius*SCALE);
-    col->setSpinningFriction(0.0);
+    col->setSpinningFriction(0.00);
     multiBody->setBaseCollider(col);
 
     multiBody->setBaseVel(initialVel);
-
-//    multiBody->
-//    //construct the rigid body for collisions. For now we are forced to use btMultiBody to get friction to work properly due to a bug with rolling friction in btRigidBody
-//    btRigidBody::btRigidBodyConstructionInfo rbInfo(settings->ballMass, motionState, physicsBall, inertia);
-//    body = new btRigidBody(rbInfo);
-//    // TODO: set restitution/friction
-//    //TODO: ang vel option+spinning friction and setting lin vel to 0
-//    body->setRestitution(1.0f);
-//    body->setFriction(0.35f);
-//    // when rolling ball decelerates with friction force for linear as if it's 0.0357
-//    // However that does not take torque/angular rotation when rolling into account, so we need to multiply by
-//    // 7/5.0*ball radius from Torque computation.
-//    body->setRollingFriction(0.0357*7.0/5.0*SCALE*settings->ballRadius);
-//    //body->setSpinningFriction(0.03);//TODO: test real values
-//    body->setSleepingThresholds(0.01*SCALE, 0.01/2/M_PI);
-    //add the constructed rigid Body to the world
-    //world->addRigidBody(body, COL_BALL, COL_FIELD | COL_ROBOT | COL_BALL);
 }
 SimBall::~SimBall() {
     world->removeMultiBody(multiBody);
     delete multiBody;
-    world->removeRigidBody(body);
-    delete body;
     delete physicsBall;
     delete motionState;
 }
@@ -75,17 +57,18 @@ SimBall::SimBall(std::unique_ptr<btMultiBodyDynamicsWorld> &_world, const std::u
         SimBall(_world, settings, btVector3(0.0f, 0.0f, settings->scale*settings->ballRadius)) {
 }
 
-btVector3 SimBall::velocity() const {
-    return body->getLinearVelocity();
+btVector3 SimBall::velocity() const { //TODO: unused?
+    return multiBody->getBaseVel();
 
 }
 btVector3 SimBall::position() const {
-    const btTransform transform = body->getWorldTransform();
+    auto f=multiBody->getWorldToBaseRot();
+    std::cout<<f.x()<<" "<<f.y()<<" "<<f.z()<<std::endl;
+    const btTransform transform = multiBody->getBaseWorldTransform();
     return transform.getOrigin();
 }
 void SimBall::kick(const btVector3 &force) {
-    body->activate();
-    body->applyCentralForce(force);
+    multiBody->addBaseForce(force); //TODO: test this and maybe activate base?
 }
 
 SSL_DetectionBall SimBall::asDetection() const {

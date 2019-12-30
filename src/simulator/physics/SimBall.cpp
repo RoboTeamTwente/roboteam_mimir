@@ -23,7 +23,9 @@ SimBall::SimBall(std::unique_ptr<btMultiBodyDynamicsWorld> &_world, const std::u
     multiBody->setLinearDamping(0);
     btTransform worldTransform;
     worldTransform.setIdentity();
-    worldTransform.setOrigin(initialPos);
+    btVector3 startPos=initialPos;
+    startPos.setZ(settings->ballRadius*SCALE);
+    worldTransform.setOrigin(startPos);
     multiBody->setBaseWorldTransform(worldTransform);
 
     multiBody->finalizeMultiDof();
@@ -62,8 +64,6 @@ btVector3 SimBall::velocity() const { //TODO: unused?
 
 }
 btVector3 SimBall::position() const {
-    auto f=multiBody->getWorldToBaseRot();
-    std::cout<<f.x()<<" "<<f.y()<<" "<<f.z()<<std::endl;
     const btTransform transform = multiBody->getBaseWorldTransform();
     return transform.getOrigin();
 }

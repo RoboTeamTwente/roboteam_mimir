@@ -32,7 +32,7 @@ Simulator::Simulator() {
     simWorld=std::make_unique<SimWorld>(worldConfig,blueConfig,yellowConfig,situation->situation);
 
     timingManager=std::make_unique<Timer>();
-    currentTiming=std::make_unique<Timing>(timingManager->getTimer("Halftime 2000hz"));
+    currentTiming=std::make_unique<Timing>(timingManager->getTimer("Realtime 250hz"));
     //start simulator logic loop
     timer= new QTimer();
     timer->setTimerType(Qt::PreciseTimer);
@@ -64,7 +64,8 @@ void Simulator::tick() {
     }
     emit sentPackets(packets);
     auto end=std::chrono::high_resolution_clock::now();
-    //std::cout<<"loop took "<<std::chrono::duration_cast<std::chrono::microseconds>(end-start).count()<<" us"<<std::endl;
+    std::cout<<"loop took "<<std::chrono::duration_cast<std::chrono::microseconds>(end-start).count()<<" us";
+    std::cout<<" dt"<< currentTiming->timeStepLength<<" ms: "<<currentTiming->millisecWaitTime  <<std::endl;
 }
 
 WorldSettings * Simulator::getWorldSettings() {

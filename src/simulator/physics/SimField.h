@@ -8,13 +8,14 @@
 #include <btBulletDynamicsCommon.h>
 #include "../config/WorldSettings.h"
 #include <memory>
+#include <BulletDynamics/Featherstone/btMultiBodyDynamicsWorld.h>
 
 class SimField {
 public:
-    explicit SimField(std::unique_ptr <btDiscreteDynamicsWorld>& world, const std::unique_ptr<WorldSettings>& cfg);
+    explicit SimField(std::unique_ptr <btMultiBodyDynamicsWorld>& world, const std::unique_ptr<WorldSettings>& cfg);
     ~SimField();
 private:
-    std::unique_ptr<btDiscreteDynamicsWorld>& dynamicsWorld;
+    std::unique_ptr<btMultiBodyDynamicsWorld>& dynamicsWorld;
     btAlignedObjectArray<btCollisionObject*> objects;
     btStaticPlaneShape * plane;
     btCollisionShape * goalBack;

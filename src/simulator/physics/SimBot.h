@@ -12,13 +12,14 @@
 #include <memory>
 #include <proto/mimir_robotcommand.pb.h>
 #include <proto/messages_robocup_ssl_detection.pb.h>
+#include <BulletDynamics/Featherstone/btMultiBodyDynamicsWorld.h>
 class SimBall;
 class SimBot : public BaseSimBot {
     public:
-        SimBot(unsigned int _id, std::unique_ptr<btDiscreteDynamicsWorld> &world,
+        SimBot(unsigned int _id, std::unique_ptr<btMultiBodyDynamicsWorld> &world,
                 const std::unique_ptr<RobotSettings> &settings,
                 const std::unique_ptr<WorldSettings> &worldSettings);
-        SimBot(unsigned int _id,  std::unique_ptr<btDiscreteDynamicsWorld> &world,
+        SimBot(unsigned int _id,  std::unique_ptr<btMultiBodyDynamicsWorld> &world,
                 const std::unique_ptr<RobotSettings> &settings,
                 const std::unique_ptr<WorldSettings> &worldSettings, const btVector3 &initialPos, btScalar dir);
         ~SimBot();
@@ -33,7 +34,7 @@ class SimBot : public BaseSimBot {
     private:
         const unsigned int id;
         const double SCALE;
-        std::unique_ptr<btDiscreteDynamicsWorld>& dynamicsWorld;
+        std::unique_ptr<btMultiBodyDynamicsWorld>& dynamicsWorld;
         btAlignedObjectArray<btCollisionShape*> shapes;
         btRigidBody* body = nullptr;
         btDefaultMotionState* motionState = nullptr;

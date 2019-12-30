@@ -83,8 +83,10 @@ private:
         std::unique_ptr<btDefaultCollisionConfiguration> collisionConfig;
         std::unique_ptr<btCollisionDispatcher> collisionDispatcher;
         std::unique_ptr<btBroadphaseInterface> overlappingPairCache;
-        std::unique_ptr<btConstraintSolver> solver;
-        std::unique_ptr<btDiscreteDynamicsWorld> dynamicsWorld; // is publicly accessible through getWorld() for debugDrawing purposes
+        std::unique_ptr<btMultiBodyConstraintSolver> solver;
+        //TODO: only reason this is a MultiBody and not DiscreteDynamicsWorld is a bug for rolling friction in spheres
+        //See https://github.com/bulletphysics/bullet3/issues/2117 for more info. Once this is patched for btRigidBody we can go back.
+        std::unique_ptr<btMultiBodyDynamicsWorld> dynamicsWorld; // is publicly accessible through getWorld() for debugDrawing purposes
 
         std::unique_ptr<RobotSettings> blueSettings;
         std::unique_ptr<RobotSettings> yellowSettings;

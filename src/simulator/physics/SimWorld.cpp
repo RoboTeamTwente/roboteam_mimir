@@ -189,7 +189,7 @@ std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
     for (const auto &blueBot: blueBots) {
         const btVector3 botPos = blueBot->position();
         for (int i = 0; i < cameras.size(); ++ i) {
-            if (random->getVanishing() > robotVanishingProb && cameras[i].isVisible(botPos.x(), botPos.y())) {
+            if (random->getVanishing() > robotVanishingProb && cameras[i].isVisible(botPos)) {
                 SSL_DetectionRobot bot = blueBot->asDetection();
                 bot.set_x(bot.x() + random->getX());
                 bot.set_y(bot.y() + random->getY());
@@ -201,7 +201,7 @@ std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
     for (const auto &yellowBot: yellowBots) {
         const btVector3 botPos = yellowBot->position();
         for (int j = 0; j < cameras.size(); ++ j) {
-            if (random->getVanishing() > robotVanishingProb && cameras[j].isVisible(botPos.x(), botPos.y())) {
+            if (random->getVanishing() > robotVanishingProb && cameras[j].isVisible(botPos)) {
                 SSL_DetectionRobot bot = yellowBot->asDetection();
                 bot.set_x(bot.x() + random->getX());
                 bot.set_y(bot.y() + random->getY());
@@ -213,7 +213,7 @@ std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
     if (ball) {
         const btVector3 &ballPos = ball->position();
         for (int k = 0; k < cameras.size(); ++ k) {
-            if (random->getVanishing() > ballVanishingProb && cameras[k].isBallVisible(ballPos)) {
+            if (random->getVanishing() > ballVanishingProb && cameras[k].isBallVisible(ballPos) && cameras[k].isVisible(ballPos)) {
                 SSL_DetectionBall detBall = ball->asDetection();
                 detBall.set_x(detBall.x() + random->getBallX());
                 detBall.set_y(detBall.y() + random->getBallY());
@@ -287,8 +287,9 @@ void SimWorld::resetWorld() {
     field = std::make_unique<SimField>(dynamicsWorld, worldSettings);
     ball = std::make_unique<SimBall>(dynamicsWorld, worldSettings);
     cameras.clear();//TODO: fix multiple camera's
-    cameras.push_back(
-            Camera(btVector3(0.0, 0.0, 5.0)*SCALE, 0.0, 0.0, SCALE*14.0, SCALE*11.0, dynamicsWorld.get()));
+    for (auto camerasettings : worldSettings->cameras){
+        cameras.emplace_back(camerasettings,dynamicsWorld.get(),SCALE);
+    }
     resetRobots();
 }
 void SimWorld::reloadSituation() {
@@ -303,11 +304,9 @@ void SimWorld::reloadSituation() {
         //TODO: make options for angular velocity e.g. rolling and such for ball construction
     }
     cameras.clear();//TODO: fix multiple camera's
-
-
-    cameras.push_back(
-            Camera(btVector3(0.0, 0.0, 5.0)*SCALE, 0.0, 0.0, SCALE*14.0, SCALE*11.0, dynamicsWorld.get()));
-    cameras[0].imageToField(btVector3(1000,1000,0),147);
+    for (auto camerasettings : worldSettings->cameras){
+        cameras.emplace_back(camerasettings,dynamicsWorld.get(),SCALE);
+    }
     blueBots.clear();
     yellowBots.clear();
     for (const auto &bot : situation->blueBots) {

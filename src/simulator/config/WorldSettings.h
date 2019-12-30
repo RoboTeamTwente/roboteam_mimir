@@ -6,6 +6,17 @@
 #define ROBOTEAM_MIMIR_WORLDSETTINGS_H
 
 
+#include <string>
+#include <vector>
+
+class CameraSettings{
+public:
+    CameraSettings(std::string camInfo, int xResolution, int yResolution);
+    const std::string camInfoSerialized;
+    const int camResolutionX;
+    const int camResolutionY;
+};
+
 class WorldSettings {
 public:
     WorldSettings(
@@ -24,7 +35,8 @@ public:
             float _gravityY,
             float _gravityZ,
             float _centerCircleRadius,
-            float scale
+            float scale,
+            std::vector<CameraSettings> _cameras
     );
     const float fieldLength;
     const float fieldWidth;
@@ -48,7 +60,10 @@ public:
 
     const float scale;
 
+    const std::vector<CameraSettings> cameras;
+
 };
+
 
 
 #endif //ROBOTEAM_MIMIR_WORLDSETTINGS_H

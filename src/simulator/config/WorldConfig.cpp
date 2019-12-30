@@ -45,6 +45,17 @@ namespace {
 
 WorldConfig::WorldConfig(const QString &path) {
     settingsFile = std::make_unique<QSettings>(path, QSettings::IniFormat);
+   std::vector<CameraSettings> cameras;
+    int camCount=settingsFile->beginReadArray(QString("Camera"));
+    for (int i = 0; i < camCount; ++i) {
+        settingsFile->setArrayIndex(i);
+        std::string camInfo = settingsFile->value(QString("camInfo"),"").toString().toStdString();
+        int xRes=settingsFile->value(QString("xRes"),0).toInt();
+        int yRes=settingsFile->value(QString("xRes"),0).toInt();
+        cameras.emplace_back(camInfo,xRes,yRes);
+    }
+    settingsFile->endArray();
+
     settings = std::make_unique<WorldSettings>(
             get(fieldLengthStr),
             get(fieldWidthStr),
@@ -61,7 +72,8 @@ WorldConfig::WorldConfig(const QString &path) {
             get(gravityYStr),
             get(gravityZStr),
             get(centerCircleRadiusStr),
-            get(scaleStr)
+            get(scaleStr),
+            cameras
     );
 }
 QString WorldConfig::name() const {

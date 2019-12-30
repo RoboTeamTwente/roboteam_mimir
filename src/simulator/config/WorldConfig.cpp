@@ -4,6 +4,7 @@
 #include "WorldConfig.h"
 #include <QFileInfo>
 #include <iostream>
+#include <QTextCodec>
 //anonymous namespace to keep these variables out of global scope
 namespace {
     const QString fieldLengthStr("Geometry/fieldLength");
@@ -45,14 +46,31 @@ namespace {
 
 WorldConfig::WorldConfig(const QString &path) {
     settingsFile = std::make_unique<QSettings>(path, QSettings::IniFormat);
-   std::vector<CameraSettings> cameras;
-    int camCount=settingsFile->beginReadArray(QString("Camera"));
+    std::vector<CameraSettings> cameras;
+    int camCount = settingsFile->beginReadArray(QString("Camera"));
     for (int i = 0; i < camCount; ++i) {
         settingsFile->setArrayIndex(i);
-        std::string camInfo = settingsFile->value(QString("camInfo"),"").toString().toStdString();
-        int xRes=settingsFile->value(QString("xRes"),0).toInt();
-        int yRes=settingsFile->value(QString("xRes"),0).toInt();
-        cameras.emplace_back(camInfo,xRes,yRes);
+        double focalLength = settingsFile->value(QString("focalLength")).toDouble();
+        double principalPointX = settingsFile->value(QString("principalPointX")).toDouble();
+        double principalPointY = settingsFile->value(QString("principalPointY")).toDouble();
+        double distortion = settingsFile->value(QString("distortion")).toDouble();
+        double q0 = settingsFile->value(QString("q0")).toDouble();
+        double q1 = settingsFile->value(QString("q1")).toDouble();
+        double q2 = settingsFile->value(QString("q2")).toDouble();
+        double q3 = settingsFile->value(QString("q3")).toDouble();
+        double tx = settingsFile->value(QString("tx")).toDouble();
+        double ty = settingsFile->value(QString("ty")).toDouble();
+        double tz = settingsFile->value(QString("tz")).toDouble();
+        double derivedtx = settingsFile->value(QString("derivedtx")).toDouble();
+        double derivedty = settingsFile->value(QString("derivedty")).toDouble();
+        double derivedtz = settingsFile->value(QString("derivedtz")).toDouble();
+        int camID = settingsFile->value(QString("camID")).toInt();
+        int xRes = settingsFile->value(QString("xRes"), 0).toInt();
+        int yRes = settingsFile->value(QString("yRes"), 0).toInt();
+        cameras.emplace_back(
+                CameraSettings(camID, focalLength, principalPointX, principalPointY, distortion, q0, q1, q2, q3, tx, ty,
+                               tz, derivedtx, derivedty, derivedtz, xRes, yRes));
+
     }
     settingsFile->endArray();
 

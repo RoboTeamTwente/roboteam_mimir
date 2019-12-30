@@ -303,6 +303,8 @@ void SimWorld::reloadSituation() {
         //TODO: make options for angular velocity e.g. rolling and such for ball construction
     }
     cameras.clear();//TODO: fix multiple camera's
+
+
     cameras.push_back(
             Camera(btVector3(0.0, 0.0, 5.0)*SCALE, 0.0, 0.0, SCALE*14.0, SCALE*11.0, dynamicsWorld.get()));
     cameras[0].imageToField(btVector3(1000,1000,0),147);

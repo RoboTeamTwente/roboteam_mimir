@@ -29,9 +29,26 @@ WorldSettings::WorldSettings(float _fieldLength, float _fieldWidth, float _bound
                              cameras(std::move(_cameras)){
 }
 
-CameraSettings::CameraSettings(std::string camInfo, int xResolution, int yResolution) :
-camInfoSerialized{std::move(camInfo)},
+CameraSettings::CameraSettings(int camID, double focalLength, double principalPointX, double principalPointY,
+                               double distortion, double q0, double q1, double q2, double q3, double tx, double ty,
+                               double tz, double derivedTX, double derivedTY, double derivedTZ, int xResolution,
+                               int yResolution) :
+cameraID(camID),
+focalLength(focalLength),
+principalPointX(principalPointX),
+principalPointY(principalPointY),
+distortion(distortion),
+q0(q0),
+q1(q1),
+q2(q2),
+q3(q3),
+tx(tx),
+ty(ty),
+tz(tz),
+derivedTX(derivedTX),
+derivedTY(derivedTY),
+derivedTZ(derivedTZ),
 camResolutionX(xResolution),
-camResolutionY{yResolution}{
+camResolutionY(yResolution){
 
 }

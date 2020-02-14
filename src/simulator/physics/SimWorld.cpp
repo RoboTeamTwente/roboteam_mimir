@@ -54,8 +54,8 @@ SimWorld::SimWorld(const std::unique_ptr<WorldConfig> &_worldSettings,
     delay = 0.0;
     robotVanishingProb = 0.0;
     ballVanishingProb = 0.0;
-    random = std::make_unique<Random>(6.0, 6.0, 0.01, 6.0,
-                                      6.0);//TODO: set these in interface : see http://www.cs.cmu.edu/~mmv/papers/03icra-jim.pdf for values
+    random = std::make_unique<Random>(6.0, 6.0, 0.01, 3.0,
+                                      12.0);//TODO: set these in interface : see http://www.cs.cmu.edu/~mmv/papers/03icra-jim.pdf for values
     reloadSituation();
 }
 SimWorld::~SimWorld() {
@@ -134,6 +134,9 @@ void SimWorld::doCommands(btScalar dt) {
 SSL_GeometryData SimWorld::getGeometryData() {
     //TODO: add camera calibration info
     SSL_GeometryData data;
+    for (int i = 0; i <cameras.size(); ++i) {
+        data.mutable_calib()->Add(cameras[i].asMessage());
+    }
     SSL_GeometryFieldSize *geomField = data.mutable_field();
     //SSL geometry is sent in mm not in m
     //the names of the variables in the settings should correspond exactly with how the measurements from SSL-vision are done
@@ -196,6 +199,7 @@ std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
         addRobotToFrames(frames, yellowBot, botPos, true);
     }
     addBallToFrames(frames);
+    std::cout<<time<<" ballheight: "<<ball->position().z()<<std::endl;
 
     return frames;
 }
@@ -222,11 +226,13 @@ void SimWorld::addRobotToFrames(std::vector<SSL_DetectionFrame> &frames, const s
 }
 std::vector<SSL_WrapperPacket> SimWorld::getPackets() {
     std::vector<SSL_WrapperPacket> packets;
-    std::vector<SSL_DetectionFrame> frames = getDetectionFrames();
-    for (const auto &frame : frames) {
-        SSL_WrapperPacket wrapper;
-        wrapper.mutable_detection()->CopyFrom(frame);
-        packets.push_back(wrapper);
+    if (tickCount % sendFramesTicks == 0){
+        std::vector<SSL_DetectionFrame> frames = getDetectionFrames();
+        for (const auto &frame : frames) {
+            SSL_WrapperPacket wrapper;
+            wrapper.mutable_detection()->CopyFrom(frame);
+            packets.push_back(wrapper);
+        }
     }
 
     // we add the geometry every x frames
@@ -371,16 +377,20 @@ void SimWorld::addBallToFrames(std::vector<SSL_DetectionFrame> &frames) {
     }
     const btVector3 &ballPos = ball->position();
     for (int i = 0; i < cameras.size(); ++i) {
-        btVector3 imagePos = cameras[i].fieldToImage(ball->position());
+        btVector3 imagePos = cameras[i].fieldToImage(ballPos);
         if (random->getVanishing() > ballVanishingProb &&
             cameras[i].isInImage(imagePos.x(), imagePos.y()) &&
             cameras[i].isBallVisible(ballPos)){
             SSL_DetectionBall detBall = ball->asDetection();
             btVector3 computedPos = cameras[i].imageToField(imagePos, ball->radius()) / worldSettings->scale * 1000;
-            detBall.set_x(computedPos.x() + random->getBallX());
-            detBall.set_y(computedPos.y() + random->getBallY());
+            detBall.set_x(computedPos.x() +random->getBallX() );
+            detBall.set_y(computedPos.y() +random->getBallY() );
             detBall.set_pixel_x(imagePos.x());
             detBall.set_pixel_y(imagePos.y());
+            //Alternative:
+//            btVector3 pos=cameras[i].extrapolation(ballPos,ball->radius()) / worldSettings->scale * 1000;;
+//            detBall.set_x(pos.x());
+//            detBall.set_y(pos.y());
             frames[i].mutable_balls()->Add()->CopyFrom(detBall);
         }
     }

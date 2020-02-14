@@ -45,7 +45,8 @@ SimBall::SimBall(std::unique_ptr<btMultiBodyDynamicsWorld> &_world, const std::u
     col->setSpinningFriction(0.00);
     multiBody->setBaseCollider(col);
 
-    multiBody->setBaseVel(initialVel);
+    btVector3 startVel=btVector3(0.4,-1.6,4.0)*SCALE;
+    multiBody->setBaseVel(startVel);
 }
 SimBall::~SimBall() {
     world->removeMultiBody(multiBody);

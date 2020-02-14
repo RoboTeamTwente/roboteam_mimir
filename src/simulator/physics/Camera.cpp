@@ -137,3 +137,28 @@ double Camera::scaleToCamera() const {
 double Camera::scaleFromCamera() const {
     return scale/1000.0;
 }
+SSL_GeometryCameraCalibration Camera::asMessage() {
+    SSL_GeometryCameraCalibration camData;
+    camData.set_camera_id(id);
+    camData.set_q0(q.x());
+    camData.set_q1(q.y());
+    camData.set_q2(q.z());
+    camData.set_q3(q.w());
+    camData.set_distortion(distortion);
+    camData.set_principal_point_x(principalPointX);
+    camData.set_principal_point_y(principalPointY);
+    camData.set_focal_length(focalLength);
+    camData.set_tx(t.x());
+    camData.set_ty(t.y());
+    camData.set_tz(t.z());
+    camData.set_derived_camera_world_tx(position.x());
+    camData.set_derived_camera_world_ty(position.y());
+    camData.set_derived_camera_world_tz(position.z());
+    return camData;
+}
+btVector3 Camera::extrapolation(btVector3 ballPoint, double assumedHeight) const {
+    btVector3 rayVec=ballPoint*scaleToCamera()-position;
+    double t=rayPlaneIntersect(btVector3(0,0,assumedHeight*scaleToCamera()),btVector3(0,0,1),position,rayVec.normalized());
+    btVector3 result= position +rayVec.normalized()*t;
+    return result*scaleFromCamera();
+}

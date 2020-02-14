@@ -76,6 +76,7 @@ private:
     std::unique_ptr<net::Publisher> publisher;
     std::unique_ptr<net::Receiver> blueReceiver;
     std::unique_ptr<net::Receiver> yellowReceiver;
+    int ticks=0;
 
 };
 

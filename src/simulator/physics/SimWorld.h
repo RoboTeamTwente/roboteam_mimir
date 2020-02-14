@@ -102,6 +102,7 @@ private:
         unsigned int numBlueBots = 1;
         unsigned int numYellowBots = 1;
         unsigned int sendGeometryTicks = 120;
+        unsigned int sendFramesTicks = 3;
         int tickCount = 0;
         double time = 0;
 

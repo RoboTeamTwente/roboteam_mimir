@@ -6,7 +6,6 @@
 #define ROBOTEAM_MIMIR_WORLDSETTINGS_H
 
 
-#include <string>
 #include <vector>
 
 //Note everything is in mm!

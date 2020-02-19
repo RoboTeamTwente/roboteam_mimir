@@ -22,7 +22,7 @@ void printVector(btVector3 vector) {
     std::cout << vector.x() << " " << vector.y() << " " << vector.z() << std::endl;
 }
 static void BulletTickCallback(btDynamicsWorld *world, btScalar dt) {
-    SimWorld *simWorld = (SimWorld *) (world->getWorldUserInfo());// This is how it's done in the example. Seems like black magic
+    SimWorld *simWorld = (SimWorld *) (world->getWorldUserInfo()); // black magic casting but this is what the library recommends.
     simWorld->doCommands(dt);
 }
 
@@ -132,8 +132,13 @@ void SimWorld::doCommands(btScalar dt) {
     dynamicsWorld->applyGravity();// has to be done after everything else according to bullet wiki.
 }
 SSL_GeometryData SimWorld::getGeometryData() {
-    //TODO: add camera calibration info
+
     SSL_GeometryData data;
+
+    for (int i = 0; i <cameras.size(); ++i) {
+        data.mutable_calib()->Add(cameras[i].asMessage());
+    }
+
     SSL_GeometryFieldSize *geomField = data.mutable_field();
     //SSL geometry is sent in mm not in m
     //the names of the variables in the settings should correspond exactly with how the measurements from SSL-vision are done
@@ -199,6 +204,7 @@ std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
 
     return frames;
 }
+//TODO: move parts to Robot class class
 void SimWorld::addRobotToFrames(std::vector<SSL_DetectionFrame> &frames, const std::unique_ptr<SimBot> &bot,
                                 const btVector3 &botPos, bool isYellow) {
     for (int i = 0; i < cameras.size(); ++i) {
@@ -365,13 +371,15 @@ void SimWorld::setBallYNoise(double noise) {
 void SimWorld::setBallVanishing(double prob) {
     ballVanishingProb = prob;
 }
+
+//TODO: move parts to ball class
 void SimWorld::addBallToFrames(std::vector<SSL_DetectionFrame> &frames) {
     if (!ball) {
         return;
     }
     const btVector3 &ballPos = ball->position();
     for (int i = 0; i < cameras.size(); ++i) {
-        btVector3 imagePos = cameras[i].fieldToImage(ball->position());
+        btVector3 imagePos = cameras[i].fieldToImage(ballPos);
         if (random->getVanishing() > ballVanishingProb &&
             cameras[i].isInImage(imagePos.x(), imagePos.y()) &&
             cameras[i].isBallVisible(ballPos)){
@@ -381,6 +389,11 @@ void SimWorld::addBallToFrames(std::vector<SSL_DetectionFrame> &frames) {
             detBall.set_y(computedPos.y() + random->getBallY());
             detBall.set_pixel_x(imagePos.x());
             detBall.set_pixel_y(imagePos.y());
+            //Alternative:
+//            btVector3 pos=cameras[i].extrapolation(ballPos,ball->radius()) / worldSettings->scale * 1000;;
+//            detBall.set_x(pos.x());
+//            detBall.set_y(pos.y());
+
             frames[i].mutable_balls()->Add()->CopyFrom(detBall);
         }
     }

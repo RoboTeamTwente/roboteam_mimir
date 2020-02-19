@@ -4,7 +4,6 @@
 #include "WorldConfig.h"
 #include <QFileInfo>
 #include <iostream>
-#include <QTextCodec>
 //anonymous namespace to keep these variables out of global scope
 namespace {
     const QString fieldLengthStr("Geometry/fieldLength");

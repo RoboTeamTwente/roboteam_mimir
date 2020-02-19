@@ -6,8 +6,9 @@
 #define ROBOTEAM_MIMIR_CAMERA_H
 
 #include <QRectF>
+#include <proto/messages_robocup_ssl_geometry.pb.h>
 #include "btBulletDynamicsCommon.h"
-#include "../config/WorldConfig.h"
+#include "../config/WorldSettings.h"
 
 class Camera {
 public:
@@ -18,6 +19,8 @@ public:
     [[nodiscard]] int getId() const;
     [[nodiscard]] btVector3 fieldToImage(btVector3 fieldPoint) const;
     [[nodiscard]] btVector3 imageToField(btVector3 imagePoint, double assumedHeight) const;
+    [[nodiscard]] SSL_GeometryCameraCalibration asMessage() const;
+    [[nodiscard]] btVector3 extrapolation(btVector3 ballPoint, double assumedHeight) const;
 
 private:
     double scaleToCamera() const;

@@ -7,7 +7,7 @@
 // this resource also has a lot of information:
 // https://docs.google.com/document/d/10sXEhzFRSnvFcl3XxNGhnD4N2SedqwdAvK3dsihxVUA/edit#heading=h.2ye70wns7io3
 // Also the cached wiki is useful, see:
-// TODO: add link
+// https://web.archive.org/web/20170706235814/http://www.bulletphysics.org/mediawiki-1.5.8/index.php/Main_Page
 
 #include "SimWorld.h"
 #include "SimField.h"
@@ -135,8 +135,8 @@ SSL_GeometryData SimWorld::getGeometryData() {
 
     SSL_GeometryData data;
 
-    for (int i = 0; i <cameras.size(); ++i) {
-        data.mutable_calib()->Add(cameras[i].asMessage());
+    for (auto & camera : cameras) {
+        data.add_calib()->CopyFrom(camera.asMessage());
     }
 
     SSL_GeometryFieldSize *geomField = data.mutable_field();

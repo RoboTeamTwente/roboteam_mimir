@@ -25,6 +25,7 @@ class SimBot : public BaseSimBot {
         ~SimBot();
         btVector3 position() const override;
         btScalar orientation() const override;
+        btScalar height() const;
 
         void receiveCommand(const mimir_robotcommand &robotcommand, double time);
         void update(SimBall* ball, double time);

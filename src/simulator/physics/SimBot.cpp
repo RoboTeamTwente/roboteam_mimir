@@ -145,7 +145,7 @@ void SimBot::addWheel(int wheelLabel, btScalar wheelAngleD, btCollisionShape *wh
     constraint->enableAngularMotor(true, 0, 10000000);
     constraint->setDbgDrawSize(1.5);
     // set friction to be different in each direction of the wheel axis x is perpendicular, y is tangent. Z friction is lateral (only really relevant for ball/ball and robot/robot collisions)
-    wheel->setAnisotropicFriction(btVector3(0.15, 0.85, 0.0), btCollisionObject::CF_ANISOTROPIC_FRICTION);
+    wheel->setAnisotropicFriction(btVector3(0.15, 1.3, 0.0), btCollisionObject::CF_ANISOTROPIC_FRICTION);
     wheelMotor[wheelLabel] = constraint;
     //add everything to the world
     dynamicsWorld->addConstraint(constraint, true);
@@ -234,7 +234,7 @@ void SimBot::update(SimBall *ball, double time) {
         case mimir_robotcommand::kGlobalVel: {
             if (lastCommand.globalvel().angleControl_case() == lastCommand.globalvel().kAngle) {
                 const auto &g = lastCommand.globalvel();
-                //globalControlAngle(g.velx(),g.vely(),g.angle()); //TODO: add/fix
+                globalControlAngle(g.velx(),g.vely(),g.angle(),time-lastCommandTime);
             } else {
                 const auto &g = lastCommand.globalvel();
                 globalControl(g.velx(), g.vely(), g.anglevel());
@@ -279,4 +279,38 @@ SSL_DetectionRobot SimBot::asDetection() const {
 }
 btScalar SimBot::height() const {
     return robSettings->totalHeight;
+}
+void SimBot::globalControlAngle(btScalar xVel, btScalar yVel, btScalar targetAngle, btScalar dt) {
+    std::cout<< xVel<<" "<<yVel<<" "<<targetAngle<<std::endl;
+    btScalar robotAngle = constrainAngle(orientation()); //We assume the robot knows it's absolute rotation
+    //clockwise rotation since we rotate back to robot frame
+    btScalar velTangent=xVel * cos(robotAngle) + yVel * sin(robotAngle);
+    btScalar velNormal =-xVel * sin(robotAngle) + yVel * cos(robotAngle);
+    // compute difference (P gain)
+    btScalar deltaAngle= constrainAngle(targetAngle-robotAngle);
+    // compute derivative estimate (D gain)
+    btScalar angularVel=(robotAngle-lastYaw)*250;
+    lastYaw = robotAngle;
+    //Simple angle PID controller.
+    btScalar P = 10.0;
+    btScalar D = 0.7;
+    btScalar pidP = P*deltaAngle;
+    btScalar pidD = -angularVel*D;
+    localControl(velTangent,velNormal,pidP+pidD);
+}
+
+btScalar SimBot::constrainAngle(btScalar angle){
+    angle = fmod(angle + M_PI, 2*M_PI);
+    if (angle < 0){
+        angle += 2*M_PI;
+    }
+    angle-=M_PI;
+    //extra insurance
+    if (angle< - M_PI){
+        angle += 2*M_PI;
+    }
+    else if (angle > M_PI){
+        angle -= 2*M_PI;
+    }
+    return angle;
 }

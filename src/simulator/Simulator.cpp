@@ -64,8 +64,8 @@ void Simulator::tick() {
     }
     emit sentPackets(packets);
     auto end=std::chrono::high_resolution_clock::now();
-    std::cout<<"loop took "<<std::chrono::duration_cast<std::chrono::microseconds>(end-start).count()<<" us";
-    std::cout<<" dt"<< currentTiming->timeStepLength<<" ms: "<<currentTiming->millisecWaitTime  <<std::endl;
+//    std::cout<<"loop took "<<std::chrono::duration_cast<std::chrono::microseconds>(end-start).count()<<" us";
+//    std::cout<<" dt"<< currentTiming->timeStepLength<<" ms: "<<currentTiming->millisecWaitTime  <<std::endl;
 }
 
 WorldSettings * Simulator::getWorldSettings() {

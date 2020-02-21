@@ -50,9 +50,11 @@ class SimBot : public BaseSimBot {
                 btTransform hullTransform);
         void wheelControl(btScalar wheel0, btScalar wheel1, btScalar wheel2, btScalar wheel3) override;
         void localControl(btScalar velTangent, btScalar velNormal, btScalar velAngle) override;
-        void globalControlAngle(btScalar xVel, btScalar yVel, btScalar angle);
+        void globalControlAngle(btScalar xVel, btScalar yVel, btScalar angle,btScalar dt);
         void deactivate();
+        btScalar constrainAngle(btScalar angle);
 
+        btScalar lastYaw = 0.0; // used in control: TODO initialize correctly
         btHingeConstraint* dribblerMotor;
         btRigidBody* dribbler;
 

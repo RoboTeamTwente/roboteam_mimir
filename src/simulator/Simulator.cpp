@@ -18,7 +18,7 @@ Simulator::Simulator() {
     QHostAddress localIP("224.5.23.2");
     int sendPort=10006;
     int receiveBluePort=20011;
-    int receiveYellowPort=10007;
+    int receiveYellowPort=20011;
     publisher=std::make_unique<net::Publisher>(localIP,sendPort);
     blueReceiver=std::make_unique<net::Receiver>(QHostAddress("127.0.0.1"),receiveBluePort);//TODO: change back to localIP
     yellowReceiver=std::make_unique<net::Receiver>(QHostAddress("127.0.0.1"),receiveYellowPort);
@@ -64,8 +64,8 @@ void Simulator::tick() {
     }
     emit sentPackets(packets);
     auto end=std::chrono::high_resolution_clock::now();
-    std::cout<<"loop took "<<std::chrono::duration_cast<std::chrono::microseconds>(end-start).count()<<" us";
-    std::cout<<" dt"<< currentTiming->timeStepLength<<" ms: "<<currentTiming->millisecWaitTime  <<std::endl;
+//    std::cout<<"loop took "<<std::chrono::duration_cast<std::chrono::microseconds>(end-start).count()<<" us";
+//    std::cout<<" dt"<< currentTiming->timeStepLength<<" ms: "<<currentTiming->millisecWaitTime  <<std::endl;
 }
 
 WorldSettings * Simulator::getWorldSettings() {

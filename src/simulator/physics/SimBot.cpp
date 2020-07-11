@@ -234,7 +234,7 @@ void SimBot::update(SimBall *ball, double time) {
         case mimir_robotcommand::kGlobalVel: {
             if (lastCommand.globalvel().angleControl_case() == lastCommand.globalvel().kAngle) {
                 const auto &g = lastCommand.globalvel();
-                //globalControlAngle(g.velx(),g.vely(),g.angle()); //TODO: add/fix
+                globalControlAngle(g.velx(),g.vely(),g.angle(),time-lastCommandTime);
             } else {
                 const auto &g = lastCommand.globalvel();
                 globalControl(g.velx(), g.vely(), g.anglevel());
@@ -279,4 +279,38 @@ SSL_DetectionRobot SimBot::asDetection() const {
 }
 btScalar SimBot::height() const {
     return robSettings->totalHeight;
+}
+void SimBot::globalControlAngle(btScalar xVel, btScalar yVel, btScalar targetAngle, btScalar dt) {
+    std::cout<< xVel<<" "<<yVel<<" "<<targetAngle<<std::endl;
+    btScalar robotAngle = constrainAngle(orientation()); //We assume the robot knows it's absolute rotation
+    //clockwise rotation since we rotate back to robot frame
+    btScalar velTangent=xVel * cos(robotAngle) + yVel * sin(robotAngle);
+    btScalar velNormal =-xVel * sin(robotAngle) + yVel * cos(robotAngle);
+    // compute difference (P gain)
+    btScalar deltaAngle= constrainAngle(targetAngle-robotAngle);
+    // compute derivative estimate (D gain)
+    btScalar angularVel=(robotAngle-lastYaw)*250;
+    lastYaw = robotAngle;
+    //Simple angle PID controller.
+    btScalar P = 12.0;
+    btScalar D = 2.0;
+    btScalar pidP = P*deltaAngle;
+    btScalar pidD = -angularVel*D;
+    localControl(velTangent,velNormal,pidP+pidD);
+}
+
+btScalar SimBot::constrainAngle(btScalar angle){
+    angle = fmod(angle + M_PI, 2*M_PI);
+    if (angle < 0){
+        angle += 2*M_PI;
+    }
+    angle-=M_PI;
+    //extra insurance
+    if (angle< - M_PI){
+        angle += 2*M_PI;
+    }
+    else if (angle > M_PI){
+        angle -= 2*M_PI;
+    }
+    return angle;
 }

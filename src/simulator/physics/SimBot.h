@@ -17,11 +17,11 @@ class SimBall;
 class SimBot : public BaseSimBot {
     public:
         SimBot(unsigned int _id, std::unique_ptr<btMultiBodyDynamicsWorld> &world,
-                const std::unique_ptr<RobotSettings> &settings,
-                const std::unique_ptr<WorldSettings> &worldSettings);
+                const RobotSettings &settings,
+                const WorldSettings &worldSettings);
         SimBot(unsigned int _id,  std::unique_ptr<btMultiBodyDynamicsWorld> &world,
-                const std::unique_ptr<RobotSettings> &settings,
-                const std::unique_ptr<WorldSettings> &worldSettings, const btVector3 &initialPos, btScalar dir);
+                const RobotSettings &settings,
+                const WorldSettings &worldSettings, const btVector3 &initialPos, btScalar dir);
         ~SimBot();
         btVector3 position() const override;
         btScalar orientation() const override;
@@ -41,12 +41,12 @@ class SimBot : public BaseSimBot {
         btDefaultMotionState* motionState = nullptr;
         btRigidBody* wheels[4];
         btHingeConstraint* wheelMotor[4];
-        const std::unique_ptr<RobotSettings> &robSettings;
+        const RobotSettings &robSettings;
 
-        void addWheels(const std::unique_ptr<WorldSettings> &worldSettings,
+        void addWheels(const WorldSettings &worldSettings,
                 btTransform hullTransform);
         void addWheel(int wheelLabel, btScalar wheelAngleD, btCollisionShape* wheelShape,
-                const std::unique_ptr<WorldSettings> &worldSettings,
+                const WorldSettings &worldSettings,
                 btTransform hullTransform);
         void wheelControl(btScalar wheel0, btScalar wheel1, btScalar wheel2, btScalar wheel3) override;
         void localControl(btScalar velTangent, btScalar velNormal, btScalar velAngle) override;
@@ -68,7 +68,7 @@ class SimBot : public BaseSimBot {
         bool canKickBall(SimBall* Ball);
 
         void
-        addDribbler(const std::unique_ptr<WorldSettings> &worldSettings,
+        addDribbler(const WorldSettings &worldSettings,
                 btScalar dir, const btVector3 &originPos);
 };
 

@@ -29,25 +29,25 @@ public:
                   float _wheelMass
                   );
     public:
-        float radius();
-        float startAngle();
-        float endAngle();
-        float totalHeight();
-        float wheelAngle0();
-        float wheelAngle1();
-        float wheelAngle2();
-        float wheelAngle3();
-        float wheelCenterRadius();
-        float wheelCenterHeight();
-        float wheelRadius();
-        float wheelThickness();
-        float bottomPlateHeight();
-        float kickerWidth();
-        float kickerThickness();
-        float kickerHeight();
-        float kickerGroundDist();
-        float bodyMass();//(kg) mass of the robot not counting wheels
-        float wheelMass();//(kg) mass of a single wheel
+        float radius() const;
+        float startAngle() const;
+        float endAngle() const;
+        float totalHeight() const;
+        float wheelAngle0() const;
+        float wheelAngle1() const;
+        float wheelAngle2() const;
+        float wheelAngle3() const;
+        float wheelCenterRadius() const;
+        float wheelCenterHeight() const;
+        float wheelRadius() const;
+        float wheelThickness() const;
+        float bottomPlateHeight() const;
+        float kickerWidth() const;
+        float kickerThickness() const;
+        float kickerHeight() const;
+        float kickerGroundDist() const;
+        float bodyMass() const;//(kg) mass of the robot not counting wheels
+        float wheelMass() const;//(kg) mass of a single wheel
     private:
         float _radius;
         float _startAngle;

@@ -28,60 +28,60 @@ RobotSettings::RobotSettings(float _radius, float _totalHeight,float _startAngle
                              _bodyMass(_bodyMass),
                              _wheelMass(_wheelMass)
                              {}
-float RobotSettings::radius() {
+float RobotSettings::radius() const {
     return _radius;
 }
-float RobotSettings::startAngle() {
+float RobotSettings::startAngle() const{
     return _startAngle;
 }
-float RobotSettings::endAngle() {
+float RobotSettings::endAngle() const{
     return _endAngle;
 }
-float RobotSettings::totalHeight() {
+float RobotSettings::totalHeight() const{
     return _totalHeight;
 }
-float RobotSettings::wheelAngle0() {
+float RobotSettings::wheelAngle0() const{
     return _wheelAngle0;
 }
-float RobotSettings::wheelAngle1() {
+float RobotSettings::wheelAngle1() const{
     return _wheelAngle1;
 }
-float RobotSettings::wheelAngle2() {
+float RobotSettings::wheelAngle2() const{
     return _wheelAngle2;
 }
-float RobotSettings::wheelAngle3() {
+float RobotSettings::wheelAngle3() const{
     return _wheelAngle3;
 }
-float RobotSettings::wheelCenterRadius() {
+float RobotSettings::wheelCenterRadius() const{
     return _wheelCenterRadius;
 }
-float RobotSettings::wheelCenterHeight() {
+float RobotSettings::wheelCenterHeight() const{
     return _wheelCenterHeight;
 }
-float RobotSettings::wheelRadius() {
+float RobotSettings::wheelRadius() const{
     return _wheelRadius;
 }
-float RobotSettings::wheelThickness() {
+float RobotSettings::wheelThickness() const{
     return _wheelThickness;
 }
-float RobotSettings::bottomPlateHeight() {
+float RobotSettings::bottomPlateHeight() const{
     return _bottomPlateHeight;
 }
-float RobotSettings::kickerWidth() {
+float RobotSettings::kickerWidth() const{
     return _kickerWidth;
 }
-float RobotSettings::kickerThickness() {
+float RobotSettings::kickerThickness() const{
     return _kickerThickness;
 }
-float RobotSettings::kickerHeight() {
+float RobotSettings::kickerHeight() const{
     return _kickerHeight;
 }
-float RobotSettings::kickerGroundDist() {
+float RobotSettings::kickerGroundDist() const{
     return _kickerGroundDist;
 }
-float RobotSettings::bodyMass() {
+float RobotSettings::bodyMass() const{
     return _bodyMass;
 }
-float RobotSettings::wheelMass() {
+float RobotSettings::wheelMass() const{
     return _wheelMass;
 }

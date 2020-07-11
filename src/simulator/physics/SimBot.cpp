@@ -13,7 +13,7 @@ btVector3 SimBot::position() const {
     motionState->getWorldTransform(transform);
     btVector3 origin=transform.getOrigin();
     transform.setOrigin(btVector3(0,0,0));
-    btVector3 topPos= origin+transform*(btVector3(0,0,robSettings->totalHeight-robSettings->bottomPlateHeight)*0.5*SCALE);
+    btVector3 topPos= origin+transform*(btVector3(0,0,robSettings->totalHeight()-robSettings->bottomPlateHeight())*0.5*SCALE);
     return topPos;
 }
 
@@ -278,7 +278,7 @@ SSL_DetectionRobot SimBot::asDetection() const {
     return robot;
 }
 btScalar SimBot::height() const {
-    return robSettings->totalHeight;
+    return robSettings->totalHeight();
 }
 void SimBot::globalControlAngle(btScalar xVel, btScalar yVel, btScalar targetAngle, btScalar dt) {
     std::cout<< xVel<<" "<<yVel<<" "<<targetAngle<<std::endl;

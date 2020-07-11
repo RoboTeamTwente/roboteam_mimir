@@ -12,7 +12,7 @@
 
 class SimField {
 public:
-    explicit SimField(std::unique_ptr <btMultiBodyDynamicsWorld>& world, const std::unique_ptr<WorldSettings>& cfg);
+    explicit SimField(std::unique_ptr <btMultiBodyDynamicsWorld>& world, const WorldSettings& cfg);
     ~SimField();
 private:
     std::unique_ptr<btMultiBodyDynamicsWorld>& dynamicsWorld;

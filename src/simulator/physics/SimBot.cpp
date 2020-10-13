@@ -31,7 +31,7 @@ SimBot::SimBot(unsigned int _id, std::unique_ptr<btMultiBodyDynamicsWorld>& worl
         SCALE(worldSettings->scale),
         robSettings{settings},
         dynamicsWorld{world}
-        {
+{
     btCompoundShape *wholeShape = new btCompoundShape();
     btTransform shapeTransform;
     shapeTransform.setIdentity();
@@ -70,7 +70,7 @@ SimBot::SimBot(unsigned int _id, std::unique_ptr<btMultiBodyDynamicsWorld>& worl
     addDribbler( worldSettings, dir, originPos);
 }
 void SimBot::addDribbler(const std::unique_ptr<WorldSettings> &worldSettings,
-                    btScalar dir, const btVector3 &originPos) {
+                         btScalar dir, const btVector3 &originPos) {
     //TODO: put constants in settings
     btCylinderShape *dribblerShape = new btCylinderShapeX(
             btVector3(0.1 / 2.0f, 0.007f, 0.007f) * SCALE);
@@ -173,7 +173,7 @@ void SimBot::localControl(btScalar velTangent, btScalar velNormal, btScalar velA
 }
 SimBot::SimBot(unsigned int id, std::unique_ptr<btMultiBodyDynamicsWorld>& world, const std::unique_ptr<RobotSettings> &settings,
                const std::unique_ptr<WorldSettings>& worldSettings) : SimBot(id, world, settings, worldSettings,
-                                                                      btVector3(0, 0, 0), 0.0) {
+                                                                             btVector3(0, 0, 0), 0.0) {
 }
 SimBot::~SimBot() {
     for (int i = shapes.size() - 1; i >= 0; --i) {
@@ -216,7 +216,9 @@ void SimBot::globalControl(btScalar xVel, btScalar yVel, btScalar angularVel) {
     localControl(xVel * cos(robotAngle) + yVel * sin(robotAngle), -xVel * sin(robotAngle) + yVel * cos(robotAngle),
                  angularVel);
 }
-
+void printVector(const btVector3& vec){
+    std::cout<<vec.x()<<" "<<vec.y()<<" "<<vec.z()<<std::endl;
+}
 //Simulate the internal code loop on the robot.
 void SimBot::update(SimBall *ball, double time) {
     //The real robot stops after not receiving commands for some time
@@ -255,9 +257,11 @@ void SimBot::update(SimBall *ball, double time) {
     //TODO: listen to commands properly
     if (ball && canKickBall(ball)){
         std::cout<<"KICKING BALL"<<std::endl;
-        btVector3 force=(ball->position()-body->getCenterOfMassPosition()).normalized()*1000;
+        btVector3 force=(ball->position()-body->getCenterOfMassPosition()).normalized()*2000;
         ball->kick(force);
     }
+    std::cout<<"ballvel: ";
+    printVector(ball->velocity());
 }
 void SimBot::deactivate() {
     if (isActive) {
@@ -265,9 +269,38 @@ void SimBot::deactivate() {
         isActive = false;
     }
 }
+
 bool SimBot::canKickBall(SimBall *ball) {
-    return (body->getCenterOfMassPosition() - ball->position()).norm() < 0.3 *SCALE;//TODO: fix actual kicker area
+    //We say that the robot can kick the ball if it within 3 cm of it's front end
+    double distance = 0.03*SCALE;
+    double ballHeight = ball->position().z();
+    //The ball cannot be flying
+    if(ballHeight>0.05*SCALE + ball->radius()){
+        return false;
+    }
+    btScalar yaw,pitch,roll;
+    body->getWorldTransform().getRotation().getEulerZYX(yaw,pitch,roll);
+    double startAngle = robSettings->startAngle/180.0*M_PI;
+    btVector3 robotFrontCenter = body->getWorldTransform() * (btVector3(robSettings->radius*cos(startAngle),0,0)*SCALE);
+    btVector3 robotFrontNormal = (robotFrontCenter-body->getWorldTransform().getOrigin()).normalized();
+
+    btVector3 ballPos = ball->position();
+    btVector3 v = ballPos - robotFrontCenter;
+    btScalar dist = v.dot(robotFrontNormal);
+    btVector3 projection = ballPos - dist*robotFrontNormal;
+    btVector3 diff = projection-robotFrontCenter;
+
+    double xydist = sqrt(diff.x()*diff.x()+diff.y()*diff.y());
+
+    double endAngle = robSettings->endAngle/180.0*M_PI;
+    double totalCutAngle = M_PI-(endAngle-startAngle)*0.5;
+    double halfFrontLength = sin(totalCutAngle)*robSettings->radius*SCALE;
+
+    btVector3 projDiff = ballPos-projection;
+    double normalDist = sqrt(projDiff.x()*projDiff.x()+projDiff.y()*projDiff.y());
+    return xydist < halfFrontLength && normalDist < SCALE*0.05;
 }
+
 
 //Position/orientation info is done on a higher level in combination with the camera info.
 SSL_DetectionRobot SimBot::asDetection() const {

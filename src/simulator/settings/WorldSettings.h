@@ -9,37 +9,33 @@
 #include <vector>
 
 //Note everything is in mm!
-class CameraSettings {
-public:
+struct CameraSettings {
     CameraSettings(int camID, double focalLength, double principalPointX, double principalPointY,
                    double distortion,
                    double q0, double q1, double q2, double q3,
                    double tx, double ty, double tz,
                    double derivedTX, double derivedTY, double derivedTZ,
                    int xResolution, int yResolution);
-    const int cameraID;
-    const double focalLength;
-    const double principalPointX;
-    const double principalPointY;
-    const double distortion;
-    const double q0;
-    const double q1;
-    const double q2;
-    const double q3;
-    const double tx;
-    const double ty;
-    const double tz;
-    const double derivedTX;
-    const double derivedTY;
-    const double derivedTZ;
-
-
-    const int camResolutionX;
-    const int camResolutionY;
+    int cameraID;
+    double focalLength;
+    double principalPointX;
+    double principalPointY;
+    double distortion;
+    double q0;
+    double q1;
+    double q2;
+    double q3;
+    double tx;
+    double ty;
+    double tz;
+    double derivedTX;
+    double derivedTY;
+    double derivedTZ;
+    int camResolutionX;
+    int camResolutionY;
 };
 
-class WorldSettings {
-public:
+struct WorldSettings {
     WorldSettings(
             float _fieldLength,
             float _fieldWidth,
@@ -59,30 +55,23 @@ public:
             float scale,
             std::vector<CameraSettings> _cameras
     );
-    const float fieldLength;
-    const float fieldWidth;
-    const float boundaryWidth;
-    const float lineWidth;
-    const float ceilingHeight;
-
-    const float goalWidth;
-    const float goalWallThickness;
-    const float goalDepth;
-    const float goalHeight;
-
-    const float ballRadius;
-    const float ballMass;
-
-    const float gravityX;
-    const float gravityY;
-    const float gravityZ;
-
-    const float centerCircleRadius;
-
-    const float scale;
-
-    const std::vector<CameraSettings> cameras;
-
+    float fieldLength;
+    float fieldWidth;
+    float boundaryWidth;
+    float lineWidth;
+    float ceilingHeight;
+    float goalWidth;
+    float goalWallThickness;
+    float goalDepth;
+    float goalHeight;
+    float ballRadius;
+    float ballMass;
+    float gravityX;
+    float gravityY;
+    float gravityZ;
+    float centerCircleRadius;
+    float scale;
+    std::vector<CameraSettings> cameras;
 };
 
 

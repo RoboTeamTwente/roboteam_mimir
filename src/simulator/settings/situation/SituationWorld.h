@@ -17,12 +17,12 @@ class SituationWorld {
 public:
     SituationWorld(QString _yellowSettings,QString _blueSettings, QString _worldSettings,
             std::vector<SituationBot> blue, std::vector<SituationBot> yellow, std::optional<SituationBall> ball);
-    const QString yellowSettings;
-    const QString blueSettings;
-    const QString worldSettings;
-    const std::vector<SituationBot> blueBots;
-    const std::vector<SituationBot> yellowBots;
-    const std::optional<SituationBall> ball;
+    QString yellowSettings;
+    QString blueSettings;
+    QString worldSettings;
+    std::vector<SituationBot> blueBots;
+    std::vector<SituationBot> yellowBots;
+    std::optional<SituationBall> ball;
 
 };
 

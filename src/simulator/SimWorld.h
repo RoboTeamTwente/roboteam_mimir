@@ -12,21 +12,19 @@
 #include <btBulletDynamicsCommon.h>
 #include "proto/messages_robocup_ssl_wrapper.pb.h"
 #include "proto/mimir_robotcommand.pb.h"
-#include "SimBot.h"
-#include "Camera.h"
 #include "BulletDynamics/Featherstone/btMultiBodyDynamicsWorld.h"
+
+#include "settings/WorldSettings.h"
+#include "settings/RobotSettings.h"
+#include "settings/situation/SituationWorld.h"
 
 class SimField;
 
 class SimBall;
 
-class RobotConfig;
+class SimBot;
 
-class WorldConfig;
-
-class Situation;
-
-class SituationWorld;
+class Camera;
 
 class Random;
 
@@ -40,18 +38,19 @@ struct RobotCommand{
 class SimWorld : public QObject {
     Q_OBJECT //TODO: figure out why this is necessary for compilation
     public:
-        SimWorld(const std::unique_ptr<WorldConfig>& _worldSettings, const std::unique_ptr<RobotConfig>& _blueSettings,
-                const std::unique_ptr<RobotConfig>& _yellowSettings, const std::unique_ptr<SituationWorld>& _situation);
+        SimWorld(const WorldSettings& _worldSettings, const RobotSettings& _blueSettings,
+                const RobotSettings& _yellowSettings, const SituationWorld& _situation);
         ~SimWorld() override;
         btDiscreteDynamicsWorld* getWorld();
         std::vector<SSL_WrapperPacket> getPackets();
         void doCommands(btScalar dt);
         void addCommands(const std::vector<mimir_robotcommand>& commands, bool TeamIsYellow); //TODO: fix copying
         void setRobotCount(unsigned numRobots, bool isYellow);
-        void updateWorldConfig(const std::unique_ptr<WorldConfig>& _worldSettings);
-        void updateRobotConfig(const std::unique_ptr<RobotConfig>& _robotSettings, bool isYellow);
-        WorldSettings *getWorldSettings();
-        RobotSettings *getRobotSettings(bool isYellow);
+        void updateWorldConfig(const WorldSettings& _worldSettings);
+        void updateRobotConfig(const RobotSettings& _robotSettings, bool isYellow);
+        WorldSettings getWorldSettings();
+        RobotSettings getRobotSettings(bool isYellow);
+
         void setSendGeometryTicks(unsigned int ticks);
         SSL_GeometryData getGeometryData();
         void stepSimulation(double dt);
@@ -73,6 +72,7 @@ private:
         std::vector<SSL_DetectionFrame> getDetectionFrames();
         void addRobotToFrames(std::vector<SSL_DetectionFrame> &frames,const std::unique_ptr<SimBot>&bot,const btVector3 &botPos,bool isYellow);
         void addBallToFrames(std::vector<SSL_DetectionFrame> &frames);
+
         std::unique_ptr<SimField> field;
         std::unique_ptr<SimBall> ball;
         std::vector<std::unique_ptr<SimBot>> blueBots;
@@ -87,12 +87,12 @@ private:
         std::unique_ptr<btMultiBodyConstraintSolver> solver;
         //TODO: only reason this is a MultiBody and not DiscreteDynamicsWorld is a bug for rolling friction in spheres
         //See https://github.com/bulletphysics/bullet3/issues/2117 for more info. Once this is patched for btRigidBody we can go back.
-        std::unique_ptr<btMultiBodyDynamicsWorld> dynamicsWorld; // is publicly accessible through getWorld() for debugDrawing purposes
+        std::shared_ptr<btMultiBodyDynamicsWorld> dynamicsWorld; // is publicly accessible through getWorld() for debugDrawing purposes
 
-        std::unique_ptr<RobotSettings> blueSettings;
-        std::unique_ptr<RobotSettings> yellowSettings;
-        std::unique_ptr<WorldSettings> worldSettings;
-        std::unique_ptr<SituationWorld> situation;
+        RobotSettings blueSettings;
+        RobotSettings yellowSettings;
+        WorldSettings worldSettings;
+        SituationWorld situation;
 
         std::unique_ptr<Random> random;
         double ballVanishingProb;

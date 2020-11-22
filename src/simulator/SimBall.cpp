@@ -5,18 +5,18 @@
 #include <iostream>
 #include "SimBall.h"
 #include "CollisionShared.h"
-SimBall::SimBall(std::unique_ptr<btMultiBodyDynamicsWorld> &_world, const std::unique_ptr<WorldSettings> &settings,
+SimBall::SimBall(std::shared_ptr<btMultiBodyDynamicsWorld> _world, const WorldSettings &settings,
         const btVector3 &initialPos,
         const btVector3 &initialVel)
         :
         world(_world),
-        SCALE(settings->scale) {
+        SCALE(settings.scale) {
     //create the shape and inertia
-    physicsBall = new btSphereShape(settings->scale*settings->ballRadius);
+    physicsBall = new btSphereShape(settings.scale*settings.ballRadius);
     btVector3 inertia(1.0, 1.0, 1.0);
-    inertia *= 0.4*settings->ballMass*settings->ballRadius*settings->ballRadius*SCALE*SCALE;
+    inertia *= 0.4*settings.ballMass*settings.ballRadius*settings.ballRadius*SCALE*SCALE;
 
-    multiBody = new btMultiBody(0, settings->ballMass, inertia, false, false, true);
+    multiBody = new btMultiBody(0, settings.ballMass, inertia, false, false, true);
     multiBody->setMaxCoordinateVelocity(100000000000);
     multiBody->setMaxAppliedImpulse(1000000000000);
     multiBody->setAngularDamping(0);
@@ -24,7 +24,7 @@ SimBall::SimBall(std::unique_ptr<btMultiBodyDynamicsWorld> &_world, const std::u
     btTransform worldTransform;
     worldTransform.setIdentity();
     btVector3 startPos=initialPos;
-    startPos.setZ(settings->ballRadius*SCALE);
+    startPos.setZ(settings.ballRadius*SCALE);
     worldTransform.setOrigin(startPos);
     multiBody->setBaseWorldTransform(worldTransform);
 
@@ -41,7 +41,7 @@ SimBall::SimBall(std::unique_ptr<btMultiBodyDynamicsWorld> &_world, const std::u
     //TODO: ang vel option+spinning friction and setting lin vel to 0
     col->setFriction(0.35);
     col->setRestitution(0.0);
-    col->setRollingFriction(0.0357*7*0.2*settings->ballRadius*SCALE);
+    col->setRollingFriction(0.0357*7*0.2*settings.ballRadius*SCALE);
     col->setSpinningFriction(0.00);
     multiBody->setBaseCollider(col);
 
@@ -54,9 +54,9 @@ SimBall::~SimBall() {
     delete motionState;
 }
 
-SimBall::SimBall(std::unique_ptr<btMultiBodyDynamicsWorld> &_world, const std::unique_ptr<WorldSettings> &settings)
+SimBall::SimBall(std::shared_ptr<btMultiBodyDynamicsWorld> _world, const WorldSettings &settings)
         :
-        SimBall(_world, settings, btVector3(0.0f, 0.0f, settings->scale*settings->ballRadius)) {
+        SimBall(_world, settings, btVector3(0.0f, 0.0f, settings.scale*settings.ballRadius)) {
 }
 
 btVector3 SimBall::velocity() const { //TODO: unused?

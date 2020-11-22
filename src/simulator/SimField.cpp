@@ -5,19 +5,19 @@
 #include "SimField.h"
 #include "CollisionShared.h"
 
-SimField::SimField(std::unique_ptr<btMultiBodyDynamicsWorld>&world, const std::unique_ptr<WorldSettings> &cfg)
+SimField::SimField(std::shared_ptr<btMultiBodyDynamicsWorld> world, const WorldSettings &cfg)
 : dynamicsWorld(world)
 {
-    const float SCALE=cfg->scale;
-    const float halfGoalHeight = cfg->goalHeight*0.5f*SCALE;
-    const float halfGoalWidth = cfg->goalWidth*0.5f*SCALE;
-    const float halfGoalDepth = cfg->goalDepth*0.5f*SCALE;
-    const float halfGoalWallThickness = cfg->goalWallThickness*0.5f*SCALE;
-    const float halfFieldLength = cfg->fieldLength*0.5f*SCALE;
-    const float halfFieldWidth = cfg->fieldWidth*0.5f*SCALE;
-    const float halfLineWidth = cfg->lineWidth*0.5f*SCALE;
-    const float boundaryWidth =cfg->boundaryWidth*SCALE;
-    const float ceilingHeight = cfg->ceilingHeight*SCALE;
+    const float SCALE=cfg.scale;
+    const float halfGoalHeight = cfg.goalHeight*0.5f*SCALE;
+    const float halfGoalWidth = cfg.goalWidth*0.5f*SCALE;
+    const float halfGoalDepth = cfg.goalDepth*0.5f*SCALE;
+    const float halfGoalWallThickness = cfg.goalWallThickness*0.5f*SCALE;
+    const float halfFieldLength = cfg.fieldLength*0.5f*SCALE;
+    const float halfFieldWidth = cfg.fieldWidth*0.5f*SCALE;
+    const float halfLineWidth = cfg.lineWidth*0.5f*SCALE;
+    const float boundaryWidth =cfg.boundaryWidth*SCALE;
+    const float ceilingHeight = cfg.ceilingHeight*SCALE;
 
     //create ground
     plane = new btStaticPlaneShape(btVector3(0.0, 0.0, 1.0),0);
@@ -52,7 +52,6 @@ SimField::SimField(std::unique_ptr<btMultiBodyDynamicsWorld>&world, const std::u
 }
 SimField::~SimField() {
     // when we exit from the field we need to destroy all relevant information stored in the dynamics world
-
     for (int i = 0; i < objects.size(); ++i) {
         dynamicsWorld->removeCollisionObject(objects[i]);
         delete objects[i];

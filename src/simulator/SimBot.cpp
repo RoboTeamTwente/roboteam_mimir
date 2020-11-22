@@ -13,7 +13,7 @@ btVector3 SimBot::position() const {
     motionState->getWorldTransform(transform);
     btVector3 origin=transform.getOrigin();
     transform.setOrigin(btVector3(0,0,0));
-    btVector3 topPos= origin+transform*(btVector3(0,0,robSettings->totalHeight-robSettings->bottomPlateHeight)*0.5*SCALE);
+    btVector3 topPos= origin+transform*(btVector3(0,0,robSettings.totalHeight-robSettings.bottomPlateHeight)*0.5*SCALE);
     return topPos;
 }
 
@@ -25,10 +25,10 @@ btScalar SimBot::orientation() const {
     return yaw;
 }
 //TODO: add option of initializing with wheel velocities
-SimBot::SimBot(unsigned int _id, std::unique_ptr<btMultiBodyDynamicsWorld>& world, const std::unique_ptr<RobotSettings> &settings,
-               const std::unique_ptr<WorldSettings>& worldSettings, const btVector3 &initialPos, btScalar dir) :
+SimBot::SimBot(unsigned int _id, std::shared_ptr<btMultiBodyDynamicsWorld> world, const RobotSettings &settings,
+               const WorldSettings& worldSettings, const btVector3 &initialPos, btScalar dir) :
         id{_id},
-        SCALE(worldSettings->scale),
+        SCALE(worldSettings.scale),
         robSettings{settings},
         dynamicsWorld{world}
 {
@@ -50,16 +50,16 @@ SimBot::SimBot(unsigned int _id, std::unique_ptr<btMultiBodyDynamicsWorld>& worl
     btTransform worldTransform;
     worldTransform.setIdentity();
     btVector3 originPos(initialPos.x(), initialPos.y(), SCALE *
-                                                        ((settings->totalHeight - settings->bottomPlateHeight) * 0.5 +
-                                                         settings->bottomPlateHeight));//TODO: ensure no offset!
+                                                        ((settings.totalHeight - settings.bottomPlateHeight) * 0.5 +
+                                                         settings.bottomPlateHeight));//TODO: ensure no offset!
     worldTransform.setOrigin(originPos);
     worldTransform.setRotation(btQuaternion(btVector3(0, 0, 1), dir));
 
     //make the hull a body with mass and place it into the world
     motionState = new btDefaultMotionState(worldTransform);
     btVector3 localInertia(0, 0, 0);
-    wholeShape->calculateLocalInertia(settings->bodyMass, localInertia);
-    btRigidBody::btRigidBodyConstructionInfo rbInfo(settings->bodyMass, motionState, wholeShape, localInertia);
+    wholeShape->calculateLocalInertia(settings.bodyMass, localInertia);
+    btRigidBody::btRigidBodyConstructionInfo rbInfo(settings.bodyMass, motionState, wholeShape, localInertia);
     body = new btRigidBody(rbInfo);
     body->setFriction(1.0);
     body->setRestitution(0.0);
@@ -69,22 +69,22 @@ SimBot::SimBot(unsigned int _id, std::unique_ptr<btMultiBodyDynamicsWorld>& worl
     addWheels(worldSettings, worldTransform);
     addDribbler( worldSettings, dir, originPos);
 }
-void SimBot::addDribbler(const std::unique_ptr<WorldSettings> &worldSettings,
+void SimBot::addDribbler(const WorldSettings &worldSettings,
                          btScalar dir, const btVector3 &originPos) {
     //TODO: put constants in settings
     btCylinderShape *dribblerShape = new btCylinderShapeX(
             btVector3(0.1 / 2.0f, 0.007f, 0.007f) * SCALE);
     shapes.push_back(dribblerShape);
     btVector3 dribblerCenter =
-            btVector3(robSettings->radius - 0.015, 0, -robSettings->totalHeight / 2.0f + 0.03f) * SCALE;
+            btVector3(robSettings.radius - 0.015, 0, -robSettings.totalHeight / 2.0f + 0.03f) * SCALE;
     btTransform dribblerStartTransform;
     dribblerStartTransform.setIdentity();
     dribblerStartTransform.setOrigin(dribblerCenter + originPos);
     dribblerStartTransform.setRotation(btQuaternion(btVector3(0, 0, 1), dir + M_PI_2));
 
     btVector3 dribblerInertia(0, 0, 0);
-    dribblerShape->calculateLocalInertia(0.02 * robSettings->bodyMass, dribblerInertia);
-    btRigidBody::btRigidBodyConstructionInfo rbDribInfo(0.02 * robSettings->bodyMass, nullptr, dribblerShape,
+    dribblerShape->calculateLocalInertia(0.02 * robSettings.bodyMass, dribblerInertia);
+    btRigidBody::btRigidBodyConstructionInfo rbDribInfo(0.02 * robSettings.bodyMass, nullptr, dribblerShape,
                                                         dribblerInertia);
     rbDribInfo.m_startWorldTransform = dribblerStartTransform;
 
@@ -104,39 +104,39 @@ void SimBot::addDribbler(const std::unique_ptr<WorldSettings> &worldSettings,
     dynamicsWorld->addConstraint(dribblerMotor, true);
 }
 void
-SimBot::addWheels(const std::unique_ptr<WorldSettings>& worldSettings,
+SimBot::addWheels(const WorldSettings& worldSettings,
                   btTransform hullTransform) {
     //we don't want to construct the same shape 4 times
     btCylinderShapeX *wheelShape = new btCylinderShapeX(
-            btVector3(robSettings->wheelThickness * 0.5, robSettings->wheelRadius, robSettings->wheelRadius) *
+            btVector3(robSettings.wheelThickness * 0.5, robSettings.wheelRadius, robSettings.wheelRadius) *
             SCALE);
-    addWheel(0, robSettings->wheelAngle0, wheelShape,  worldSettings, hullTransform);
-    addWheel(1, robSettings->wheelAngle1, wheelShape,  worldSettings, hullTransform);
-    addWheel(2, robSettings->wheelAngle2, wheelShape,  worldSettings, hullTransform);
-    addWheel(3, robSettings->wheelAngle3, wheelShape,  worldSettings, hullTransform);
+    addWheel(0, robSettings.wheelAngle0, wheelShape,  worldSettings, hullTransform);
+    addWheel(1, robSettings.wheelAngle1, wheelShape,  worldSettings, hullTransform);
+    addWheel(2, robSettings.wheelAngle2, wheelShape,  worldSettings, hullTransform);
+    addWheel(3, robSettings.wheelAngle3, wheelShape,  worldSettings, hullTransform);
 }
 void SimBot::addWheel(int wheelLabel, btScalar wheelAngleD, btCollisionShape *wheelShape,
-                      const std::unique_ptr<WorldSettings>& worldSettings, btTransform hullTransform) {
+                      const WorldSettings& worldSettings, btTransform hullTransform) {
     btScalar angleR = wheelAngleD / 180.0 * M_PI;//convert to radians
     // find the centre of the wheel position
     btTransform wheelTransform;
     wheelTransform.setRotation(btQuaternion(btVector3(0.0f, 0.0f, 1.0f), angleR));
     btVector3 wheelPos =
-            btVector3(cos(angleR) * robSettings->radius, sin(angleR) * robSettings->radius, robSettings->wheelRadius) *
+            btVector3(cos(angleR) * robSettings.radius, sin(angleR) * robSettings.radius, robSettings.wheelRadius) *
             SCALE;
     wheelTransform.setOrigin(wheelPos);
     //calculate moments of inertia of wheel
     btVector3 wheelInertia;
-    wheelShape->calculateLocalInertia(robSettings->wheelMass, wheelInertia);
+    wheelShape->calculateLocalInertia(robSettings.wheelMass, wheelInertia);
     // cosntruct rigid body
     //we need to multiply by body transform to construct the objects in the right places
     btDefaultMotionState *motionState = new btDefaultMotionState(hullTransform * wheelTransform);
-    btRigidBody::btRigidBodyConstructionInfo wheelInfo(robSettings->wheelMass, motionState, wheelShape, wheelInertia);
+    btRigidBody::btRigidBodyConstructionInfo wheelInfo(robSettings.wheelMass, motionState, wheelShape, wheelInertia);
     btRigidBody *wheel = new btRigidBody(wheelInfo);
     wheel->setUserIndex(bodyType::WHEEL);
     wheels[wheelLabel] = wheel;
     //construct joint/motor
-    btVector3 heightOffset = btVector3(0, 0, -(robSettings->totalHeight+robSettings->bottomPlateHeight) * 0.5) *
+    btVector3 heightOffset = btVector3(0, 0, -(robSettings.totalHeight+robSettings.bottomPlateHeight) * 0.5) *
                              SCALE;
     btHingeConstraint *constraint = new btHingeConstraint(*body, *wheel, wheelPos + heightOffset,
                                                           btVector3(0.0, 0.0, 0),
@@ -145,7 +145,7 @@ void SimBot::addWheel(int wheelLabel, btScalar wheelAngleD, btCollisionShape *wh
     constraint->enableAngularMotor(true, 0, 10000000);
     constraint->setDbgDrawSize(1.5);
     // set friction to be different in each direction of the wheel axis x is perpendicular, y is tangent. Z friction is lateral (only really relevant for ball/ball and robot/robot collisions)
-    wheel->setAnisotropicFriction(btVector3(0.15, 0.85, 0.0), btCollisionObject::CF_ANISOTROPIC_FRICTION);
+    wheel->setAnisotropicFriction(btVector3(0.05, 1.0, 0.0), btCollisionObject::CF_ANISOTROPIC_FRICTION);
     wheelMotor[wheelLabel] = constraint;
     //add everything to the world
     dynamicsWorld->addConstraint(constraint, true);
@@ -160,19 +160,19 @@ void SimBot::wheelControl(btScalar wheel0, btScalar wheel1, btScalar wheel2, btS
 }
 void SimBot::localControl(btScalar velTangent, btScalar velNormal, btScalar velAngle) {
     btScalar degToRad = M_PI / 180.0f;
-    btScalar angles[4] = {degToRad * robSettings->wheelAngle0,
-                          degToRad * robSettings->wheelAngle1,
-                          degToRad * robSettings->wheelAngle2,
-                          degToRad * robSettings->wheelAngle3};
+    btScalar angles[4] = {degToRad * robSettings.wheelAngle0,
+                          degToRad * robSettings.wheelAngle1,
+                          degToRad * robSettings.wheelAngle2,
+                          degToRad * robSettings.wheelAngle3};
     for (int i = 0; i < 4; ++i) {
-        btScalar wheelVel = 1.0 / robSettings->wheelRadius *
-                            ((robSettings->radius * velAngle) - (velTangent * sin(angles[i])) +
+        btScalar wheelVel = 1.0 / robSettings.wheelRadius *
+                            ((robSettings.radius * velAngle) - (velTangent * sin(angles[i])) +
                              (velNormal * cos(angles[i])));
         wheelMotor[i]->setMotorTargetVelocity(wheelVel);
     }
 }
-SimBot::SimBot(unsigned int id, std::unique_ptr<btMultiBodyDynamicsWorld>& world, const std::unique_ptr<RobotSettings> &settings,
-               const std::unique_ptr<WorldSettings>& worldSettings) : SimBot(id, world, settings, worldSettings,
+SimBot::SimBot(unsigned int id, std::shared_ptr<btMultiBodyDynamicsWorld> world, const RobotSettings &settings,
+               const WorldSettings& worldSettings) : SimBot(id, world, settings, worldSettings,
                                                                              btVector3(0, 0, 0), 0.0) {
 }
 SimBot::~SimBot() {
@@ -222,10 +222,10 @@ void printVector(const btVector3& vec){
 //Simulate the internal code loop on the robot.
 void SimBot::update(SimBall *ball, double time) {
     //The real robot stops after not receiving commands for some time
-    if (time - lastCommandTime > 0.1) { //TODO: move to settings
-        deactivate();
-        return;
-    }
+//    if (time - lastCommandTime > 0.1) { //TODO: move to settings
+//        deactivate();
+//        return;
+//    }
     body->activate();
     switch (lastCommand.control_case()) {
         case mimir_robotcommand::kWheels: {
@@ -249,7 +249,9 @@ void SimBot::update(SimBall *ball, double time) {
             break;
         }
         case mimir_robotcommand::CONTROL_NOT_SET: {
-            std::cerr << "No control set in command!" << std::endl;
+            //std::cerr << "No control set in command!" << std::endl;
+            localControl(5.0,0.0,0.0);
+            std::cout<<" length: "<<body->getLinearVelocity().length();
             break; //TODO: fix this error on startup
         }
     }
@@ -280,8 +282,8 @@ bool SimBot::canKickBall(SimBall *ball) {
     }
     btScalar yaw,pitch,roll;
     body->getWorldTransform().getRotation().getEulerZYX(yaw,pitch,roll);
-    double startAngle = robSettings->startAngle/180.0*M_PI;
-    btVector3 robotFrontCenter = body->getWorldTransform() * (btVector3(robSettings->radius*cos(startAngle),0,0)*SCALE);
+    double startAngle = robSettings.startAngle/180.0*M_PI;
+    btVector3 robotFrontCenter = body->getWorldTransform() * (btVector3(robSettings.radius*cos(startAngle),0,0)*SCALE);
     btVector3 robotFrontNormal = (robotFrontCenter-body->getWorldTransform().getOrigin()).normalized();
 
     btVector3 ballPos = ball->position();
@@ -292,9 +294,9 @@ bool SimBot::canKickBall(SimBall *ball) {
 
     double xydist = sqrt(diff.x()*diff.x()+diff.y()*diff.y());
 
-    double endAngle = robSettings->endAngle/180.0*M_PI;
+    double endAngle = robSettings.endAngle/180.0*M_PI;
     double totalCutAngle = M_PI-(endAngle-startAngle)*0.5;
-    double halfFrontLength = sin(totalCutAngle)*robSettings->radius*SCALE;
+    double halfFrontLength = sin(totalCutAngle)*robSettings.radius*SCALE;
 
     btVector3 projDiff = ballPos-projection;
     double normalDist = sqrt(projDiff.x()*projDiff.x()+projDiff.y()*projDiff.y());
@@ -311,7 +313,7 @@ SSL_DetectionRobot SimBot::asDetection() const {
     return robot;
 }
 btScalar SimBot::height() const {
-    return robSettings->totalHeight;
+    return robSettings.totalHeight;
 }
 void SimBot::globalControlAngle(btScalar xVel, btScalar yVel, btScalar targetAngle, btScalar dt) {
     std::cout<< xVel<<" "<<yVel<<" "<<targetAngle<<std::endl;

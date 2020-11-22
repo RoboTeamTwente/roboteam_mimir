@@ -91,7 +91,7 @@ void Visualizer::drawFieldLines(QPainter* painter) {
         painter->drawLine(graphicLine);
     }
     for (int j = 0; j < geometryField.field_arcs_size(); ++ j) {
-        const SSL_FieldCicularArc &arc = geometryField.field_arcs(j);
+        const SSL_FieldCircularArc &arc = geometryField.field_arcs(j);
         pen.setWidthF(arc.thickness());
         QRectF boundingBox(arc.center().x()-arc.radius(),arc.center().y()-arc.radius(),arc.radius()*2,arc.radius()*2);
         const double scaleFactor=180.0/(16.0*3.14159);//qt works with 1/16 of a degree rounded to ints for some unholy reason.

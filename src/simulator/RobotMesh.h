@@ -5,19 +5,17 @@
 #ifndef ROBOTEAM_MIMIR_ROBOTMESH_H
 #define ROBOTEAM_MIMIR_ROBOTMESH_H
 
-#include <QList>
+#include <vector>
 #include <btBulletDynamicsCommon.h>
-#include "../config/RobotSettings.h"
+#include "settings/RobotSettings.h"
 #include <memory>
 
 class RobotMesh {
 public:
-    explicit RobotMesh(const std::unique_ptr<RobotSettings>& settings);
-    const QList<btVector3> &hull() const;
+    explicit RobotMesh(const RobotSettings& settings);
+    [[nodiscard]] const std::vector<btVector3> &hull() const;
 private:
-
-private:
-    QList<btVector3> mesh;
+    std::vector<btVector3> mesh;
 
 };
 

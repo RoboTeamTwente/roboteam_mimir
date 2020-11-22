@@ -8,7 +8,7 @@
 #include <QRectF>
 #include <proto/messages_robocup_ssl_geometry.pb.h>
 #include "btBulletDynamicsCommon.h"
-#include "../config/WorldSettings.h"
+#include "settings/WorldSettings.h"
 
 class Camera {
 public:

@@ -6,7 +6,7 @@
 #define ROBOTEAM_MIMIR_ROBOTCONFIG_H
 
 #include <QSettings>
-#include "RobotSettings.h"
+#include <simulator/settings/RobotSettings.h>
 #include <memory>
 
 class RobotConfig {

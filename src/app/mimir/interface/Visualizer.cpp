@@ -9,12 +9,14 @@
 
 namespace interface {
 
-Visualizer::Visualizer(WorldSettings* worldSettings, RobotSettings* yellow, RobotSettings* blue,
+Visualizer::Visualizer(const WorldSettings& worldSettings,const RobotSettings& yellow,const RobotSettings& blue,
         const SSL_GeometryData &geometry, QWidget* parent)
         :
-        blueSettings(blue),
+        QGraphicsView(parent),
         yellowSettings(yellow),
-        QGraphicsView(parent) {
+        blueSettings(blue),
+        worldSettings(worldSettings)
+        {
     scene = new QGraphicsScene(this);
     setScene(scene);
     setGeometryData(geometry,worldSettings);
@@ -30,7 +32,7 @@ Visualizer::Visualizer(WorldSettings* worldSettings, RobotSettings* yellow, Robo
     timer->start(20);
 
 }
-void Visualizer::setGeometryData(const SSL_GeometryData &geometry, WorldSettings* settings) {
+void Visualizer::setGeometryData(const SSL_GeometryData &geometry, WorldSettings settings) {
     //Unfortunately there is no pretty way to compare protobuf objects.
     worldSettings=settings;
     if (geometry.SerializeAsString() != geometryData.SerializeAsString()) {
@@ -59,10 +61,10 @@ void Visualizer::drawForeground(QPainter* painter, const QRectF &rect) {
     for (const auto &frame : cameraFrames) {
         const auto &det=frame.second;
         for (int i = 0; i <det.robots_blue_size() ; ++ i) {
-            drawRobot(painter,det.robots_blue(i),blueSettings,Qt::blue);
+            drawRobot(painter,det.robots_blue(i),&blueSettings,Qt::blue);
         }
         for (int i = 0; i <det.robots_yellow_size() ; ++ i) {
-            drawRobot(painter,det.robots_yellow(i),yellowSettings,Qt::yellow);
+            drawRobot(painter,det.robots_yellow(i),&yellowSettings,Qt::yellow);
         }
         for (int i = 0; i<det.balls_size(); ++i){
             drawBall(painter,det.balls(i));
@@ -120,7 +122,7 @@ void Visualizer::drawGoal(QPainter* painter, bool isLeft) {
     pen.setJoinStyle(Qt::MiterJoin);
     QPainterPath path;
     double side = isLeft ? -1.0 : 1.0;
-    double d = worldSettings->goalWallThickness* 0.5*1000;
+    double d = worldSettings.goalWallThickness* 0.5*1000;
     double l = field.field_length() * 0.5;
     double w = field.goal_width()* 0.5 + d; //it's drawn using symmetry so we don't have to mirror the y-axis perse
     pen.setWidthF(2*d);
@@ -164,7 +166,7 @@ void Visualizer::drawRobot(QPainter* painter,const SSL_DetectionRobot &bot, Robo
     painter->drawText(botPos+QPointF(-radius*0.4,radius*0.4),QString::number(bot.robot_id()));
 }
 void Visualizer::drawBall(QPainter* painter, const SSL_DetectionBall &ball) {
-    const float radius=worldSettings->ballRadius*1000 ;
+    const float radius=worldSettings.ballRadius*1000 ;
     QRectF rect(-radius,-radius,radius*2,radius*2);
     QPointF ballPos(ball.x(),-ball.y());
     rect.translate(ballPos);
@@ -174,13 +176,13 @@ void Visualizer::drawBall(QPainter* painter, const SSL_DetectionBall &ball) {
     painter->drawEllipse(rect);
 
 }
-void Visualizer::setBlueSettings(RobotSettings* settings) {
+void Visualizer::setBlueSettings(RobotSettings settings) {
     blueSettings=settings;
 }
-void Visualizer::setYellowSettings(RobotSettings* settings) {
+void Visualizer::setYellowSettings(RobotSettings settings) {
     yellowSettings=settings;
 }
-void Visualizer::setWorldSettings(WorldSettings* settings) {
+void Visualizer::setWorldSettings(WorldSettings settings) {
     worldSettings=settings;
 }
 void Visualizer::addDetections(const std::vector<SSL_WrapperPacket>& frames) {

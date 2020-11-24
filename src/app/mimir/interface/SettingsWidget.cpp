@@ -3,7 +3,7 @@
 //
 
 #include "SettingsWidget.h"
-#include "simulator/Simulator.h"
+#include "Simulator.h"
 namespace interface{
     SettingsWidget::SettingsWidget(Simulator* simulator,QWidget *parent) : QWidget(parent){
         //TODO: connect widgets and initialize values correctly

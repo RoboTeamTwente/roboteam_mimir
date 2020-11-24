@@ -10,10 +10,6 @@
 // https://web.archive.org/web/20170706235814/http://www.bulletphysics.org/mediawiki-1.5.8/index.php/Main_Page
 
 #include "SimWorld.h"
-#include "SimField.h"
-#include "SimBall.h"
-#include "SimBot.h"
-#include "Camera.h"
 
 #include "utilities/Random.h"
 #include "CollisionShared.h"
@@ -34,16 +30,18 @@ SimWorld::SimWorld(const WorldSettings & _worldSettings,
                    yellowSettings(_yellowSettings),
                    worldSettings(_worldSettings),
                    situation(_situation){
+    MaterialManager::initialize();
+    setupMaterials();
     //We create local copies of all the inputs to ensure we are always sending the data back as the simulator sees it.
     //Contains default setup for memory and how collisions between different types of objects are handled/calculated
     collisionConfig = std::make_unique<btDefaultCollisionConfiguration>();
     //uses the default dispatcher. We might want to use the parallel one down the road.
     collisionDispatcher = std::make_unique<btCollisionDispatcher>(collisionConfig.get());
-    collisionDispatcher->setNearCallback(
-            customNearCallback); //We use a custom callback so we can change some contact constraints (see CollisionShared)
+    //We use a custom callback so we can change some contact constraints (see CollisionShared)
     //btDbvtBroadphase is a good general purpose broadphase. You can also try out btAxis3Sweep.
     overlappingPairCache = std::make_unique<btDbvtBroadphase>();
     //the default constraint solver. For parallel processing you can use a different solver (see Extras/BulletMultiThreaded)
+
     solver = std::make_unique<btMultiBodyConstraintSolver>();
     // the world in which all simulation happens
     dynamicsWorld = std::make_shared<btMultiBodyDynamicsWorld>(collisionDispatcher.get(), overlappingPairCache.get(),
@@ -60,6 +58,7 @@ SimWorld::SimWorld(const WorldSettings & _worldSettings,
 }
 SimWorld::~SimWorld() {
     //delete bullet related objects in reverse order of creation!
+    MaterialManager::deinitialize();
 }
 btDiscreteDynamicsWorld *SimWorld::getWorld() {
     return dynamicsWorld.get(); // Raw as we don't want to share ownership of the world with e.g. visual interfaces
@@ -294,6 +293,7 @@ void SimWorld::resetWorld() {
         cameras.emplace_back(camerasettings, dynamicsWorld.get(), SCALE);
     }
     resetRobots();
+
 }
 void SimWorld::reloadSituation() {
     const btScalar SCALE = worldSettings.scale;
@@ -327,11 +327,11 @@ void SimWorld::reloadSituation() {
     numBlueBots = situation.blueBots.size(); //TODO: fix communication with interface and interactions between Simulator.
     numYellowBots = situation.yellowBots.size();
 }
-void SimWorld::updateWorldConfig(const WorldSettings &_worldSettings) {
+void SimWorld::setWorldSettings(const WorldSettings &_worldSettings) {
     worldSettings = _worldSettings;
     resetWorld();
 }
-void SimWorld::updateRobotConfig(const RobotSettings & _robotSettings, bool isYellow) {
+void SimWorld::setRobotSettings(const RobotSettings & _robotSettings, bool isYellow) {
     if (isYellow) {
         yellowSettings = _robotSettings;
     } else {
@@ -399,4 +399,26 @@ void SimWorld::addBallToFrames(std::vector<SSL_DetectionFrame> &frames) {
             frames[i].mutable_balls()->Add()->CopyFrom(detBall);
         }
     }
+}
+void SimWorld::setupMaterials() {
+  Material ball_ground_contact;
+  ball_ground_contact.friction = 0.35;
+  ball_ground_contact.rollingFriction = 0.106607348; // TODO: fix scaling issues? (e.g. doesn't scale well with ball mass right now)
+  ball_ground_contact.spinningFriction = 0.03; //TODO: measure, this is the most random estimate
+  ball_ground_contact.restitution = 0.55; //TODO: use measurements (guestimate now)
+  MaterialManager::setMaterial(COL_BALL,COL_GROUND,ball_ground_contact);
+
+  Material robot_hull_ball_contact;
+  robot_hull_ball_contact.friction = 0.22;
+  robot_hull_ball_contact.restitution = 0.6;
+  MaterialManager::setMaterial(COL_BALL,COL_ROBOT_HULL,robot_hull_ball_contact);
+
+  Material ball_wall_contact;
+  ball_wall_contact.rollingFriction = 3 * ball_ground_contact.rollingFriction.value();
+  ball_wall_contact.friction = 0.48;
+  ball_wall_contact.restitution = 0.25;
+  MaterialManager::setMaterial(COL_BALL,,robot_hull_ball_contact);
+  //robot wall
+  //robot robot
+
 }

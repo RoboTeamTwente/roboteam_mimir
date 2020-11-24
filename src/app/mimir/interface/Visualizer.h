@@ -6,21 +6,21 @@
 #define ROBOTEAM_MIMIR_VISUALIZER_H
 #include <QGraphicsView>
 #include <proto/messages_robocup_ssl_wrapper.pb.h>
-#include "../simulator/config/WorldSettings.h"
-#include "../simulator/config/RobotSettings.h"
+#include <simulator/settings/WorldSettings.h>
+#include <simulator/settings/RobotSettings.h>
 #include <unordered_map>
 namespace interface {
 
 class Visualizer : public QGraphicsView {
     Q_OBJECT
     public:
-        explicit Visualizer(WorldSettings* worldSettings, RobotSettings* yellow, RobotSettings* blue,
+        explicit Visualizer(const WorldSettings& worldSettings,const RobotSettings& yellow,const RobotSettings& blue,
                 const SSL_GeometryData &geometry, QWidget* parent = nullptr);
     public slots:
-        void setGeometryData(const SSL_GeometryData &geometry, WorldSettings* settings);
-        void setBlueSettings(RobotSettings* settings);
-        void setYellowSettings(RobotSettings* settings);
-        void setWorldSettings(WorldSettings* settings);
+        void setGeometryData(const SSL_GeometryData &geometry, WorldSettings settings);
+        void setBlueSettings(RobotSettings settings);
+        void setYellowSettings(RobotSettings settings);
+        void setWorldSettings(WorldSettings settings);
         void addDetections(const std::vector<SSL_WrapperPacket>& frames);
     protected:
         void drawBackground(QPainter* painter, const QRectF &rect) override;
@@ -42,9 +42,9 @@ class Visualizer : public QGraphicsView {
         QRectF sceneRect;
         QTimer* timer;
 
-        RobotSettings* yellowSettings;
-        RobotSettings* blueSettings;
-        WorldSettings* worldSettings;
+        RobotSettings yellowSettings;
+        RobotSettings blueSettings;
+        WorldSettings worldSettings;
 
         SSL_GeometryData geometryData;
         std::unordered_map<int,SSL_DetectionFrame> cameraFrames;

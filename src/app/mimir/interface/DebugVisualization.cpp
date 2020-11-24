@@ -190,7 +190,7 @@ namespace interface {
             currentDir.cdUp();
         }
         if (success) {
-            if (currentDir.cd("src/interface")) {
+            if (currentDir.cd("src/app/mimir/interface")) {
                 return currentDir.absolutePath();
             }
         }

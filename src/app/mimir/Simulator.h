@@ -9,34 +9,33 @@
 #include <memory>
 #include "net/Publisher.h"
 #include "net/Receiver.h"
-#include "../../utilities/Timer.h"//TODO: Fix include
+#include "Timer.h"//TODO: Fix include
 
-class SimWorld;
-class ConfigWidget;
-class btDiscreteDynamicsWorld;
-class WorldSettings;
-class RobotSettings;
-class SSL_GeometryData;
-class SSL_WrapperPacket;
-class QTimer;
+#include <simulator/SimWorld.h>
+#include "ConfigWidget.h"
+#include "WorldConfig.h"
+#include "RobotConfig.h"
 
+#include <QTimer>
+#include "proto/messages_robocup_ssl_geometry.pb.h"
+#include "Timer.h"
 
 class Simulator :public QObject {
     Q_OBJECT
 public:
     Simulator();
     btDiscreteDynamicsWorld* getPhysicsWorld();
-    WorldSettings * getWorldSettings();
-    RobotSettings * getBlueSettings();
-    RobotSettings * getYellowSettings();
+    WorldSettings getWorldSettings();
+    RobotSettings getBlueSettings();
+    RobotSettings getYellowSettings();
     QList<QString> getWorldConfigNames();
     QList<QString> getRobotConfigNames();
     SSL_GeometryData getGeometry();
 
 signals:
-    void geometryUpdated(const SSL_GeometryData &geometry,WorldSettings* settings);
-    void blueUpdated(RobotSettings* settings);
-    void yellowUpdated(RobotSettings* settings);
+    void geometryUpdated(const SSL_GeometryData &geometry,WorldSettings settings);
+    void blueUpdated(RobotSettings settings);
+    void yellowUpdated(RobotSettings settings);
     void sentPackets(const std::vector<SSL_WrapperPacket> &packets);
 public slots:
     void tick();

@@ -6,7 +6,7 @@
 #define ROBOTEAM_MIMIR_WORLDCONFIG_H
 
 #include <QSettings>
-#include "WorldSettings.h"
+#include <simulator/settings/WorldSettings.h>
 #include <memory>
 
 

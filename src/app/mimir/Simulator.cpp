@@ -3,14 +3,7 @@
 //
 
 #include "Simulator.h"
-#include "physics/SimWorld.h"
-#include "ConfigWidget.h"
-#include "config/WorldConfig.h"
-#include "config/RobotConfig.h"
 
-#include <QTimer>
-#include "proto/messages_robocup_ssl_geometry.pb.h"
-#include "utilities/Timer.h"
 
 Simulator::Simulator() {
     //set up network connections
@@ -25,11 +18,11 @@ Simulator::Simulator() {
     //read all config files and save them in a widget
     configWidget=new ConfigWidget();
     // get the initial config settings and create a physics simulator with them
-    const std::unique_ptr<Situation> &situation = configWidget->getSituation("BallTestFormation");
-    const std::unique_ptr<WorldConfig> &worldConfig = configWidget->getWorldConfig(situation->situation->worldSettings);
-    const std::unique_ptr<RobotConfig> &yellowConfig = configWidget->getRobotConfig(situation->situation->yellowSettings);
-    const std::unique_ptr<RobotConfig> &blueConfig = configWidget->getRobotConfig(situation->situation->blueSettings);
-    simWorld=std::make_unique<SimWorld>(worldConfig,blueConfig,yellowConfig,situation->situation);
+    SituationWorld situation = *configWidget->getSituation("BallTestFormation")->situation.get();
+    WorldSettings worldSettings = *configWidget->getWorldConfig("divisionA")->settings.get();
+    RobotSettings blue_settings= *configWidget->getRobotConfig("RTT")->settings.get();
+    RobotSettings yellow_settings= *configWidget->getRobotConfig("RTT")->settings.get();
+    simWorld=std::make_unique<SimWorld>(worldSettings,blue_settings,yellow_settings,situation);
 
     timingManager=std::make_unique<Timer>();
     currentTiming=std::make_unique<Timing>(timingManager->getTimer("Realtime 250hz"));
@@ -68,13 +61,13 @@ void Simulator::tick() {
 //    std::cout<<" dt"<< currentTiming->timeStepLength<<" ms: "<<currentTiming->millisecWaitTime  <<std::endl;
 }
 
-WorldSettings * Simulator::getWorldSettings() {
+WorldSettings Simulator::getWorldSettings() {
     return simWorld->getWorldSettings();
 }
-RobotSettings * Simulator::getBlueSettings() {
+RobotSettings Simulator::getBlueSettings() {
     return simWorld->getRobotSettings(false);
 }
-RobotSettings * Simulator::getYellowSettings() {
+RobotSettings Simulator::getYellowSettings() {
     return simWorld->getRobotSettings(true);
 }
 QList<QString> Simulator::getRobotConfigNames() {
@@ -84,7 +77,7 @@ QList<QString> Simulator::getWorldConfigNames() {
     return configWidget->getWorldNames();
 }
 void Simulator::setRobotConfig(const QString &name, bool isYellow) {
-    simWorld->updateRobotConfig(configWidget->getRobotConfig(name),isYellow);
+    simWorld->setRobotSettings(*configWidget->getRobotConfig(name)->settings.get(),isYellow);
     if (isYellow){
         emit yellowUpdated(getYellowSettings());
     }
@@ -103,7 +96,7 @@ void Simulator::setYellowConfig(const QString &name) {
 }
 void Simulator::setWorldConfig(const QString &name) {
     std::cerr<<"setting worldConfig to "<< name.toStdString()<<std::endl;
-    simWorld->updateWorldConfig(configWidget->getWorldConfig(name));
+    simWorld->setWorldSettings(*configWidget->getWorldConfig(name)->settings.get());
     emit geometryUpdated(simWorld->getGeometryData(),getWorldSettings());
 }
 void Simulator::setBlueBotCount(int count) {

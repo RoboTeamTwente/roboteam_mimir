@@ -8,9 +8,9 @@
 #include <QDir>
 #include <QSettings>
 #include <memory>
-#include "config/WorldConfig.h"
-#include "config/RobotConfig.h"
-#include "config/Situation.h"
+#include "WorldConfig.h"
+#include "RobotConfig.h"
+#include "Situation.h"
 
 class ConfigWidget {
 public:

@@ -4,27 +4,18 @@
 
 #ifndef ROBOTEAM_MIMIR_SIMWORLD_H
 #define ROBOTEAM_MIMIR_SIMWORLD_H
-//TODO: remove later
-#include <QObject>
-#include "iostream"
-//end
-
 #include <btBulletDynamicsCommon.h>
-#include "proto/messages_robocup_ssl_wrapper.pb.h"
-#include "proto/mimir_robotcommand.pb.h"
-#include "BulletDynamics/Featherstone/btMultiBodyDynamicsWorld.h"
+#include <proto/messages_robocup_ssl_wrapper.pb.h>
+#include <proto/mimir_robotcommand.pb.h>
+#include <BulletDynamics/Featherstone/btMultiBodyDynamicsWorld.h>
 
 #include "settings/WorldSettings.h"
 #include "settings/RobotSettings.h"
 #include "settings/situation/SituationWorld.h"
-
-class SimField;
-
-class SimBall;
-
-class SimBot;
-
-class Camera;
+#include "SimField.h"
+#include "SimBall.h"
+#include "SimBot.h"
+#include "Camera.h"
 
 class Random;
 
@@ -35,25 +26,25 @@ struct RobotCommand{
   mimir_robotcommand command;
   double simulatorReceiveTime;
 };
-class SimWorld : public QObject {
-    Q_OBJECT //TODO: figure out why this is necessary for compilation
+class SimWorld{
     public:
         SimWorld(const WorldSettings& _worldSettings, const RobotSettings& _blueSettings,
                 const RobotSettings& _yellowSettings, const SituationWorld& _situation);
-        ~SimWorld() override;
+        ~SimWorld();
+        void stepSimulation(double dt);
         btDiscreteDynamicsWorld* getWorld();
         std::vector<SSL_WrapperPacket> getPackets();
         void doCommands(btScalar dt);
         void addCommands(const std::vector<mimir_robotcommand>& commands, bool TeamIsYellow); //TODO: fix copying
         void setRobotCount(unsigned numRobots, bool isYellow);
-        void updateWorldConfig(const WorldSettings& _worldSettings);
-        void updateRobotConfig(const RobotSettings& _robotSettings, bool isYellow);
+
+        void setWorldSettings(const WorldSettings& _worldSettings);
+        void setRobotSettings(const RobotSettings& _robotSettings, bool isYellow);
         WorldSettings getWorldSettings();
         RobotSettings getRobotSettings(bool isYellow);
 
         void setSendGeometryTicks(unsigned int ticks);
         SSL_GeometryData getGeometryData();
-        void stepSimulation(double dt);
         void setDelay(double _delay);
 
         void setRobotXNoise(double noise);
@@ -66,6 +57,7 @@ class SimWorld : public QObject {
         void setBallVanishing(double prob);
 
 private:
+        void setupMaterials();
         void resetRobots();
         void resetWorld();
         void reloadSituation();

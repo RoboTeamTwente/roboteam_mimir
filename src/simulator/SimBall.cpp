@@ -13,6 +13,7 @@ SimBall::SimBall(std::shared_ptr<btMultiBodyDynamicsWorld> _world, const WorldSe
         SCALE(settings.scale) {
     //create the shape and inertia
     physicsBall = new btSphereShape(settings.scale*settings.ballRadius);
+
     btVector3 inertia(1.0, 1.0, 1.0);
     inertia *= 0.4*settings.ballMass*settings.ballRadius*settings.ballRadius*SCALE*SCALE;
 
@@ -21,6 +22,7 @@ SimBall::SimBall(std::shared_ptr<btMultiBodyDynamicsWorld> _world, const WorldSe
     multiBody->setMaxAppliedImpulse(1000000000000);
     multiBody->setAngularDamping(0);
     multiBody->setLinearDamping(0);
+
     btTransform worldTransform;
     worldTransform.setIdentity();
     btVector3 startPos=initialPos;
@@ -32,17 +34,19 @@ SimBall::SimBall(std::shared_ptr<btMultiBodyDynamicsWorld> _world, const WorldSe
 
     world->addMultiBody(multiBody);
     motionState = new btDefaultMotionState(worldTransform); //TODO: use motionState?
+
     btMultiBodyLinkCollider* col = new btMultiBodyLinkCollider(multiBody, - 1);
     col->setCollisionShape(physicsBall);
     col->setWorldTransform(worldTransform);
 
-    world->addCollisionObject(col, COL_BALL, COL_FIELD | COL_ROBOT | COL_BALL);
+    world->addCollisionObject(col, COL_BALL, COL_GROUND | COL_ROBOT | COL_BALL);
     // TODO: set restitution/friction
     //TODO: ang vel option+spinning friction and setting lin vel to 0
     col->setFriction(0.35);
     col->setRestitution(0.0);
     col->setRollingFriction(0.0357*7*0.2*settings.ballRadius*SCALE);
     col->setSpinningFriction(0.00);
+    col->setCollisionFlags(col->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
     multiBody->setBaseCollider(col);
 
     multiBody->setBaseVel(initialVel);

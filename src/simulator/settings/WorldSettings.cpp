@@ -2,7 +2,7 @@
 // Created by rolf on 02-10-19.
 //
 
-#include "WorldSettings.h"
+#include "settings/WorldSettings.h"
 
 #include <utility>
 

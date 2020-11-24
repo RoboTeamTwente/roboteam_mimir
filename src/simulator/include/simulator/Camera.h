@@ -5,7 +5,6 @@
 #ifndef ROBOTEAM_MIMIR_CAMERA_H
 #define ROBOTEAM_MIMIR_CAMERA_H
 
-#include <QRectF>
 #include <proto/messages_robocup_ssl_geometry.pb.h>
 #include "btBulletDynamicsCommon.h"
 #include "settings/WorldSettings.h"

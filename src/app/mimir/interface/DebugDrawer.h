@@ -6,7 +6,7 @@
 #define ROBOTEAM_MIMIR_DEBUGDRAWER_H
 
 #include <btBulletDynamicsCommon.h>
-#include "../simulator/config/WorldSettings.h" //TODO: fix includes
+#include <simulator/settings/WorldSettings.h> //TODO: fix includes
 #include <memory>
 namespace interface{
     class DebugVisualization;

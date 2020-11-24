@@ -64,7 +64,7 @@ SimBot::SimBot(unsigned int _id, std::shared_ptr<btMultiBodyDynamicsWorld> world
     body->setFriction(1.0);
     body->setRestitution(0.0);
     dynamicsWorld->addRigidBody(body,COL_ROBOT,COL_EVERYTHING);
-
+    body->setCollisionFlags(btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
     worldTransform.setOrigin(btVector3(initialPos.x(), initialPos.y(), 0.0));
     addWheels(worldSettings, worldTransform);
     addDribbler( worldSettings, dir, originPos);
@@ -133,7 +133,6 @@ void SimBot::addWheel(int wheelLabel, btScalar wheelAngleD, btCollisionShape *wh
     btDefaultMotionState *motionState = new btDefaultMotionState(hullTransform * wheelTransform);
     btRigidBody::btRigidBodyConstructionInfo wheelInfo(robSettings.wheelMass, motionState, wheelShape, wheelInertia);
     btRigidBody *wheel = new btRigidBody(wheelInfo);
-    wheel->setUserIndex(bodyType::WHEEL);
     wheels[wheelLabel] = wheel;
     //construct joint/motor
     btVector3 heightOffset = btVector3(0, 0, -(robSettings.totalHeight+robSettings.bottomPlateHeight) * 0.5) *
@@ -144,6 +143,7 @@ void SimBot::addWheel(int wheelLabel, btScalar wheelAngleD, btCollisionShape *wh
                                                           btVector3(1.0, 0.0, 0.0));
     constraint->enableAngularMotor(true, 0, 10000000);
     constraint->setDbgDrawSize(1.5);
+    wheel->setCollisionFlags(wheel->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
     // set friction to be different in each direction of the wheel axis x is perpendicular, y is tangent. Z friction is lateral (only really relevant for ball/ball and robot/robot collisions)
     wheel->setAnisotropicFriction(btVector3(0.05, 1.0, 0.0), btCollisionObject::CF_ANISOTROPIC_FRICTION);
     wheelMotor[wheelLabel] = constraint;
@@ -251,7 +251,6 @@ void SimBot::update(SimBall *ball, double time) {
         case mimir_robotcommand::CONTROL_NOT_SET: {
             //std::cerr << "No control set in command!" << std::endl;
             localControl(5.0,0.0,0.0);
-            std::cout<<" length: "<<body->getLinearVelocity().length();
             break; //TODO: fix this error on startup
         }
     }
@@ -262,8 +261,7 @@ void SimBot::update(SimBall *ball, double time) {
         btVector3 force=(ball->position()-body->getCenterOfMassPosition()).normalized()*2000;
         ball->kick(force);
     }
-    std::cout<<"ballvel: ";
-    printVector(ball->velocity());
+
 }
 void SimBot::deactivate() {
     if (isActive) {
@@ -316,7 +314,6 @@ btScalar SimBot::height() const {
     return robSettings.totalHeight;
 }
 void SimBot::globalControlAngle(btScalar xVel, btScalar yVel, btScalar targetAngle, btScalar dt) {
-    std::cout<< xVel<<" "<<yVel<<" "<<targetAngle<<std::endl;
     btScalar robotAngle = constrainAngle(orientation()); //We assume the robot knows it's absolute rotation
     //clockwise rotation since we rotate back to robot frame
     btScalar velTangent=xVel * cos(robotAngle) + yVel * sin(robotAngle);

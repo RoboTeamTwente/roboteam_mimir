@@ -3,11 +3,11 @@
 //
 
 #include "ConfigWidget.h"
-#include "config/WorldConfig.h"
-#include "config/RobotConfig.h"
+#include "WorldConfig.h"
+#include "RobotConfig.h"
 #include <QCoreApplication>
 #include <iostream>
-#include "config/Situation.h"
+#include "Situation.h"
 
 ConfigWidget::ConfigWidget() {
     QDir worldDir = findConfigDir();
@@ -43,7 +43,7 @@ QDir ConfigWidget::findConfigDir() {
         currentDir.cdUp();
     }
     if (success) {
-        if (currentDir.cd("src/simulator/config")) {
+        if (currentDir.cd("config")) {
             return currentDir;
         }
     }

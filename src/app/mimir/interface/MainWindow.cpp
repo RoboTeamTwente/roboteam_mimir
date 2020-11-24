@@ -5,7 +5,7 @@
 #include "MainWindow.h"
 #include "DebugVisualization.h"
 #include "SettingsWidget.h"
-#include "simulator/Simulator.h"
+#include "Simulator.h"
 #include "Visualizer.h"
 
 namespace interface {
@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget* parent)
         :QMainWindow(parent) {
 
     simulator = new Simulator();
-    debugVisualization = new DebugVisualization(simulator->getWorldSettings()->scale, simulator->getPhysicsWorld(), this);
+    debugVisualization = new DebugVisualization(simulator->getWorldSettings().scale, simulator->getPhysicsWorld(), this);
     settingsWidget = new SettingsWidget(simulator, this);
     visualizer = new Visualizer(simulator->getWorldSettings(), simulator->getYellowSettings(),
             simulator->getBlueSettings(), simulator->getGeometry(), this);

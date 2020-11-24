@@ -6,7 +6,7 @@
 #define ROBOTEAM_MIMIR_SITUATION_H
 
 #include <QtCore/QSettings>
-#include "SituationWorld.h"
+#include <simulator/settings/situation/SituationWorld.h>
 #include <memory>
 
 class Situation {

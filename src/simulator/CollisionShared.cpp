@@ -4,58 +4,116 @@
 
 #include "CollisionShared.h"
 #include <iostream> //TODO: remove redundant include
+#include <BulletCollision/CollisionDispatch/btManifoldResult.h>
+#include <iomanip>
 
-bool isWheelGroundCollision(btCollisionObject *obj0, btCollisionObject *obj1) {
-    return (obj0->getUserIndex() == bodyType::WHEEL &&
-            obj1->getUserIndex() == bodyType::GROUND) ||
-            (obj1->getUserIndex() == bodyType::WHEEL &&
-            obj0->getUserIndex() == bodyType::GROUND);
+std::unordered_map<CollisionPair,Material,CollisionTypeHasher> MaterialManager::materialMap;
+
+void MaterialManager::initialize() {
+  deinitialize();
+  gContactAddedCallback = MaterialManager::contactAddedCallback;
 }
-void editContactPoint(btManifoldPoint &point){
-    //TODO: fix control
-    point.m_contactCFM=0.00; //TODO: tune this value
+void MaterialManager::deinitialize() {
+  gContactAddedCallback = nullptr;
+  materialMap.clear();
 }
-//This callback is almost identical to btCollisionDispatcher:defaultNearCallBack, except we check and edit some collision points
-void customNearCallback(btBroadphasePair &collisionPair, btCollisionDispatcher &dispatcher,
-                        const btDispatcherInfo &dispatchInfo) {
-    btCollisionObject *colObj0 = (btCollisionObject *) collisionPair.m_pProxy0->m_clientObject;
-    btCollisionObject *colObj1 = (btCollisionObject *) collisionPair.m_pProxy1->m_clientObject;
+Material MaterialManager::getMaterial(CollisionType first, CollisionType second) {
+  CollisionPair pair{
+    .first = first,
+    .second = second
+  };
+  auto it = materialMap.find(pair);
+  if(it == materialMap.end()){
+    std::cerr<<"NO MATERIAL FOUND in getMaterial!"<<std::endl;
+    return Material();
+  }else{
+    return it->second;
+  }
+}
+void MaterialManager::setMaterial(CollisionType first, CollisionType second, Material material) {
+  CollisionPair pair{
+    .first = first,
+    .second = second
+  };
+  materialMap[pair] = material;
+}
+bool MaterialManager::contactAddedCallback(btManifoldPoint &cp,
+                                           const btCollisionObjectWrapper *colObj0Wrap,
+                                           int partId0,
+                                           int index0,
+                                           const btCollisionObjectWrapper *colObj1Wrap,
+                                           int partId1,
+                                           int index1) {
 
-    if (dispatcher.needsCollision(colObj0, colObj1)) {
-        btCollisionObjectWrapper obj0Wrap(0, colObj0->getCollisionShape(), colObj0, colObj0->getWorldTransform(), -1,
-                                          -1);
-        btCollisionObjectWrapper obj1Wrap(0, colObj1->getCollisionShape(), colObj1, colObj1->getWorldTransform(), -1,
-                                          -1);
+  CollisionType obj0Type = (CollisionType) colObj0Wrap->m_collisionObject->getBroadphaseHandle()->m_collisionFilterGroup;
+  CollisionType obj1Type = (CollisionType) colObj1Wrap->m_collisionObject->getBroadphaseHandle()->m_collisionFilterGroup;
+  if(obj0Type == CollisionType::COL_NOTHING || obj1Type == COL_NOTHING){
+    return false;
+  }
+  CollisionPair pair{
+    .first = obj0Type,
+    .second = obj1Type
+  };
+  if(pair == CollisionPair{.first = COL_GROUND, .second = COL_BALL}){
+    std::cout<< std::setprecision(9);
+    std::cout<<cp.m_combinedFriction<<" "<<cp.m_combinedRollingFriction<<" "<<cp.m_combinedSpinningFriction<<" "<<
+    cp.m_combinedRestitution<<" "<<cp.m_frictionCFM<<" "<<cp.m_contactERP<<" "<<cp.m_contactCFM<<" "<<cp.m_contactPointFlags<<" "<<cp.m_contactMotion1
+    <<" "<<cp.m_contactMotion2<<" "
+    <<std::endl;
+  }else{
+    return false;
+  }
+  auto it = materialMap.find(pair);
+  if(it == materialMap.end()){
+    std::cerr<<"Could not find materials in map! type_0: " << obj0Type<<" type_1: " <<obj1Type<<std::endl;
+    return false;
+  }
+  const Material& material = it->second;
+  return processMaterial(cp,material);
+}
+bool MaterialManager::processMaterial(btManifoldPoint &cp, const Material &material) {
+  bool wasEdited = false;
 
-        //dispatcher will keep algorithms persistent in the collision pair
-        if (!collisionPair.m_algorithm) {
-            collisionPair.m_algorithm = dispatcher.findAlgorithm(&obj0Wrap, &obj1Wrap, 0, BT_CONTACT_POINT_ALGORITHMS);
-        }
+  int flags = cp.m_contactPointFlags;
+  flags = flags | material.addContactPointFlags;
+  if(flags != cp.m_contactPointFlags){
+    wasEdited = true;
+    cp.m_contactPointFlags = flags;
+  }
+  if(material.friction.has_value()){
+    wasEdited = true;
+    cp.m_combinedFriction = material.friction.value();
+  }
 
-        if (collisionPair.m_algorithm) {
-            btManifoldResult contactPointResult(&obj0Wrap, &obj1Wrap);
+  if(material.rollingFriction.has_value()){
+    wasEdited = true;
+    cp.m_combinedRollingFriction= material.rollingFriction.value();
+  }
 
-            if (dispatchInfo.m_dispatchFunc == btDispatcherInfo::DISPATCH_DISCRETE) {
-                //discrete collision detection query
+  if(material.spinningFriction.has_value()){
+    wasEdited = true;
+    cp.m_combinedSpinningFriction = material.spinningFriction.value();
+  }
 
-                collisionPair.m_algorithm->processCollision(&obj0Wrap, &obj1Wrap, dispatchInfo, &contactPointResult);
-                //START OF EDITED CODE FOR MIMIR
-                if (isWheelGroundCollision(colObj0,colObj1)){
-                    if (contactPointResult.getPersistentManifold()){
-                        int numContacts = contactPointResult.getPersistentManifold()->getNumContacts();
-                        for (int i = 0; i < numContacts; ++i) {
-                            editContactPoint(contactPointResult.getPersistentManifold()->getContactPoint(i));
-                        }
-                    }
-                }
-                //END MIMIR Code
-            } else {
-                //continuous collision detection query, time of impact (toi)
-                btScalar toi = collisionPair.m_algorithm->calculateTimeOfImpact(colObj0, colObj1, dispatchInfo,
-                                                                                &contactPointResult);
-                if (dispatchInfo.m_timeOfImpact > toi)
-                    dispatchInfo.m_timeOfImpact = toi;
-            }
-        }
-    }
+  if(material.restitution.has_value()){
+    wasEdited = true;
+    cp.m_combinedRestitution = material.restitution.value();
+  }
+
+  if(material.frictionCFM.has_value()){
+    wasEdited = true;
+    cp.m_frictionCFM = material.frictionCFM.value();
+  }
+
+  if(material.contactERP.has_value()){
+    wasEdited = true;
+    cp.m_contactERP = material.contactERP.value();
+  }
+
+  if(material.contactCFM.has_value()){
+    wasEdited = true;
+    cp.m_contactCFM = material.contactCFM.value();
+  }
+
+  return wasEdited;
 }

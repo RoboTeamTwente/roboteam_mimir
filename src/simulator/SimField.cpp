@@ -71,9 +71,10 @@ void SimField::addObject(btCollisionShape *shape, const btTransform &transform) 
     object->setFriction(1.0);
 //    object->setSpinningFriction(1.0);
     //allow custom friction for robot wheels, so we set the userIndex.
-    object->setUserIndex(bodyType::GROUND);//TODO: only set for the bottom field, not for all sides
-    int fieldCollidesWith = COL_BALL | COL_ROBOT | COL_CAMERARAY;
-    dynamicsWorld->addCollisionObject(object,COL_FIELD,fieldCollidesWith);
+    object->setCollisionFlags(object->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);//TODO: only for bottom field
+
+    int fieldCollidesWith = COL_BALL | COL_ROBOT | COL_CAMERA_RAY;
+    dynamicsWorld->addCollisionObject(object,COL_GROUND,fieldCollidesWith);
     objects.push_back(object);
 
 }

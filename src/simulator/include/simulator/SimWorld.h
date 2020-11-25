@@ -31,12 +31,11 @@ class SimWorld{
         SimWorld(const WorldSettings& _worldSettings, const RobotSettings& _blueSettings,
                 const RobotSettings& _yellowSettings, const SituationWorld& _situation);
         ~SimWorld();
-        void stepSimulation(double dt);
+        std::vector<SSL_WrapperPacket> stepSimulation(const std::vector<mimir_robotcommand>& blue_commands,
+                                                      const std::vector<mimir_robotcommand>& yelllow_commands);
         btDiscreteDynamicsWorld* getWorld();
-        std::vector<SSL_WrapperPacket> getPackets();
-        void doCommands(btScalar dt);
-        void addCommands(const std::vector<mimir_robotcommand>& commands, bool TeamIsYellow); //TODO: fix copying
         void setRobotCount(unsigned numRobots, bool isYellow);
+        void doCommands(btScalar dt);
 
         void setWorldSettings(const WorldSettings& _worldSettings);
         void setRobotSettings(const RobotSettings& _robotSettings, bool isYellow);
@@ -57,7 +56,9 @@ class SimWorld{
         void setBallVanishing(double prob);
 
 private:
-        void setupMaterials();
+  void addCommands(const std::vector<mimir_robotcommand>& commands, bool TeamIsYellow); //TODO: fix copying
+  std::vector<SSL_WrapperPacket> getPackets();
+  void setupMaterials();
         void resetRobots();
         void resetWorld();
         void reloadSituation();
@@ -96,6 +97,7 @@ private:
         unsigned int sendGeometryTicks = 120;
         int tickCount = 0;
         double time = 0;
+        double timeStepSize = 1/240.0;
 
 };
 

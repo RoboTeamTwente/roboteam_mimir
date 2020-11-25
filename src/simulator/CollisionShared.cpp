@@ -54,18 +54,9 @@ bool MaterialManager::contactAddedCallback(btManifoldPoint &cp,
     .first = obj0Type,
     .second = obj1Type
   };
-  if(pair == CollisionPair{.first = COL_GROUND, .second = COL_BALL}){
-    std::cout<< std::setprecision(9);
-    std::cout<<cp.m_combinedFriction<<" "<<cp.m_combinedRollingFriction<<" "<<cp.m_combinedSpinningFriction<<" "<<
-    cp.m_combinedRestitution<<" "<<cp.m_frictionCFM<<" "<<cp.m_contactERP<<" "<<cp.m_contactCFM<<" "<<cp.m_contactPointFlags<<" "<<cp.m_contactMotion1
-    <<" "<<cp.m_contactMotion2<<" "
-    <<std::endl;
-  }else{
-    return false;
-  }
   auto it = materialMap.find(pair);
   if(it == materialMap.end()){
-    std::cerr<<"Could not find materials in map! type_0: " << obj0Type<<" type_1: " <<obj1Type<<std::endl;
+    //std::cerr<<"Could not find materials in map! type_0: " << obj0Type<<" type_1: " <<obj1Type<<std::endl;
     return false;
   }
   const Material& material = it->second;

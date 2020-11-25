@@ -22,7 +22,9 @@ namespace interface {
         setFocus();
     }
     DebugVisualization::~DebugVisualization() {
+        world->setDebugDrawer(nullptr);
         delete drawer;
+        drawer = nullptr;
         // make sure OpenGL functions etc. are destroyed to prevent memory leaks (also in GPU)
         makeCurrent();
 
@@ -206,19 +208,30 @@ namespace interface {
         lines.push_back({to,toColor});
     }
     void DebugVisualization::draw(){
+
         //tell the shaders where in the buffers to look for the position and colors
         quintptr offset = 0;
         int vertexLocation = shaderProgram.attributeLocation("aPos");
         shaderProgram.enableAttributeArray(vertexLocation);
+#ifndef BT_USE_DOUBLE_PRECISION
         shaderProgram.setAttributeBuffer(vertexLocation, GL_FLOAT,offset, 3,
                                          sizeof(VertexData));// each position has 3 floats.
-
+#else
+      shaderProgram.setAttributeBuffer(vertexLocation, GL_DOUBLE,offset, 3,
+                                       sizeof(VertexData));// each position has 3 floats.
+#endif
         offset += sizeof(btVector3);
         int colorLocation = shaderProgram.attributeLocation("color");
         shaderProgram.enableAttributeArray(colorLocation);
-        shaderProgram.setAttributeBuffer(colorLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
+#ifndef BT_USE_DOUBLE_PRECISION
+      shaderProgram.setAttributeBuffer(colorLocation, GL_FLOAT,offset, 3,
+                                         sizeof(VertexData));// each position has 3 floats.
+#else
+      shaderProgram.setAttributeBuffer(colorLocation, GL_DOUBLE,offset, 3,
+                                       sizeof(VertexData));// each position has 3 floats.
+#endif
 
-        //draw all the points and clear them again
+      //draw all the points and clear them again
         lineVbo.allocate(&lines.front(), lines.size() * sizeof(VertexData));
         glDrawArrays(GL_LINES, 0, lines.size());
         lines.clear();

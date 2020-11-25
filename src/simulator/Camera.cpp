@@ -28,7 +28,7 @@ bool Camera::isBallVisible(btVector3 ballPos) const {
     //Raytests need to be done in world coordinates
     btCollisionWorld::AllHitsRayResultCallback ray(position*scaleFromCamera(), ballPos);
     ray.m_collisionFilterGroup = COL_CAMERA_RAY;
-    ray.m_collisionFilterMask= COL_ROBOT|COL_GROUND; //TODO: fix or remove
+    ray.m_collisionFilterMask= COL_ROBOT_HULL|COL_GROUND; //TODO: fix or remove
     // we only want to check for collisions with robots and field elements
     dynamicsWorld->rayTest(position*scaleFromCamera(), ballPos, ray);
     return !ray.hasHit();

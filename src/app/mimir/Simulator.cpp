@@ -40,25 +40,27 @@ btDiscreteDynamicsWorld* Simulator::getPhysicsWorld() {
 }
 
 void Simulator::tick() {
+    static auto sum = std::chrono::nanoseconds(0);
+    static int ticks = 0;
     auto start=std::chrono::high_resolution_clock::now();
     //TODO: fix input delay and make receivers callback based on a seperate thread so we can keep the looprate low but the internal step of the world high
     auto blueMsgs=blueReceiver->readMessages();
     auto yellowMsgs=yellowReceiver->readMessages();
-    if (blueMsgs.size()>0){
-        simWorld->addCommands(blueMsgs,false);
-    }
-    if (yellowMsgs.size()>0){
-        simWorld->addCommands(yellowMsgs,true);
-    }
-    simWorld->stepSimulation(currentTiming->timeStepLength);
-    std::vector<SSL_WrapperPacket> packets=simWorld->getPackets();
+
+    std::vector<SSL_WrapperPacket> packets=simWorld->stepSimulation(blueMsgs,yellowMsgs);
     for (const auto& packet: packets){
         publisher->send(packet);
     }
     emit sentPackets(packets);
     auto end=std::chrono::high_resolution_clock::now();
-//    std::cout<<"loop took "<<std::chrono::duration_cast<std::chrono::microseconds>(end-start).count()<<" us";
-//    std::cout<<" dt"<< currentTiming->timeStepLength<<" ms: "<<currentTiming->millisecWaitTime  <<std::endl;
+    sum += (end-start);
+    ticks++;
+    if(ticks == 250 ) {
+      std::cout << "loop took " << std::chrono::duration_cast<std::chrono::microseconds>(sum).count() /250 << " us";
+      std::cout << " dt" << currentTiming->timeStepLength << " ms: " << currentTiming->millisecWaitTime << std::endl;
+      ticks = 0;
+      sum = std::chrono::nanoseconds(0);
+    }
 }
 
 WorldSettings Simulator::getWorldSettings() {

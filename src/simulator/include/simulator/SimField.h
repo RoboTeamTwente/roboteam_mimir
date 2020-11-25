@@ -16,8 +16,11 @@ public:
     ~SimField();
 private:
     std::shared_ptr<btMultiBodyDynamicsWorld> dynamicsWorld;
+
     btAlignedObjectArray<btCollisionObject*> objects;
+
     btStaticPlaneShape * plane;
+
     btCollisionShape * goalBack;
     btCollisionShape * goalSide;
     void addObject(btCollisionShape *shape, const btTransform &transform);

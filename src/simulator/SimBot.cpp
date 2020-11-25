@@ -63,7 +63,9 @@ SimBot::SimBot(unsigned int _id, std::shared_ptr<btMultiBodyDynamicsWorld> world
     body = new btRigidBody(rbInfo);
     body->setFriction(1.0);
     body->setRestitution(0.0);
-    dynamicsWorld->addRigidBody(body,COL_ROBOT,COL_EVERYTHING);
+    body->setDeactivationTime(1.0);
+
+  dynamicsWorld->addRigidBody(body,COL_ROBOT_HULL,COL_EVERYTHING);
     body->setCollisionFlags(btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
     worldTransform.setOrigin(btVector3(initialPos.x(), initialPos.y(), 0.0));
     addWheels(worldSettings, worldTransform);
@@ -91,7 +93,8 @@ void SimBot::addDribbler(const WorldSettings &worldSettings,
     dribbler = new btRigidBody(rbDribInfo);
     dribbler->setRestitution(0.2f);
     dribbler->setFriction(3.5f);
-    dynamicsWorld->addRigidBody(dribbler, COL_ROBOT, COL_EVERYTHING);
+    dribbler->setSleepingThresholds(10.0,10.0);
+    dynamicsWorld->addRigidBody(dribbler, COL_ROBOT_DRIBBLER, COL_EVERYTHING);
 
     btTransform localA, localB;
     localA.setIdentity();
@@ -146,10 +149,11 @@ void SimBot::addWheel(int wheelLabel, btScalar wheelAngleD, btCollisionShape *wh
     wheel->setCollisionFlags(wheel->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
     // set friction to be different in each direction of the wheel axis x is perpendicular, y is tangent. Z friction is lateral (only really relevant for ball/ball and robot/robot collisions)
     wheel->setAnisotropicFriction(btVector3(0.05, 1.0, 0.0), btCollisionObject::CF_ANISOTROPIC_FRICTION);
+    wheel->setFriction(1.5);
     wheelMotor[wheelLabel] = constraint;
     //add everything to the world
     dynamicsWorld->addConstraint(constraint, true);
-    dynamicsWorld->addRigidBody(wheel,COL_ROBOT,COL_EVERYTHING);
+    dynamicsWorld->addRigidBody(wheel,COL_ROBOT_WHEEL,COL_EVERYTHING);
 
 }
 void SimBot::wheelControl(btScalar wheel0, btScalar wheel1, btScalar wheel2, btScalar wheel3) {
@@ -222,10 +226,10 @@ void printVector(const btVector3& vec){
 //Simulate the internal code loop on the robot.
 void SimBot::update(SimBall *ball, double time) {
     //The real robot stops after not receiving commands for some time
-//    if (time - lastCommandTime > 0.1) { //TODO: move to settings
-//        deactivate();
-//        return;
-//    }
+    if (time - lastCommandTime > 0.1) { //TODO: move to settings
+        deactivate();
+        return;
+    }
     body->activate();
     switch (lastCommand.control_case()) {
         case mimir_robotcommand::kWheels: {
@@ -250,7 +254,7 @@ void SimBot::update(SimBall *ball, double time) {
         }
         case mimir_robotcommand::CONTROL_NOT_SET: {
             //std::cerr << "No control set in command!" << std::endl;
-            localControl(5.0,0.0,0.0);
+            localControl(0.0,0.0,0.0);
             break; //TODO: fix this error on startup
         }
     }

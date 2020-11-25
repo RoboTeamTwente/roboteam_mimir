@@ -63,8 +63,13 @@ SimWorld::~SimWorld() {
 btDiscreteDynamicsWorld *SimWorld::getWorld() {
     return dynamicsWorld.get(); // Raw as we don't want to share ownership of the world with e.g. visual interfaces
 }
-void SimWorld::stepSimulation(double dt) {
-    dynamicsWorld->stepSimulation(dt, 1, dt);
+std::vector<SSL_WrapperPacket> SimWorld::stepSimulation(const std::vector<mimir_robotcommand>& blue_commands, const std::vector<mimir_robotcommand>& yellow_commands) {
+  addCommands(blue_commands,false);
+  addCommands(yellow_commands,true);
+  dynamicsWorld->stepSimulation(timeStepSize, 1,timeStepSize);
+  auto packets = getPackets();
+  tickCount++;
+  return packets;
 }
 //helper functions for creating geometry
 inline int scale(const float &meas) {
@@ -176,7 +181,7 @@ SSL_GeometryData SimWorld::getGeometryData() {
            worldSettings.lineWidth);
     return data;
 }
-std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames() {
+std::vector<SSL_DetectionFrame> SimWorld::getDetectionFrames(){
     // compute area in pixels as a function from distance to Camera. TODO: figure out if area computation takes into account the skew/distortion or if it's literally the raw pixel area
     //for later; add motionState interpolation
 
@@ -244,7 +249,6 @@ std::vector<SSL_WrapperPacket> SimWorld::getPackets() {
         }
         packets[0].mutable_geometry()->CopyFrom(getGeometryData());
     }
-    tickCount++;
     return packets;
 }
 
@@ -403,8 +407,9 @@ void SimWorld::addBallToFrames(std::vector<SSL_DetectionFrame> &frames) {
 void SimWorld::setupMaterials() {
   Material ball_ground_contact;
   ball_ground_contact.friction = 0.35;
-  ball_ground_contact.rollingFriction = 0.106607348; // TODO: fix scaling issues? (e.g. doesn't scale well with ball mass right now)
-  ball_ground_contact.spinningFriction = 0.03; //TODO: measure, this is the most random estimate
+  ball_ground_contact.rollingFriction = 0.106607348; // TODO: fix scaling issues? (e.g. doesn't scale well with ball mass/world size right now)
+  //ball_ground_contact.rollingFriction = 0.5;
+  ball_ground_contact.spinningFriction = 0.03; //TODO: measure, this is just a random estimate
   ball_ground_contact.restitution = 0.55; //TODO: use measurements (guestimate now)
   MaterialManager::setMaterial(COL_BALL,COL_GROUND,ball_ground_contact);
 
@@ -415,9 +420,22 @@ void SimWorld::setupMaterials() {
 
   Material ball_wall_contact;
   ball_wall_contact.rollingFriction = 3 * ball_ground_contact.rollingFriction.value();
-  ball_wall_contact.friction = 0.48;
+  ball_wall_contact.friction = 0.5;
   ball_wall_contact.restitution = 0.25;
-  MaterialManager::setMaterial(COL_BALL,,robot_hull_ball_contact);
+  MaterialManager::setMaterial(COL_BALL,COL_WALL,robot_hull_ball_contact);
+
+  Material wheel_ground_contact;
+  wheel_ground_contact.frictionCFM = 0.002;
+  wheel_ground_contact.contactCFM = 0.002;
+  MaterialManager::setMaterial(COL_ROBOT_WHEEL,COL_GROUND,wheel_ground_contact);
+
+  Material hull_ground_contact;
+  hull_ground_contact.friction = 1.0;
+  hull_ground_contact.restitution = 0.0;
+  MaterialManager::setMaterial(COL_ROBOT_HULL,COL_GROUND,hull_ground_contact);
+
+  //MaterialManager::setMaterial();
+
   //robot wall
   //robot robot
 

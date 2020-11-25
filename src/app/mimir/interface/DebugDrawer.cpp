@@ -20,7 +20,7 @@ namespace interface {
     }
     void DebugDrawer::drawContactPoint(const btVector3 &PointOnB, const btVector3 &normalOnB, btScalar distance,
                                        int lifeTime, const btVector3 &color) {
-        drawLine(PointOnB,PointOnB+normalOnB*0.1*scale,color);
+        drawLine(PointOnB,PointOnB+normalOnB*0.2*scale,color);
     }
     //sets the debug mode; what is drawn by the drawer
     int DebugDrawer::getDebugMode() const {
@@ -39,6 +39,6 @@ namespace interface {
         drawLine(transform.getOrigin(),transform.getOrigin()+transform.getBasis().getColumn(2)*radius*3.0,color);
     }
     void DebugDrawer::draw3dText(const btVector3 &location, const char *textString) {
-
+      std::cout<<"DD: "<<textString<<std::endl;
     }
 }

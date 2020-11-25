@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(roboteam_mimir)
 
 option(DOUBLE_PRECISION "compile using double precision physics library" OFF)
+
 #find the necessary dependencies
 find_package(Protobuf REQUIRED)
 find_package(Qt5 COMPONENTS Core Network REQUIRED)
@@ -10,10 +11,9 @@ find_package(Qt5 COMPONENTS Widgets)
 # Instruct Cmake to run the meta-object-compiler for qt5's signal slot system automatically when needed
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS "-O3 -march=native -flto")
 if (DOUBLE_PRECISION)
-    set(CMAKE_CXX_FLAGS  "-O0 -Wall -Wextra -DBT_USE_DOUBLE_PRECISION")
-else()
-    set(CMAKE_CXX_FLAGS  "-O0 -Wall -Wextra  ")
+    add_definitions(-DBT_USE_DOUBLE_PRECISION)
 endif()
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include(BuildBullet)

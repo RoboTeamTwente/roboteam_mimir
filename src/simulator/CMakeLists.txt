@@ -23,3 +23,9 @@ target_include_directories(simulator
         PRIVATE include/simulator
         PUBLIC ${BULLET_INCLUDE_DIRS}
 )
+target_compile_options(simulator PUBLIC
+        -O3
+        -march=native
+        -flto
+        )
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

@@ -39,7 +39,7 @@ SimBall::SimBall(std::shared_ptr<btMultiBodyDynamicsWorld> _world, const WorldSe
     col->setCollisionShape(physicsBall);
     col->setWorldTransform(worldTransform);
 
-    world->addCollisionObject(col, COL_BALL, COL_GROUND | COL_ROBOT | COL_BALL);
+    world->addCollisionObject(col, COL_BALL, COL_GROUND | COL_ROBOT_HULL | COL_BALL);
     // TODO: set restitution/friction
     //TODO: ang vel option+spinning friction and setting lin vel to 0
     col->setFriction(0.35);

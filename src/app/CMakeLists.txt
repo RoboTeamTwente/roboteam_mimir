@@ -23,3 +23,7 @@ target_link_libraries(Mimir
 target_include_directories(Mimir
         PRIVATE mimir
         )
+#target_compile_options(Mimir PUBLIC
+#        -O2
+#        -march=native
+#        -flto)

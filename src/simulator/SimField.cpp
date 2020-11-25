@@ -67,13 +67,12 @@ void SimField::addObject(btCollisionShape *shape, const btTransform &transform) 
     // put it into the world
     object->setWorldTransform(transform);
     //TODO: fix friction and restitution
-    object->setRestitution(0.56);
     object->setFriction(1.0);
 //    object->setSpinningFriction(1.0);
     //allow custom friction for robot wheels, so we set the userIndex.
     object->setCollisionFlags(object->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);//TODO: only for bottom field
 
-    int fieldCollidesWith = COL_BALL | COL_ROBOT | COL_CAMERA_RAY;
+    int fieldCollidesWith = COL_BALL | COL_ROBOT_WHEEL | COL_ROBOT_HULL | COL_CAMERA_RAY;
     dynamicsWorld->addCollisionObject(object,COL_GROUND,fieldCollidesWith);
     objects.push_back(object);
 

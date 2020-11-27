@@ -69,42 +69,7 @@ SimBot::SimBot(unsigned int _id, std::shared_ptr<btMultiBodyDynamicsWorld> world
     body->setCollisionFlags(btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
     worldTransform.setOrigin(btVector3(initialPos.x(), initialPos.y(), 0.0));
     addWheels(worldSettings, worldTransform);
-    addDribbler( worldSettings, dir, originPos);
-}
-void SimBot::addDribbler(const WorldSettings &worldSettings,
-                         btScalar dir, const btVector3 &originPos) {
-    //TODO: put constants in settings
-    btCylinderShape *dribblerShape = new btCylinderShapeX(
-            btVector3(0.1 / 2.0f, 0.007f, 0.007f) * SCALE);
-    shapes.push_back(dribblerShape);
-    btVector3 dribblerCenter =
-            btVector3(robSettings.radius - 0.015, 0, -robSettings.totalHeight / 2.0f + 0.03f) * SCALE;
-    btTransform dribblerStartTransform;
-    dribblerStartTransform.setIdentity();
-    dribblerStartTransform.setOrigin(dribblerCenter + originPos);
-    dribblerStartTransform.setRotation(btQuaternion(btVector3(0, 0, 1), dir + M_PI_2));
-
-    btVector3 dribblerInertia(0, 0, 0);
-    dribblerShape->calculateLocalInertia(0.02 * robSettings.bodyMass, dribblerInertia);
-    btRigidBody::btRigidBodyConstructionInfo rbDribInfo(0.02 * robSettings.bodyMass, nullptr, dribblerShape,
-                                                        dribblerInertia);
-    rbDribInfo.m_startWorldTransform = dribblerStartTransform;
-
-    dribbler = new btRigidBody(rbDribInfo);
-    dribbler->setRestitution(0.2f);
-    dribbler->setFriction(3.5f);
-    dribbler->setSleepingThresholds(10.0,10.0);
-    dynamicsWorld->addRigidBody(dribbler, COL_ROBOT_DRIBBLER, COL_EVERYTHING);
-
-    btTransform localA, localB;
-    localA.setIdentity();
-    localB.setIdentity();
-    localA.setOrigin(dribblerCenter);
-    localA.setRotation(btQuaternion(btVector3(1, 0, 0), - M_PI_2));
-    localB.setRotation(btQuaternion(btVector3(0, 1, 0), M_PI_2));
-    dribblerMotor = new btHingeConstraint(*body, *dribbler, localA, localB);
-    dribblerMotor->enableAngularMotor(true,0, 1000);
-    dynamicsWorld->addConstraint(dribblerMotor, true);
+    front_end = new SimBotFrontEnd(world,worldSettings,robSettings,shapeTransform,body);
 }
 void
 SimBot::addWheels(const WorldSettings& worldSettings,
@@ -189,10 +154,6 @@ SimBot::~SimBot() {
         delete wheels[j];
         delete wheelMotor[j];
     }
-    dynamicsWorld->removeConstraint(dribblerMotor);
-    dynamicsWorld->removeRigidBody(dribbler);
-    delete dribblerMotor;
-    delete dribbler;
     dynamicsWorld->removeRigidBody(body);
     delete body;
     delete motionState;
@@ -254,17 +215,11 @@ void SimBot::update(SimBall *ball, double time) {
         }
         case mimir_robotcommand::CONTROL_NOT_SET: {
             //std::cerr << "No control set in command!" << std::endl;
-            localControl(0.0,0.0,0.0);
+            localControl(0.02,0.0,0.0);
             break; //TODO: fix this error on startup
         }
     }
-    //Kicker
-    //TODO: listen to commands properly
-    if (ball && canKickBall(ball)){
-        std::cout<<"KICKING BALL"<<std::endl;
-        btVector3 force=(ball->position()-body->getCenterOfMassPosition()).normalized()*2000;
-        ball->kick(force);
-    }
+
 
 }
 void SimBot::deactivate() {
@@ -349,4 +304,50 @@ btScalar SimBot::constrainAngle(btScalar angle){
         angle -= 2*M_PI;
     }
     return angle;
+}
+SimBotFrontEnd::SimBotFrontEnd(std::shared_ptr<btMultiBodyDynamicsWorld> world,const WorldSettings &worldSettings, const RobotSettings &settings,
+                               btTransform robotHullTransform, btRigidBody * robotBody) :
+dynamicsWorld(world),
+SCALE(worldSettings.scale){
+  printVector(robotBody->getWorldTransform().getOrigin());
+  btScalar z,y,x;
+  robotBody->getWorldTransform().getRotation().getEulerZYX(z,y,x);
+  boxShape = new btBoxShape(
+      btVector3(0.01f, 0.07f, 0.02f) * SCALE);  //TODO: put constants in settings
+  btVector3 dribblerCenter =
+      btVector3(settings.radius - 0.015, 0, -0.04) * SCALE;
+  boxShape->setUserPointer(this);
+
+
+  btTransform dribblerStartTransform;
+  dribblerStartTransform.setIdentity();
+  dribblerStartTransform.setOrigin(dribblerCenter);
+  dribblerStartTransform = robotBody->getWorldTransform()  * robotHullTransform*  dribblerStartTransform;
+  btVector3 dribblerInertia(0, 0, 0);
+
+  boxShape->calculateLocalInertia(0.02 * settings.bodyMass, dribblerInertia); //TODO: put into settings
+  btRigidBody::btRigidBodyConstructionInfo rbDribInfo(0.02 * settings.bodyMass, nullptr, boxShape,
+                                                      dribblerInertia);
+  rbDribInfo.m_startWorldTransform = dribblerStartTransform;
+
+  frontEndBody = new btRigidBody(rbDribInfo);
+
+  dynamicsWorld->addRigidBody(frontEndBody, COL_ROBOT_DRIBBLER, COL_BALL);
+
+  btTransform localA, localB;
+  localA.setIdentity();
+  localB.setIdentity();
+  localA.setOrigin(dribblerCenter);
+
+  btFixedConstraint * joint = new btFixedConstraint(*robotBody,*frontEndBody,localA,localB);
+
+  dynamicsWorld->addConstraint(joint, true);
+
+}
+void SimBotFrontEnd::ballCollisionCallback(SimBall * ball,btVector3 collisionNormal) {
+  //force
+  //force*dt = m*v
+
+  btVector3 vec = collisionNormal.normalized()*3;
+  ball->kick(vec);
 }

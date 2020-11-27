@@ -14,6 +14,24 @@
 #include <proto/messages_robocup_ssl_detection.pb.h>
 #include <BulletDynamics/Featherstone/btMultiBodyDynamicsWorld.h>
 class SimBall;
+
+class SimBotFrontEnd{
+ public:
+  SimBotFrontEnd(std::shared_ptr<btMultiBodyDynamicsWorld> world,const WorldSettings &worldSettings, const RobotSettings &settings,
+                 btTransform robotHullTransform, btRigidBody * robotBody);
+
+  void ballCollisionCallback(SimBall * ball,btVector3 collisionNormal);
+ private:
+  const double SCALE;
+  std::shared_ptr<btMultiBodyDynamicsWorld> dynamicsWorld;
+  btBoxShape * boxShape;
+  btRigidBody * frontEndBody;
+  btFixedConstraint * robotConstraint;
+
+  double chargeKickTime = 1.0;
+  double lastKickTime = -1000.0;
+};
+
 class SimBot : public BaseSimBot {
     public:
         SimBot(unsigned int _id, std::shared_ptr<btMultiBodyDynamicsWorld> world,
@@ -57,8 +75,7 @@ class SimBot : public BaseSimBot {
         btScalar constrainAngle(btScalar angle);
 
         btScalar lastYaw = 0.0; // used in control: TODO initialize correctly
-        btHingeConstraint* dribblerMotor;
-        btRigidBody* dribbler;
+        SimBotFrontEnd * front_end;
 
         mimir_robotcommand lastCommand;
         double lastCommandTime = 0.0; //TODO: fix initialization
@@ -68,10 +85,6 @@ class SimBot : public BaseSimBot {
         double lastKickTime;
 
         bool canKickBall(SimBall* Ball);
-
-        void
-        addDribbler(const WorldSettings &worldSettings,
-                btScalar dir, const btVector3 &originPos);
 };
 
 #endif //ROBOTEAM_MIMIR_SIMBOT_H

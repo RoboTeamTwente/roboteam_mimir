@@ -22,14 +22,17 @@ class SimBall {
         [[nodiscard]] btVector3 velocity() const;
         [[nodiscard]] btScalar radius() const;
         void kick(const btVector3 &force);
+        void processKicks(double dt);
         [[nodiscard]] SSL_DetectionBall asDetection() const;
     private:
         const double SCALE;
         std::shared_ptr<btMultiBodyDynamicsWorld> world;
-        btSphereShape* physicsBall;
-        btMultiBody* multiBody;
-        btMotionState* motionState;
+        btSphereShape* physicsBall = nullptr;
+        btMultiBody* multiBody = nullptr;
+        btMotionState* motionState = nullptr;
 
+        bool isKicked = false;
+        btVector3 kickedForce = btVector3(0,0,0);
 };
 
 #endif //ROBOTEAM_MIMIR_SIMBALL_H

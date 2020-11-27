@@ -18,7 +18,8 @@ SimBall::SimBall(std::shared_ptr<btMultiBodyDynamicsWorld> _world, const WorldSe
     inertia *= 0.4*settings.ballMass*settings.ballRadius*settings.ballRadius*SCALE*SCALE;
 
     multiBody = new btMultiBody(0, settings.ballMass, inertia, false, false, true);
-    multiBody->setMaxCoordinateVelocity(100000000000);
+
+  multiBody->setMaxCoordinateVelocity(100000000000);
     multiBody->setMaxAppliedImpulse(1000000000000);
     multiBody->setAngularDamping(0);
     multiBody->setLinearDamping(0);
@@ -33,13 +34,14 @@ SimBall::SimBall(std::shared_ptr<btMultiBodyDynamicsWorld> _world, const WorldSe
     multiBody->finalizeMultiDof();
 
     world->addMultiBody(multiBody);
+
     motionState = new btDefaultMotionState(worldTransform); //TODO: use motionState?
 
     btMultiBodyLinkCollider* col = new btMultiBodyLinkCollider(multiBody, - 1);
     col->setCollisionShape(physicsBall);
     col->setWorldTransform(worldTransform);
-
-    world->addCollisionObject(col, COL_BALL, COL_GROUND | COL_ROBOT_HULL | COL_BALL);
+    col->setUserPointer(this);
+    world->addCollisionObject(col, COL_BALL, COL_GROUND | COL_ROBOT_HULL | COL_ROBOT_DRIBBLER | COL_BALL);
     // TODO: set restitution/friction
     //TODO: ang vel option+spinning friction and setting lin vel to 0
     col->setFriction(0.35);
@@ -47,9 +49,12 @@ SimBall::SimBall(std::shared_ptr<btMultiBodyDynamicsWorld> _world, const WorldSe
     col->setRollingFriction(0.0357*7*0.2*settings.ballRadius*SCALE);
     col->setSpinningFriction(0.00);
     col->setCollisionFlags(col->getCollisionFlags() | btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
+    col->setCcdMotionThreshold(1e-7);
+    col->setCcdSweptSphereRadius(settings.ballRadius*SCALE);
     multiBody->setBaseCollider(col);
 
     multiBody->setBaseVel(initialVel);
+
 }
 SimBall::~SimBall() {
     world->removeMultiBody(multiBody);
@@ -71,8 +76,10 @@ btVector3 SimBall::position() const {
     const btTransform transform = multiBody->getBaseWorldTransform();
     return transform.getOrigin();
 }
-void SimBall::kick(const btVector3 &force) {
-    multiBody->addBaseForce(force); //TODO: test this and maybe activate base?
+void SimBall::kick(const btVector3 &vel) {
+    btVector3 velocity = vel;
+    isKicked = true;
+    kickedForce+=velocity;
 }
 
 btScalar SimBall::radius() const {
@@ -87,4 +94,12 @@ SSL_DetectionBall SimBall::asDetection() const {
     //ball.set_z(physicsBall->getRadius()/SCALE);//TODO:  in replays we see this is not being set by SSL-vision Is this deprecated?
 
     return ball;
+}
+void SimBall::processKicks(double dt) {
+  if(isKicked){
+    isKicked = false;
+    multiBody->addBaseForce(kickedForce/dt*multiBody->getBaseMass()*SCALE); //F*dt = m*v (impulse) , multiplied by the scale
+    kickedForce = btVector3(0,0,0);
+  }
+
 }

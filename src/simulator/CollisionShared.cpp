@@ -5,7 +5,8 @@
 #include "CollisionShared.h"
 #include <iostream> //TODO: remove redundant include
 #include <BulletCollision/CollisionDispatch/btManifoldResult.h>
-#include <iomanip>
+#include "SimBot.h"
+
 
 std::unordered_map<CollisionPair,Material,CollisionTypeHasher> MaterialManager::materialMap;
 
@@ -54,9 +55,22 @@ bool MaterialManager::contactAddedCallback(btManifoldPoint &cp,
     .first = obj0Type,
     .second = obj1Type
   };
+  if(pair == CollisionPair{.first = CollisionType::COL_ROBOT_DRIBBLER,.second =CollisionType::COL_BALL}) {
+    if (pair.first == COL_ROBOT_DRIBBLER){
+      SimBotFrontEnd * frontEnd = static_cast<SimBotFrontEnd *>(colObj0Wrap->getCollisionObject()->getUserPointer());
+      SimBall * ball = static_cast<SimBall *>(colObj1Wrap->getCollisionObject()->getUserPointer());
+      std::cout<< cp.m_normalWorldOnB.x()<<" "<< cp.m_normalWorldOnB.y()<<" "<<cp.m_normalWorldOnB.z()<<std::endl;
+      frontEnd->ballCollisionCallback(ball,cp.m_normalWorldOnB);
+    }else{
+      SimBotFrontEnd * frontEnd = static_cast<SimBotFrontEnd *>(colObj1Wrap->getCollisionObject()->getUserPointer());
+      SimBall * ball = static_cast<SimBall *>(colObj0Wrap->getCollisionObject()->getUserPointer());
+      std::cout<< cp.m_normalWorldOnB.x()<<" "<< cp.m_normalWorldOnB.y()<<" "<<cp.m_normalWorldOnB.z()<<std::endl;
+      frontEnd->ballCollisionCallback(ball,cp.m_normalWorldOnB);
+    }
+  }
   auto it = materialMap.find(pair);
   if(it == materialMap.end()){
-    //std::cerr<<"Could not find materials in map! type_0: " << obj0Type<<" type_1: " <<obj1Type<<std::endl;
+    std::cerr<<"Could not find materials in map! type_0: " << obj0Type<<" type_1: " <<obj1Type<<std::endl;
     return false;
   }
   const Material& material = it->second;

@@ -17,9 +17,14 @@
 void printVector(btVector3 vector) {
     std::cout << vector.x() << " " << vector.y() << " " << vector.z() << std::endl;
 }
-static void BulletTickCallback(btDynamicsWorld *world, btScalar dt) {
+static void BulletPreTickCallback(btDynamicsWorld *world, btScalar dt) {
     SimWorld *simWorld = (SimWorld *) (world->getWorldUserInfo()); // black magic casting but this is what the library recommends.
     simWorld->doCommands(dt);
+}
+
+static void BulletPostTickCalback(btDynamicsWorld * world, btScalar dt){
+  SimWorld * simWorld = (SimWorld *) (world->getWorldUserInfo());
+  simWorld->postProcess(dt);
 }
 
 SimWorld::SimWorld(const WorldSettings & _worldSettings,
@@ -47,7 +52,8 @@ SimWorld::SimWorld(const WorldSettings & _worldSettings,
     dynamicsWorld = std::make_shared<btMultiBodyDynamicsWorld>(collisionDispatcher.get(), overlappingPairCache.get(),
                                                                solver.get(), collisionConfig.get());
     // make sure bullet calls our motor commands when relevant every physics tick
-    dynamicsWorld->setInternalTickCallback(BulletTickCallback, this, true);
+    dynamicsWorld->setInternalTickCallback(BulletPreTickCallback, this, true);
+    dynamicsWorld->setInternalTickCallback(BulletPostTickCalback, this, false);
 
     delay = 0.0;
     robotVanishingProb = 0.0;
@@ -133,6 +139,9 @@ void SimWorld::doCommands(btScalar dt) {
     for (auto &bot : yellowBots) {
         bot->update(ball.get(), time);
     }
+    ball->processKicks(dt); //Need dt becasue we use delta-v formulation
+
+    std::cout<<ball->velocity().length()/worldSettings.scale<<std::endl;
     dynamicsWorld->applyGravity();// has to be done after everything else according to bullet wiki.
 }
 SSL_GeometryData SimWorld::getGeometryData() {
@@ -418,6 +427,11 @@ void SimWorld::setupMaterials() {
   robot_hull_ball_contact.restitution = 0.6;
   MaterialManager::setMaterial(COL_BALL,COL_ROBOT_HULL,robot_hull_ball_contact);
 
+  Material robot_dribbler_ball_contact;
+  robot_dribbler_ball_contact.friction = 0.0;
+  robot_dribbler_ball_contact.restitution = 1.0;
+  MaterialManager::setMaterial(COL_BALL,COL_ROBOT_DRIBBLER,robot_dribbler_ball_contact);
+
   Material ball_wall_contact;
   ball_wall_contact.rollingFriction = 3 * ball_ground_contact.rollingFriction.value();
   ball_wall_contact.friction = 0.5;
@@ -439,4 +453,26 @@ void SimWorld::setupMaterials() {
   //robot wall
   //robot robot
 
+}
+void SimWorld::postProcess(btScalar dt) {
+//  bool isCollision = false;
+//  int numManifolds = dynamicsWorld->getDispatcher()->getNumManifolds();
+//  btPersistentManifold * manifold;
+//  for (int i = 0; i < numManifolds; i++)
+//  {
+//    btPersistentManifold* contactManifold = dynamicsWorld->getDispatcher()->getManifoldByIndexInternal(i);
+//    const btCollisionObject* obA = contactManifold->getBody0();
+//    const btCollisionObject* obB = contactManifold->getBody1();
+//
+//    if (!obA->getCollisionShape()->isNonMoving() && !obB->getCollisionShape()->isNonMoving()) {
+//      isCollision = true;
+//      manifold = contactManifold;
+//    }
+//  }
+//  if(isCollision){
+//    std::cout<<"COLLISION"<<std::endl;
+//  }
+//  printVector(ball->velocity()/worldSettings.scale);
+
+  //
 }

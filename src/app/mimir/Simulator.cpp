@@ -30,7 +30,7 @@ Simulator::Simulator() {
     timer= new QTimer();
     timer->setTimerType(Qt::PreciseTimer);
     connect(timer,&QTimer::timeout,this,&Simulator::tick);
-    timer->start(currentTiming->millisecWaitTime);
+    timer->start(1000);
 
 }
 

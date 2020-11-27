@@ -36,7 +36,7 @@ class SimWorld{
         btDiscreteDynamicsWorld* getWorld();
         void setRobotCount(unsigned numRobots, bool isYellow);
         void doCommands(btScalar dt);
-
+        void postProcess(btScalar dt);
         void setWorldSettings(const WorldSettings& _worldSettings);
         void setRobotSettings(const RobotSettings& _robotSettings, bool isYellow);
         WorldSettings getWorldSettings();

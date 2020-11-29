@@ -101,5 +101,12 @@ void SimBall::processKicks(double dt) {
     multiBody->addBaseForce(kickedForce/dt*multiBody->getBaseMass()*SCALE); //F*dt = m*v (impulse) , multiplied by the scale
     kickedForce = btVector3(0,0,0);
   }
+}
 
+void SimBall::instantKick(const btVector3 &velocity) {
+    multiBody->setBaseVel(velocity);
+}
+
+void SimBall::dribble(const btVector3 &torque) {
+    multiBody->addBaseTorque(torque);
 }

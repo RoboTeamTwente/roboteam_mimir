@@ -42,4 +42,5 @@ Timing Timer::getTimer(const QString& name) {
             return timing;
         }
     }
+    return timings[0];
 }

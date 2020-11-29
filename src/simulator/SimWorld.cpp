@@ -429,7 +429,7 @@ void SimWorld::setupMaterials() {
 
   Material robot_dribbler_ball_contact;
   robot_dribbler_ball_contact.friction = 0.0;
-  robot_dribbler_ball_contact.restitution = 1.0;
+  robot_dribbler_ball_contact.restitution = 0.0;
   MaterialManager::setMaterial(COL_BALL,COL_ROBOT_DRIBBLER,robot_dribbler_ball_contact);
 
   Material ball_wall_contact;

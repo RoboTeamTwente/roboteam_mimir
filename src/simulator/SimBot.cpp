@@ -215,7 +215,7 @@ void SimBot::update(SimBall *ball, double time) {
         }
         case mimir_robotcommand::CONTROL_NOT_SET: {
             //std::cerr << "No control set in command!" << std::endl;
-            localControl(0.02,0.0,0.0);
+            localControl(-0.02,0.0,0.0);
             break; //TODO: fix this error on startup
         }
     }
@@ -316,7 +316,6 @@ SCALE(worldSettings.scale){
       btVector3(0.01f, 0.07f, 0.02f) * SCALE);  //TODO: put constants in settings
   btVector3 dribblerCenter =
       btVector3(settings.radius - 0.015, 0, -0.04) * SCALE;
-  boxShape->setUserPointer(this);
 
 
   btTransform dribblerStartTransform;
@@ -331,8 +330,11 @@ SCALE(worldSettings.scale){
   rbDribInfo.m_startWorldTransform = dribblerStartTransform;
 
   frontEndBody = new btRigidBody(rbDribInfo);
+  frontEndBody->setUserPointer(this);
+  frontEndBody->setFriction(0.0);
 
-  dynamicsWorld->addRigidBody(frontEndBody, COL_ROBOT_DRIBBLER, COL_BALL);
+
+    dynamicsWorld->addRigidBody(frontEndBody, COL_ROBOT_DRIBBLER, COL_BALL);
 
   btTransform localA, localB;
   localA.setIdentity();
@@ -344,10 +346,30 @@ SCALE(worldSettings.scale){
   dynamicsWorld->addConstraint(joint, true);
 
 }
-void SimBotFrontEnd::ballCollisionCallback(SimBall * ball,btVector3 collisionNormal) {
-  //force
-  //force*dt = m*v
+bool SimBotFrontEnd::ballCollisionCallback(SimBall * ball, btManifoldPoint& contactPoint) {
+//TODO: also add reactionary forces onto robot
+btVector3 collisionNormal = contactPoint.m_normalWorldOnB;
+  //kick
+//  btScalar velocity = 3.0;
+//  btVector3 vec = collisionNormal.normalized()*velocity;
+//  ball->kick(vec);
+// return false; contact point not edited
+  //chip
+//  btScalar kickVelocity = 6.5;
+//  btScalar angle = 1.2*M_PI_4;
+//  btScalar upVelLength = collisionNormal.length()*tan(angle);
+//  btVector3 kickDir = collisionNormal + getLocalUp().normalized()*upVelLength;
+//  btVector3 kickVec = kickDir.normalized() * kickVelocity;
+//  ball->kick(kickVec);
+  //return false, contact point not edited
 
-  btVector3 vec = collisionNormal.normalized()*3;
-  ball->kick(vec);
+  //dribbling: add friction and simulate that the surface is moving down at a velocity
+  std::cout<<contactPoint.m_contactMotion1<<std::endl;
+  //btVector3 torqueVec = contactPoint.m_localPointA.cross();
+  ball->dribble(getLocalUp().normalized()*2);
+  return false;
+}
+
+btVector3 SimBotFrontEnd::getLocalUp() const{
+    return frontEndBody->getWorldTransform().getBasis().getColumn(2);
 }

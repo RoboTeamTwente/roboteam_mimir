@@ -20,8 +20,9 @@ class SimBotFrontEnd{
   SimBotFrontEnd(std::shared_ptr<btMultiBodyDynamicsWorld> world,const WorldSettings &worldSettings, const RobotSettings &settings,
                  btTransform robotHullTransform, btRigidBody * robotBody);
 
-  void ballCollisionCallback(SimBall * ball,btVector3 collisionNormal);
+  bool ballCollisionCallback(SimBall * ball,btManifoldPoint& contactPoint);
  private:
+  btVector3 getLocalUp() const;
   const double SCALE;
   std::shared_ptr<btMultiBodyDynamicsWorld> dynamicsWorld;
   btBoxShape * boxShape;

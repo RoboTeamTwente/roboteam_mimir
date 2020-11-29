@@ -60,13 +60,14 @@ bool MaterialManager::contactAddedCallback(btManifoldPoint &cp,
       SimBotFrontEnd * frontEnd = static_cast<SimBotFrontEnd *>(colObj0Wrap->getCollisionObject()->getUserPointer());
       SimBall * ball = static_cast<SimBall *>(colObj1Wrap->getCollisionObject()->getUserPointer());
       std::cout<< cp.m_normalWorldOnB.x()<<" "<< cp.m_normalWorldOnB.y()<<" "<<cp.m_normalWorldOnB.z()<<std::endl;
-      frontEnd->ballCollisionCallback(ball,cp.m_normalWorldOnB);
+      frontEnd->ballCollisionCallback(ball,cp);
     }else{
-      SimBotFrontEnd * frontEnd = static_cast<SimBotFrontEnd *>(colObj1Wrap->getCollisionObject()->getUserPointer());
+      SimBotFrontEnd * frontEnd = (SimBotFrontEnd *)(colObj1Wrap->getCollisionObject()->getUserPointer());
       SimBall * ball = static_cast<SimBall *>(colObj0Wrap->getCollisionObject()->getUserPointer());
       std::cout<< cp.m_normalWorldOnB.x()<<" "<< cp.m_normalWorldOnB.y()<<" "<<cp.m_normalWorldOnB.z()<<std::endl;
-      frontEnd->ballCollisionCallback(ball,cp.m_normalWorldOnB);
+      frontEnd->ballCollisionCallback(ball,cp);
     }
+    return true;
   }
   auto it = materialMap.find(pair);
   if(it == materialMap.end()){

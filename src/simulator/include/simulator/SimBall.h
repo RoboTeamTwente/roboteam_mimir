@@ -21,8 +21,12 @@ class SimBall {
         [[nodiscard]] btVector3 position() const;
         [[nodiscard]] btVector3 velocity() const;
         [[nodiscard]] btScalar radius() const;
+
+        void instantKick(const btVector3& velocity);
         void kick(const btVector3 &force);
         void processKicks(double dt);
+
+        void dribble(const btVector3& torque);
         [[nodiscard]] SSL_DetectionBall asDetection() const;
     private:
         const double SCALE;

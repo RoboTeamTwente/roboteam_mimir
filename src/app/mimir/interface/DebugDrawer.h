@@ -25,7 +25,7 @@ namespace interface{
         void reportErrorWarning(const char* warningString) override;
         void draw3dText(const btVector3& location, const char* textString) override;
         void setDebugMode(int debugMode)override ;
-        int getDebugMode() const override;
+        [[nodiscard]] int getDebugMode() const override;
     private:
         DebugDrawModes debugMode;
         DebugVisualization * visualization=nullptr;

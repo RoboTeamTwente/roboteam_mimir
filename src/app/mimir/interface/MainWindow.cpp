@@ -7,13 +7,14 @@
 #include "SettingsWidget.h"
 #include "Simulator.h"
 #include "Visualizer.h"
+#include "Visualizer3D.h"
 
 namespace interface {
 MainWindow::MainWindow(QWidget* parent)
         :QMainWindow(parent) {
 
     simulator = new Simulator();
-    debugVisualization = new DebugVisualization(simulator->getWorldSettings().scale, simulator->getPhysicsWorld(), this);
+    //debugVisualization = new DebugVisualization(simulator->getWorldSettings().scale, simulator->getPhysicsWorld(), this);
     settingsWidget = new SettingsWidget(simulator, this);
     visualizer = new Visualizer(simulator->getWorldSettings(), simulator->getYellowSettings(),
             simulator->getBlueSettings(), simulator->getGeometry(), this);
@@ -26,11 +27,15 @@ MainWindow::MainWindow(QWidget* parent)
 //    userMenus = new QVBoxLayout();
 //    userMenus->addWidget(settingsWidget);
 
+    auto visualizer3d = new Visualizer3D(simulator->getWorldSettings().scale,this);
+    visualizer3d->addDebugDrawing(simulator->getPhysicsWorld());
+
     splitter = new QSplitter();
     splitter->addWidget(settingsWidget);
     splitter->addWidget(visualizer);
-    splitter->addWidget(debugVisualization);
-    splitter->setSizes({100, 900,900});
+    //splitter->addWidget(debugVisualization);
+    splitter->addWidget(visualizer3d);
+    splitter->setSizes({100, 400,400,900});
     setCentralWidget(splitter);
     showMaximized();
 }

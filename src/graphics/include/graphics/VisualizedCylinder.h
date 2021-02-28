@@ -1,0 +1,14 @@
+//
+// Created by rolf on 16-01-21.
+//
+
+#ifndef ROBOTEAM_MIMIR_VISUALIZEDCYLINDER_H
+#define ROBOTEAM_MIMIR_VISUALIZEDCYLINDER_H
+
+
+class VisualizedCylinder {
+
+};
+
+
+#endif //ROBOTEAM_MIMIR_VISUALIZEDCYLINDER_H

@@ -13,7 +13,7 @@ add_executable(Mimir
         mimir/Simulator.cpp
         mimir/Situation.cpp
         mimir/Timer.cpp
-        )
+        mimir/interface/Visualizer3D.cpp mimir/interface/Visualizer3D.h mimir/interface/VisualizerCamera.cpp mimir/interface/VisualizerCamera.h mimir/interface/VisualizerDebugDrawer.cpp mimir/interface/VisualizerDebugDrawer.h mimir/interface/VisualizerWorld.cpp mimir/interface/VisualizerWorld.h mimir/interface/VisualizerBall.cpp mimir/interface/VisualizerBall.h mimir/interface/VisualizerBox.cpp mimir/interface/VisualizerBox.h mimir/interface/VisualizerCylinder.cpp mimir/interface/VisualizerCylinder.h)
 target_link_libraries(Mimir
         PRIVATE Qt5::Core
         PRIVATE Qt5::Widgets

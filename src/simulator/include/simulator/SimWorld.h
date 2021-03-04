@@ -56,6 +56,7 @@ class SimWorld {
   void setBallVanishing(double prob);
 
   void reloadSituation();
+
  protected:
   virtual void resetField();
   virtual void resetBall();
@@ -65,14 +66,22 @@ class SimWorld {
 
   std::unique_ptr<SimField> field;
   std::unique_ptr<SimBall> ball;
+  std::vector<std::unique_ptr<SimBot>> blueBots;
+  std::vector<std::unique_ptr<SimBot>> yellowBots;
 
   RobotSettings blueSettings;
   RobotSettings yellowSettings;
+
+  SituationWorld situation;
+
+  unsigned int numBlueBots = 1;
+  unsigned int numYellowBots = 1;
+  void resetRobots();
+
  private:
   void addCommands(const std::vector<mimir_robotcommand> &commands, bool TeamIsYellow); //TODO: fix copying
   std::vector<SSL_WrapperPacket> getPackets();
   void setupMaterials();
-  void resetRobots();
 
   void resetWorld();
   std::vector<SSL_DetectionFrame> getDetectionFrames();
@@ -83,8 +92,7 @@ class SimWorld {
   void addBallToFrames(std::vector<SSL_DetectionFrame> &frames);
 
 
-  std::vector<std::unique_ptr<SimBot>> blueBots;
-  std::vector<std::unique_ptr<SimBot>> yellowBots;
+
   std::vector<Camera> cameras;
   std::vector<RobotCommand> blueCommands;
   std::vector<RobotCommand> yellowCommands;
@@ -98,15 +106,13 @@ class SimWorld {
 
 
 
-  SituationWorld situation;
 
   std::unique_ptr<Random> random;
   double ballVanishingProb;
   double robotVanishingProb;
   double delay;
 
-  unsigned int numBlueBots = 1;
-  unsigned int numYellowBots = 1;
+
   unsigned int sendGeometryTicks = 120;
   int tickCount = 0;
   double time = 0;

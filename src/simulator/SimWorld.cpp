@@ -281,20 +281,6 @@ void SimWorld::setRobotCount(unsigned int numRobots, bool isYellow) {
   }
 }
 
-void SimWorld::resetRobots() {
-  blueBots.clear();
-  yellowBots.clear();
-  for (unsigned int i = 0; i < numBlueBots; ++i) {
-    blueBots.push_back(std::move(
-        std::make_unique<SimBot>(i, dynamicsWorld, blueSettings, worldSettings,
-                                 btVector3(0.0, 0.0, 0.0) * worldSettings.scale, 0.0)));
-  }
-  for (unsigned int i = 0; i < numYellowBots; ++i) {
-    yellowBots.push_back(std::move(
-        std::make_unique<SimBot>(i, dynamicsWorld, yellowSettings, worldSettings,
-                                 btVector3(0.0, 0.4, 0.0) * worldSettings.scale, 0.0)));
-  }
-}
 void SimWorld::resetWorld() {
   const btScalar SCALE = worldSettings.scale;
   dynamicsWorld->setGravity(
@@ -324,22 +310,71 @@ void SimWorld::reloadSituation() {
   for (auto camerasettings : worldSettings.cameras) {
     cameras.emplace_back(camerasettings, dynamicsWorld.get(), SCALE);
   }
-  blueBots.clear();
-  yellowBots.clear();
-  for (const auto &bot : situation.blueBots) {
-    blueBots.push_back(std::move(
-        std::make_unique<SimBot>(bot.id, dynamicsWorld, blueSettings, worldSettings,
-                                 bot.position * worldSettings.scale, bot.position.z())
-    ));
-  }
-  for (const auto &bot : situation.yellowBots) {
-    yellowBots.push_back(std::move(
-        std::make_unique<SimBot>(bot.id, dynamicsWorld, blueSettings, worldSettings,
-                                 bot.position * worldSettings.scale, bot.position.z())
-    ));
-  }
   numBlueBots = situation.blueBots.size(); //TODO: fix communication with interface and interactions between Simulator.
   numYellowBots = situation.yellowBots.size();
+  resetRobots();
+
+}
+void SimWorld::resetRobots() {
+  blueBots.clear();
+  yellowBots.clear();
+
+  for (int i = 0; i < numBlueBots; ++i) {
+    if(i < situation.blueBots.size()){
+      const auto& bot = situation.blueBots[i];
+      blueBots.push_back(std::move(
+          std::make_unique<SimBot>(bot.id, dynamicsWorld, blueSettings, worldSettings,
+                                   bot.position * worldSettings.scale, bot.position.z())
+      ));
+    }else {
+      int first_free_id = -1;
+      for (int id= 0; id < numBlueBots+1; ++id) {
+        bool id_used = false;
+        for (const auto& bot : blueBots) {
+          if(bot->getId() == id){
+            id_used = true;
+            break;
+          }
+        }
+        if(!id_used){
+          first_free_id = id;
+          break;
+        }
+      }
+      assert(first_free_id!=-1);
+      btVector3 position = btVector3(0.5+first_free_id*0.5,0.5*worldSettings.fieldWidth,0.0) * worldSettings.scale;
+      blueBots.push_back(std::move(
+          std::make_unique<SimBot>(first_free_id,dynamicsWorld,blueSettings,worldSettings,position,0.0)));
+    }
+  }
+  for (int i = 0; i < numYellowBots; ++i) {
+    if(i < situation.yellowBots.size()){
+      const auto& bot = situation.yellowBots[i];
+      yellowBots.push_back(std::move(
+          std::make_unique<SimBot>(bot.id, dynamicsWorld, yellowSettings, worldSettings,
+                                   bot.position * worldSettings.scale, bot.position.z())
+      ));
+    }else{
+      int first_free_id = -1;
+      for (int id= 0; id < numYellowBots+1; ++id) {
+        bool id_used = false;
+        for (const auto& bot : yellowBots) {
+          if(bot->getId() == id){
+            id_used = true;
+            break;
+          }
+        }
+        if(!id_used){
+          first_free_id = id;
+          break;
+        }
+      }
+      assert(first_free_id!=-1);
+      btVector3 position = -btVector3(0.5+first_free_id*0.5,0.5*worldSettings.fieldWidth,0.0) * worldSettings.scale;
+      yellowBots.push_back(std::move(
+          std::make_unique<SimBot>(first_free_id,dynamicsWorld,yellowSettings,worldSettings,position,0.0)));
+    }
+  }
 }
 void SimWorld::setWorldSettings(const WorldSettings &_worldSettings) {
   worldSettings = _worldSettings;

@@ -10,15 +10,16 @@
 #include <QTimer>
 #include "VisualizerCamera.h"
 #include "VisualizerDebugDrawer.h"
-#include "VisualizerWorld.h"
 #include <QOpenGLDebugLogger>
 #include <QOpenGLDebugMessage>
+#include <graphics/VisualizedSimWorld.h>
 
 class Visualizer3D : public QOpenGLWidget, QOpenGLFunctions{
 Q_OBJECT
 public:
     explicit Visualizer3D(double scale, QWidget * parent = nullptr);
     void addDebugDrawing(btDiscreteDynamicsWorld * physics_world);
+    void addVisualWorld(VisualizedSimWorld * sim_world);
 
 protected:
     void initializeGL() override;
@@ -39,7 +40,6 @@ protected slots:
 private:
     QString findShaderDir();
     void setupShader();
-    void setupDebugDrawer();
     void setupView();
     void moveCamera();
 
@@ -58,7 +58,7 @@ private:
     QOpenGLShaderProgram * shader;
 
     VisualizerDebugDrawer * debugDrawer;
-    VisualizerWorld * world;
+    VisualizedSimWorld * visualWorld;
 
     QBasicTimer timer;
     QOpenGLDebugLogger * debug_logger;

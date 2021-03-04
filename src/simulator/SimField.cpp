@@ -15,7 +15,6 @@ SimField::SimField(std::shared_ptr<btMultiBodyDynamicsWorld> world, const WorldS
     const float halfGoalWallThickness = cfg.goalWallThickness*0.5f*SCALE;
     const float halfFieldLength = cfg.fieldLength*0.5f*SCALE;
     const float halfFieldWidth = cfg.fieldWidth*0.5f*SCALE;
-    const float halfLineWidth = cfg.lineWidth*0.5f*SCALE;
     const float boundaryWidth =cfg.boundaryWidth*SCALE;
     const float ceilingHeight = cfg.ceilingHeight*SCALE;
 
@@ -34,22 +33,20 @@ SimField::SimField(std::shared_ptr<btMultiBodyDynamicsWorld> world, const WorldS
 
     //Create back of goal box
     //the + is to fill the outer corners of the goal with an object too
-    goalBack = new btBoxShape(btVector3(halfGoalWallThickness, halfGoalWidth + 2*halfGoalWallThickness, halfGoalHeight));
+    goalBack = new btBoxShape(goalBackDimensions(cfg));
     //Create goal Side
-    goalSide = new btBoxShape(btVector3(halfGoalDepth, halfGoalWallThickness, halfGoalHeight));
-    //Let's put the goals in the correct places
-    const btQuaternion dir=btQuaternion::getIdentity();
+    goalSide = new btBoxShape(goalSideDimensions(cfg));
 
-    //goal on negative x side
-    addObject(goalBack,btTransform(dir,btVector3(-(halfFieldLength+halfLineWidth+halfGoalWallThickness+halfGoalDepth*2),0.0f,halfGoalHeight)));
-    addObject(goalSide,btTransform(dir,btVector3(-(halfFieldLength+halfLineWidth+halfGoalDepth),-(halfGoalWidth+halfGoalWallThickness) ,halfGoalHeight)));
-    addObject(goalSide,btTransform(dir,btVector3(-(halfFieldLength+halfLineWidth+halfGoalDepth),halfGoalWidth+halfGoalWallThickness ,halfGoalHeight)));
+    auto backTransforms = goalBackTransforms(cfg);
+    for(const auto& transform : backTransforms){
+      addObject(goalBack,transform);
+    }
 
-    //goal on positive x side
-    addObject(goalBack,btTransform(dir,btVector3(halfFieldLength+halfLineWidth+halfGoalWallThickness+halfGoalDepth*2,0.0f,halfGoalHeight)));
-    addObject(goalSide,btTransform(dir,btVector3(halfFieldLength+halfLineWidth+halfGoalDepth,-(halfGoalWidth+halfGoalWallThickness) ,halfGoalHeight)));
-    addObject(goalSide,btTransform(dir,btVector3(halfFieldLength+halfLineWidth+halfGoalDepth,halfGoalWidth+halfGoalWallThickness ,halfGoalHeight)));
-}
+    auto sideTransforms = goalSideTransforms(cfg);
+    for(const auto& transform : sideTransforms){
+      addObject(goalSide,transform);
+    }
+ }
 SimField::~SimField() {
     // when we exit from the field we need to destroy all relevant information stored in the dynamics world
     for (int i = 0; i < objects.size(); ++i) {
@@ -76,4 +73,49 @@ void SimField::addObject(btCollisionShape *shape, const btTransform &transform) 
     dynamicsWorld->addCollisionObject(object,COL_GROUND,fieldCollidesWith);
     objects.push_back(object);
 
+}
+std::vector<btTransform> SimField::goalBackTransforms(const WorldSettings &cfg) {
+  const btQuaternion dir=btQuaternion::getIdentity();
+  const float SCALE=cfg.scale;
+  const float halfGoalHeight = cfg.goalHeight*0.5f*SCALE;
+  const float halfGoalDepth = cfg.goalDepth*0.5f*SCALE;
+  const float halfGoalWallThickness = cfg.goalWallThickness*0.5f*SCALE;
+  const float halfFieldLength = cfg.fieldLength*0.5f*SCALE;
+  const float halfLineWidth = cfg.lineWidth*0.5f*SCALE;
+
+  return{
+  btTransform(dir,btVector3(-(halfFieldLength+halfLineWidth+halfGoalWallThickness+halfGoalDepth*2),0.0f,halfGoalHeight)),
+  btTransform(dir,btVector3(halfFieldLength+halfLineWidth+halfGoalWallThickness+halfGoalDepth*2,0.0f,halfGoalHeight))
+  };
+}
+std::vector<btTransform> SimField::goalSideTransforms(const WorldSettings &cfg) {
+  const btQuaternion dir=btQuaternion::getIdentity();
+  const float SCALE=cfg.scale;
+  const float halfGoalHeight = cfg.goalHeight*0.5f*SCALE;
+  const float halfGoalWidth = cfg.goalWidth*0.5f*SCALE;
+  const float halfGoalDepth = cfg.goalDepth*0.5f*SCALE;
+  const float halfGoalWallThickness = cfg.goalWallThickness*0.5f*SCALE;
+  const float halfFieldLength = cfg.fieldLength*0.5f*SCALE;
+  const float halfLineWidth = cfg.lineWidth*0.5f*SCALE;
+
+  return{
+      btTransform(dir,btVector3(-(halfFieldLength+halfLineWidth+halfGoalDepth),-(halfGoalWidth+halfGoalWallThickness) ,halfGoalHeight)),
+      btTransform(dir,btVector3(-(halfFieldLength+halfLineWidth+halfGoalDepth),halfGoalWidth+halfGoalWallThickness ,halfGoalHeight)),
+      btTransform(dir,btVector3(halfFieldLength+halfLineWidth+halfGoalDepth,-(halfGoalWidth+halfGoalWallThickness) ,halfGoalHeight)),
+      btTransform(dir,btVector3(halfFieldLength+halfLineWidth+halfGoalDepth,halfGoalWidth+halfGoalWallThickness ,halfGoalHeight))
+      };
+}
+btVector3 SimField::goalBackDimensions(const WorldSettings &cfg) {
+  const float SCALE=cfg.scale;
+  const float halfGoalHeight = cfg.goalHeight*0.5f*SCALE;
+  const float halfGoalWidth = cfg.goalWidth*0.5f*SCALE;
+  const float halfGoalWallThickness = cfg.goalWallThickness*0.5f*SCALE;
+  return btVector3(halfGoalWallThickness, halfGoalWidth + 2*halfGoalWallThickness, halfGoalHeight);
+}
+btVector3 SimField::goalSideDimensions(const WorldSettings &cfg) {
+  const float SCALE=cfg.scale;
+  const float halfGoalHeight = cfg.goalHeight*0.5f*SCALE;
+  const float halfGoalDepth = cfg.goalDepth*0.5f*SCALE;
+  const float halfGoalWallThickness = cfg.goalWallThickness*0.5f*SCALE;
+  return btVector3(halfGoalDepth, halfGoalWallThickness, halfGoalHeight);
 }

@@ -22,8 +22,8 @@ Simulator::Simulator() {
     WorldSettings worldSettings = *configWidget->getWorldConfig("divisionA")->settings.get();
     RobotSettings blue_settings= *configWidget->getRobotConfig("RTT")->settings.get();
     RobotSettings yellow_settings= *configWidget->getRobotConfig("RTT")->settings.get();
-    simWorld=std::make_unique<SimWorld>(worldSettings,blue_settings,yellow_settings,situation);
-
+    simWorld=std::make_unique<VisualizedSimWorld>(worldSettings,blue_settings,yellow_settings,situation);
+    simWorld->reloadSituation();
     timingManager=std::make_unique<Timer>();
     currentTiming=std::make_unique<Timing>(timingManager->getTimer("Realtime 250hz"));
     //start simulator logic loop
@@ -178,4 +178,7 @@ void Simulator::setRobotVanishing(double vanishingProb) {
 }
 void Simulator::setDelay(double delay) {
     simWorld->setDelay(delay);
+}
+VisualizedSimWorld *Simulator::getVisualWorld() {
+  return simWorld.get();
 }

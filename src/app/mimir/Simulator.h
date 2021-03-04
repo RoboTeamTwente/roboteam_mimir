@@ -11,7 +11,8 @@
 #include "net/Receiver.h"
 #include "Timer.h"//TODO: Fix include
 
-#include <simulator/SimWorld.h>
+#include <graphics/VisualizedSimWorld.h>
+
 #include "ConfigWidget.h"
 #include "WorldConfig.h"
 #include "RobotConfig.h"
@@ -25,6 +26,7 @@ class Simulator :public QObject {
 public:
     Simulator();
     btDiscreteDynamicsWorld* getPhysicsWorld();
+    VisualizedSimWorld * getVisualWorld();
     WorldSettings getWorldSettings();
     RobotSettings getBlueSettings();
     RobotSettings getYellowSettings();
@@ -70,7 +72,7 @@ private:
     QTimer *timer;
     std::unique_ptr<Timer> timingManager;
     std::unique_ptr<Timing> currentTiming;
-    std::unique_ptr<SimWorld> simWorld;
+    std::unique_ptr<VisualizedSimWorld> simWorld;
     ConfigWidget* configWidget; //TODO: how to make this a unique pointer?
     std::unique_ptr<net::Publisher> publisher;
     std::unique_ptr<net::Receiver> blueReceiver;

@@ -7,7 +7,7 @@
 
 #include <simulator/SimBot.h>
 
-class VisualizedSimBot : SimBot {
+ class VisualizedSimBot : public SimBot {
 
 };
 

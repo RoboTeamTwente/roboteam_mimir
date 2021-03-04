@@ -8,12 +8,14 @@
 #include "Simulator.h"
 #include "Visualizer.h"
 #include "Visualizer3D.h"
+#include <thread>
 
 namespace interface {
 MainWindow::MainWindow(QWidget* parent)
         :QMainWindow(parent) {
 
     simulator = new Simulator();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     //debugVisualization = new DebugVisualization(simulator->getWorldSettings().scale, simulator->getPhysicsWorld(), this);
     settingsWidget = new SettingsWidget(simulator, this);
     visualizer = new Visualizer(simulator->getWorldSettings(), simulator->getYellowSettings(),
@@ -29,6 +31,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     auto visualizer3d = new Visualizer3D(simulator->getWorldSettings().scale,this);
     visualizer3d->addDebugDrawing(simulator->getPhysicsWorld());
+    visualizer3d->addVisualWorld(simulator->getVisualWorld());
 
     splitter = new QSplitter();
     splitter->addWidget(settingsWidget);

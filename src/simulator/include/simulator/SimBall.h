@@ -17,7 +17,7 @@ class SimBall {
         SimBall(std::shared_ptr <btMultiBodyDynamicsWorld> _world, const WorldSettings &settings);
         SimBall(std::shared_ptr <btMultiBodyDynamicsWorld> _world, const WorldSettings &settings,
                 const btVector3 &initialPos, const btVector3 &initialVel = btVector3(0.0f, 0.0f, 0.0f));
-        ~SimBall();
+        virtual ~SimBall();
         [[nodiscard]] btVector3 position() const;
         [[nodiscard]] btVector3 velocity() const;
         [[nodiscard]] btScalar radius() const;
@@ -28,11 +28,13 @@ class SimBall {
 
         void dribble(const btVector3& torque);
         [[nodiscard]] SSL_DetectionBall asDetection() const;
-    private:
+    protected:
         const double SCALE;
+        btMultiBody* multiBody = nullptr;
+
+    private:
         std::shared_ptr<btMultiBodyDynamicsWorld> world;
         btSphereShape* physicsBall = nullptr;
-        btMultiBody* multiBody = nullptr;
         btMotionState* motionState = nullptr;
 
         bool isKicked = false;

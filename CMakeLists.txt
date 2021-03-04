@@ -11,7 +11,7 @@ find_package(Qt5 COMPONENTS Widgets)
 # Instruct Cmake to run the meta-object-compiler for qt5's signal slot system automatically when needed
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "-O0")
+#set(CMAKE_CXX_FLAGS "-O0")
 if (DOUBLE_PRECISION)
     add_definitions(-DBT_USE_DOUBLE_PRECISION)
 endif()

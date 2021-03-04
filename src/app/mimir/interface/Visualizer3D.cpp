@@ -78,8 +78,6 @@ scale{scale}{
     setFocusPolicy(Qt::ClickFocus);
     setFocus();
 
-    world = new VisualizerWorld(); //TODO: fix
-
     timer.start(20,this); //TODO: figure out better way to do constant updates.
 
 }
@@ -107,7 +105,7 @@ void Visualizer3D::initializeGL() {
     setupShader();
     shader->bind();
     debugDrawer->init(shader);
-    world->init(shader);
+    visualWorld->init_gl(shader);
     shader->release();
 
 }
@@ -146,9 +144,6 @@ QString Visualizer3D::findShaderDir() {
     return currentDir.absolutePath();
 }
 
-void Visualizer3D::setupDebugDrawer() {
-
-}
 
 void Visualizer3D::paintGL() {
     shader->bind();
@@ -162,7 +157,7 @@ void Visualizer3D::paintGL() {
     //4. unbind their buffers again
     QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
     debugDrawer->draw(shader,f);
-    world->draw(shader,f);
+    visualWorld->draw(shader,f);
 
     shader->release();
 }
@@ -196,4 +191,7 @@ void Visualizer3D::moveCamera() {
 
 void Visualizer3D::messageLogged(const QOpenGLDebugMessage& msg) {
     std::cerr<<"[OPENGL_ERROR]: "<<msg.message().toStdString()<<std::endl;
+}
+void Visualizer3D::addVisualWorld(VisualizedSimWorld *sim_world) {
+  visualWorld = sim_world;
 }

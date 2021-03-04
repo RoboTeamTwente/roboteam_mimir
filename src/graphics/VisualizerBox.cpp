@@ -31,15 +31,13 @@ void VisualizerBox::init(QOpenGLShaderProgram *shader) {
     vbo.release();
 }
 
-void VisualizerBox::draw(QOpenGLShaderProgram *shader, QOpenGLFunctions *gl) {
+void VisualizerBox::draw(QOpenGLShaderProgram *shader, QOpenGLFunctions *gl, const QMatrix4x4& model) {
     vbo.bind();
     vao.bind();
-    //we use the identity matrix,as the lines are already drawn in world coordinates
-    QMatrix4x4 model;
-    model.setToIdentity();
-    shader->setUniformValue("model",model);
 
+    shader->setUniformValue("model",model);
     gl->glDrawArrays(GL_TRIANGLES,0,data.size());
+
     vao.release();
     vbo.release();
 
@@ -47,9 +45,9 @@ void VisualizerBox::draw(QOpenGLShaderProgram *shader, QOpenGLFunctions *gl) {
 
 void VisualizerBox::createVertexes(float length_x, float length_y, float length_z, float r, float g, float b) {
     data.reserve(36);
-    float half_x = 0.5f*length_x;
-    float half_y = 0.5f*length_y;
-    float half_z = 0.5f*length_z;
+    float half_x = length_x;
+    float half_y = length_y;
+    float half_z = length_z;
 
 //    addVertex(-half_x,-half_y,half_z,r,g,b);//0
 //    addVertex(half_x,-half_y,half_z,r,g,b);//1

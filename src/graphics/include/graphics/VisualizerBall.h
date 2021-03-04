@@ -13,8 +13,9 @@
 class VisualizerBall {
 public:
     VisualizerBall(float radius, float r, float g, float b);
+    ~VisualizerBall();
     void init(QOpenGLShaderProgram * shader);
-    void draw(QOpenGLShaderProgram * shader, QOpenGLFunctions * gl);
+    void draw(QOpenGLShaderProgram * shader, QOpenGLFunctions * gl,const QMatrix4x4& modelToWorld);
 private:
     void sphereEQ(float u, float v, float radius, float * write_to);
     void addTriangle(float a[3], float b[3], float c[3], float r, float g, float blue);

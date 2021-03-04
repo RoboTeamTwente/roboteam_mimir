@@ -13,9 +13,14 @@
 class SimField {
 public:
     explicit SimField(std::shared_ptr<btMultiBodyDynamicsWorld> world, const WorldSettings& cfg);
-    ~SimField();
-private:
-    std::shared_ptr<btMultiBodyDynamicsWorld> dynamicsWorld;
+    virtual ~SimField();
+ protected:
+  static std::vector<btTransform> goalBackTransforms(const WorldSettings &cfg);
+  static std::vector<btTransform> goalSideTransforms(const WorldSettings &cfg);
+  static btVector3 goalBackDimensions(const WorldSettings &cfg);
+  static btVector3 goalSideDimensions(const WorldSettings &cfg);
+
+  std::shared_ptr<btMultiBodyDynamicsWorld> dynamicsWorld;
 
     btAlignedObjectArray<btCollisionObject*> objects;
 

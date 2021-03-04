@@ -27,13 +27,12 @@ void VisualizerBall::init(QOpenGLShaderProgram *shader) {
     vbo.release();
 }
 
-void VisualizerBall::draw(QOpenGLShaderProgram *shader, QOpenGLFunctions *gl) {
+void VisualizerBall::draw(QOpenGLShaderProgram *shader, QOpenGLFunctions *gl, const QMatrix4x4& modelToWorld) {
     vbo.bind();
     vao.bind();
     //we use the identity matrix,as the lines are already drawn in world coordinates
-    QMatrix4x4 model;
-    model.setToIdentity();
-    shader->setUniformValue("model",model);
+
+    shader->setUniformValue("model",modelToWorld);
 
     gl->glDrawArrays(GL_TRIANGLES,0,data.size());
     vao.release();
@@ -41,8 +40,8 @@ void VisualizerBall::draw(QOpenGLShaderProgram *shader, QOpenGLFunctions *gl) {
 }
 
 VisualizerBall::VisualizerBall(float radius, float r, float g, float b) {
-    int u_res = 10;
-    int v_res = 10;
+    int u_res = 20;
+    int v_res = 20;
 
 
     float startU = 0.0;
@@ -86,5 +85,9 @@ void VisualizerBall::addTriangle(float *a, float *b, float *c, float r, float g,
     data.emplace_back(VertexData{.pos = {a[0],a[1],a[2]},.color ={r,g,blue}});
     data.emplace_back(VertexData{.pos = {b[0],b[1],b[2]},.color ={r,g,blue}});
     data.emplace_back(VertexData{.pos = {c[0],c[1],c[2]},.color ={r,g,blue}});
+
+}
+VisualizerBall::~VisualizerBall() {
+  double test = 1;
 
 }

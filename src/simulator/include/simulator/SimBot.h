@@ -19,7 +19,7 @@ class SimBotFrontEnd{
  public:
   SimBotFrontEnd(std::shared_ptr<btMultiBodyDynamicsWorld> world,const WorldSettings &worldSettings, const RobotSettings &settings,
                  btTransform robotHullTransform, btRigidBody * robotBody);
-
+  ~SimBotFrontEnd();
   bool ballCollisionCallback(SimBall * ball,btManifoldPoint& contactPoint);
  private:
   btVector3 getLocalUp() const;

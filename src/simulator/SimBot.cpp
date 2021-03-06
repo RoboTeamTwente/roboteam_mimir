@@ -145,6 +145,7 @@ SimBot::SimBot(unsigned int id, std::shared_ptr<btMultiBodyDynamicsWorld> world,
                                                                              btVector3(0, 0, 0), 0.0) {
 }
 SimBot::~SimBot() {
+    delete front_end;
     for (int i = shapes.size() - 1; i >= 0; --i) {
         delete shapes[i];
     }
@@ -341,9 +342,9 @@ SCALE(worldSettings.scale){
   localB.setIdentity();
   localA.setOrigin(dribblerCenter);
 
-  btFixedConstraint * joint = new btFixedConstraint(*robotBody,*frontEndBody,localA,localB);
+  robotConstraint = new btFixedConstraint(*robotBody,*frontEndBody,localA,localB);
 
-  dynamicsWorld->addConstraint(joint, true);
+  dynamicsWorld->addConstraint(robotConstraint, true);
 
 }
 bool SimBotFrontEnd::ballCollisionCallback(SimBall * ball, btManifoldPoint& contactPoint) {
@@ -372,4 +373,11 @@ btVector3 collisionNormal = contactPoint.m_normalWorldOnB;
 
 btVector3 SimBotFrontEnd::getLocalUp() const{
     return frontEndBody->getWorldTransform().getBasis().getColumn(2);
+}
+
+SimBotFrontEnd::~SimBotFrontEnd() {
+    dynamicsWorld->removeRigidBody(frontEndBody);
+    dynamicsWorld->removeConstraint(robotConstraint);
+    delete frontEndBody;
+    delete robotConstraint;
 }

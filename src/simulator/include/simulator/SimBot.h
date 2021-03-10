@@ -35,9 +35,6 @@ class SimBotFrontEnd{
 
 class SimBot : public BaseSimBot {
     public:
-        SimBot(unsigned int _id, std::shared_ptr<btMultiBodyDynamicsWorld> world,
-                const RobotSettings &settings,
-                const WorldSettings &worldSettings);
         SimBot(unsigned int _id,  std::shared_ptr<btMultiBodyDynamicsWorld> world,
                 const RobotSettings &settings,
                 const WorldSettings &worldSettings,

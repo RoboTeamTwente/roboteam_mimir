@@ -11,6 +11,8 @@ add_library(graphics
         VisualizerCylinder.cpp
         include/graphics/VisualizerUtil.h
         TexturedGroundPlane.cpp
+        Material.cpp
+        Light.cpp
         )
 
 target_link_libraries(graphics

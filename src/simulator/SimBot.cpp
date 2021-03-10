@@ -140,10 +140,6 @@ void SimBot::localControl(btScalar velTangent, btScalar velNormal, btScalar velA
         wheelMotor[i]->setMotorTargetVelocity(wheelVel);
     }
 }
-SimBot::SimBot(unsigned int id, std::shared_ptr<btMultiBodyDynamicsWorld> world, const RobotSettings &settings,
-               const WorldSettings& worldSettings) : SimBot(id, world, settings, worldSettings,
-                                                                             btVector3(0, 0, 0), 0.0) {
-}
 SimBot::~SimBot() {
     delete front_end;
     for (int i = shapes.size() - 1; i >= 0; --i) {
@@ -158,7 +154,6 @@ SimBot::~SimBot() {
     dynamicsWorld->removeRigidBody(body);
     delete body;
     delete motionState;
-
 
 }
 unsigned int SimBot::getId() {

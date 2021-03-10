@@ -16,6 +16,9 @@ class VisualizedSimField : public SimField{
   void init(QOpenGLShaderProgram * shader);
   void draw(QOpenGLShaderProgram * shader, QOpenGLFunctions * gl);
  protected:
+  Material goal_material;
+
+  Material wall_material;
   std::unique_ptr<TexturedGroundPlane> ground_plane;
 
   std::unique_ptr<VisualizerBox> back_box;

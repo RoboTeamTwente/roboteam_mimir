@@ -9,6 +9,7 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLBuffer>
+#include "Material.h"
 
 class VisualizerBox {
 public:
@@ -19,12 +20,14 @@ public:
     void draw(QOpenGLShaderProgram * shader, QOpenGLFunctions * gl,const QMatrix4x4& mat);
 private:
     void createVertexes(float length_x, float length_y, float length_z, float r, float g, float b);
-    void addVertex(float x, float y, float z, float r, float g, float b);
+    void addVertex(float x, float y, float z, float r, float g, float b, float n_x, float n_y, float n_z);
     struct VertexData{
         float pos[3];
         float color[3];
+        float normal[3];
     };
     std::vector<VertexData> data;
+    Material material;
     QOpenGLVertexArrayObject vao;
 
     QOpenGLBuffer vbo;

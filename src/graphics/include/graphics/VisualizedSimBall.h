@@ -7,6 +7,8 @@
 
 #include <simulator/SimBall.h>
 #include "VisualizerBall.h"
+#include "Material.h"
+
 class VisualizedSimBall : public SimBall {
  public:
   VisualizedSimBall(std::shared_ptr<btMultiBodyDynamicsWorld> world, const WorldSettings & settings);
@@ -18,6 +20,7 @@ class VisualizedSimBall : public SimBall {
   void draw(QOpenGLShaderProgram * shader, QOpenGLFunctions * gl);
  protected:
   std::unique_ptr<VisualizerBall> visual;
+  Material material;
 };
 
 

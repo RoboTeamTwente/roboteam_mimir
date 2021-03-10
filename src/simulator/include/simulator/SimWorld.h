@@ -76,9 +76,10 @@ class SimWorld {
 
   unsigned int numBlueBots = 1;
   unsigned int numYellowBots = 1;
-  void resetRobots();
 
+  void addRobot(bool isBlue, unsigned int id, btVector3 position);
  private:
+  void resetRobots();
   void addCommands(const std::vector<mimir_robotcommand> &commands, bool TeamIsYellow); //TODO: fix copying
   std::vector<SSL_WrapperPacket> getPackets();
   void setupMaterials();

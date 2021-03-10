@@ -18,6 +18,7 @@ public:
     void zoom(float zoomin);
     QMatrix4x4 getViewMatrix();
     const QMatrix4x4& getProjectionMatrix();
+    QVector3D getViewPosition();
 private:
     //movement speed
     const float move_speed = 0.1;

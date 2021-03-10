@@ -21,6 +21,12 @@ void VisualizerBall::init(QOpenGLShaderProgram *shader) {
     int color_location = shader->attributeLocation("color");
     shader->enableAttributeArray(color_location);
     shader->setAttributeBuffer(color_location,GL_FLOAT,offset,3,sizeof(VertexData));
+
+    offset += sizeof(float)*3;
+    int normal_location = shader->attributeLocation("objectNormal");
+    shader->enableAttributeArray(normal_location);
+    shader->setAttributeBuffer(normal_location,GL_FLOAT,offset,3,sizeof(VertexData));
+
     vbo.allocate(&data.front(),data.size()*sizeof(VertexData));
 
     vao.release();
@@ -68,8 +74,8 @@ VisualizerBall::VisualizerBall(float radius, float r, float g, float b) {
             sphereEQ(u_next,v,radius,pos_3);
             sphereEQ(u_next,v_next,radius,pos_4);
 
-            addTriangle(pos_1,pos_3,pos_2,r,g,b);
-            addTriangle(pos_4,pos_2,pos_3,r,g,b);
+            addTriangle(pos_1,pos_3,pos_2,r,g,b,radius);
+            addTriangle(pos_4,pos_2,pos_3,r,g,b,radius);
 
         }
     }
@@ -81,10 +87,10 @@ void VisualizerBall::sphereEQ(float u, float v, float radius, float *write_to) {
     write_to[2] = sinf(u)*sinf(v)*radius;
 }
 
-void VisualizerBall::addTriangle(float *a, float *b, float *c, float r, float g, float blue) {
-    data.emplace_back(VertexData{.pos = {a[0],a[1],a[2]},.color ={r,g,blue}});
-    data.emplace_back(VertexData{.pos = {b[0],b[1],b[2]},.color ={r,g,blue}});
-    data.emplace_back(VertexData{.pos = {c[0],c[1],c[2]},.color ={r,g,blue}});
+void VisualizerBall::addTriangle(float *a, float *b, float *c, float r, float g, float blue, float radius) {
+    data.emplace_back(VertexData{.pos = {a[0],a[1],a[2]},.color ={r,g,blue},.normal{a[0]/radius,a[1]/radius,a[2]/radius}});
+    data.emplace_back(VertexData{.pos = {b[0],b[1],b[2]},.color ={r,g,blue},.normal{b[0]/radius,b[1]/radius,b[2]/radius}});
+    data.emplace_back(VertexData{.pos = {c[0],c[1],c[2]},.color ={r,g,blue},.normal{c[0]/radius,c[1]/radius,c[2]/radius}});
 
 }
 VisualizerBall::~VisualizerBall() {

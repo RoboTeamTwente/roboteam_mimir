@@ -22,6 +22,7 @@ class VisualizedSimWorld : public SimWorld {
   void resetBall() override;
   void resetBall(btVector3 initialPos, btVector3 initialVel) override;
   void resetField() override;
+  void resetRobot(bool isBlue, int id, btVector3 position);
 
  private:
   VisualizedSimBall * getVisualBall();

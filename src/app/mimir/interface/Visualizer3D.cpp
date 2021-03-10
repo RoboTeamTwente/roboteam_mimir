@@ -78,7 +78,7 @@ scale{scale}{
     setFocusPolicy(Qt::ClickFocus);
     setFocus();
 
-    timer.start(20,this); //TODO: figure out better way to do constant updates.
+  timer.start(20,this); //TODO: figure out better way to do constant updates.
 
 }
 
@@ -103,6 +103,7 @@ void Visualizer3D::initializeGL() {
 
 
     setupShader();
+
     shader->bind();
     debugDrawer->init(shader);
     visualWorld->init_gl(shader);
@@ -119,6 +120,7 @@ void Visualizer3D::setupShader() {
     bool link = shader->link();
     if (!loadf || !loadv || !link) {
         std::cerr<<"Could not find, link or compile shaders!"<<std::endl;
+        qDebug()<<shader->log();
         close();// close the widget leading to a white screen
     }
 }
@@ -150,7 +152,7 @@ void Visualizer3D::paintGL() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the buffers from previous iteration
     setupView();
 
-    //every object needs to;
+  //every object needs to;
     //1 set the model transformation matrix
     //2. bind their own vbo's and vbo's
     //3. draw what they want to draw
@@ -165,6 +167,7 @@ void Visualizer3D::paintGL() {
 void Visualizer3D::setupView() {
     shader->setUniformValue("projection",camera.getProjectionMatrix());
     shader->setUniformValue("view",camera.getViewMatrix());
+    shader->setUniformValue("viewPos",camera.getViewPosition());
 
 }
 

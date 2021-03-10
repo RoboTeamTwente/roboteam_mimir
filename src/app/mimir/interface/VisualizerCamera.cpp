@@ -68,3 +68,6 @@ void VisualizerCamera::zoom(float zoomin) {
     projection.perspective(viewAngle, aspect, near_plane, far_plane);
 
 }
+QVector3D VisualizerCamera::getViewPosition() {
+  return cameraPos;
+}

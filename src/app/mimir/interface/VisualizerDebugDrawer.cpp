@@ -117,6 +117,7 @@ void VisualizerDebugDrawer::draw(QOpenGLShaderProgram * shader, QOpenGLFunctions
     QMatrix4x4 model;
     model.setToIdentity();
     shader->setUniformValue("model",model);
+    shader->setUniformValue("compute_lighting",false);
 
     vbo.allocate(&linesData.front(), linesData.size() * sizeof(LineVertexData));
     gl->glDrawArrays(GL_LINES, 0, linesData.size());

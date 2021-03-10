@@ -322,10 +322,8 @@ void SimWorld::resetRobots() {
   for (int i = 0; i < numBlueBots; ++i) {
     if(i < situation.blueBots.size()){
       const auto& bot = situation.blueBots[i];
-      blueBots.push_back(std::move(
-          std::make_unique<SimBot>(bot.id, dynamicsWorld, blueSettings, worldSettings,
-                                   bot.position * worldSettings.scale, bot.position.z())
-      ));
+      addRobot(true,bot.id,bot.position);
+
     }else {
       int first_free_id = -1;
       for (int id= 0; id < numBlueBots+1; ++id) {
@@ -342,18 +340,16 @@ void SimWorld::resetRobots() {
         }
       }
       assert(first_free_id!=-1);
-      btVector3 position = btVector3(0.5+first_free_id*0.5,0.5*worldSettings.fieldWidth,0.0) * worldSettings.scale;
-      blueBots.push_back(std::move(
-          std::make_unique<SimBot>(first_free_id,dynamicsWorld,blueSettings,worldSettings,position,0.0)));
+      btVector3 position = btVector3(0.5+first_free_id*0.5,0.5*worldSettings.fieldWidth,0.0);
+      addRobot(true,first_free_id,position);
+
     }
   }
   for (int i = 0; i < numYellowBots; ++i) {
     if(i < situation.yellowBots.size()){
       const auto& bot = situation.yellowBots[i];
-      yellowBots.push_back(std::move(
-          std::make_unique<SimBot>(bot.id, dynamicsWorld, yellowSettings, worldSettings,
-                                   bot.position * worldSettings.scale, bot.position.z())
-      ));
+      addRobot(false,bot.id,bot.position);
+
     }else{
       int first_free_id = -1;
       for (int id= 0; id < numYellowBots+1; ++id) {
@@ -370,9 +366,8 @@ void SimWorld::resetRobots() {
         }
       }
       assert(first_free_id!=-1);
-      btVector3 position = -btVector3(0.5+first_free_id*0.5,0.5*worldSettings.fieldWidth,0.0) * worldSettings.scale;
-      yellowBots.push_back(std::move(
-          std::make_unique<SimBot>(first_free_id,dynamicsWorld,yellowSettings,worldSettings,position,0.0)));
+      btVector3 position = -btVector3(0.5+first_free_id*0.5,0.5*worldSettings.fieldWidth,0.0);
+      addRobot(false,first_free_id,position);
     }
   }
 }
@@ -523,4 +518,16 @@ void SimWorld::resetBall(btVector3 initialPos, btVector3 initialVel) {
 }
 void SimWorld::resetField() {
   field = std::make_unique<SimField>(dynamicsWorld, worldSettings);
+}
+void SimWorld::addRobot(bool isBlue, unsigned int id,btVector3 position) {
+  if(isBlue){
+    blueBots.push_back(std::move(
+        std::make_unique<SimBot>(id, dynamicsWorld, blueSettings, worldSettings,
+                                 position * worldSettings.scale, position.z())));
+  }else{
+    yellowBots.push_back(std::move(
+        std::make_unique<SimBot>(id, dynamicsWorld, yellowSettings, worldSettings,
+                                 position * worldSettings.scale, position.z())));
+  }
+
 }

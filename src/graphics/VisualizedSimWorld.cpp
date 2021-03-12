@@ -22,6 +22,13 @@ void VisualizedSimWorld::draw(QOpenGLShaderProgram *shader, QOpenGLFunctions *gl
   getVisualBall()->draw(shader,gl);
 
   getVisualField()->draw(shader,gl);
+
+  for(const auto& bot : blueBots){
+    getRobot(bot)->update(shader,gl);
+  }
+  for(const auto& bot : yellowBots){
+    getRobot(bot)->update(shader,gl);
+  }
 }
 void VisualizedSimWorld::init_gl(QOpenGLShaderProgram *shader) {
 
@@ -45,7 +52,7 @@ VisualizedSimBall *VisualizedSimWorld::getVisualBall() {
 VisualizedSimField *VisualizedSimWorld::getVisualField() {
   return dynamic_cast<VisualizedSimField *>(field.get());
 }
-void VisualizedSimWorld::resetRobot(bool isBlue, int id, btVector3 position) {
+void VisualizedSimWorld::addRobot(bool isBlue, unsigned int id, btVector3 position) {
   if(isBlue){
     blueBots.push_back(std::move(
         std::make_unique<VisualizedSimBot>(id, dynamicsWorld, blueSettings, worldSettings,
@@ -56,5 +63,8 @@ void VisualizedSimWorld::resetRobot(bool isBlue, int id, btVector3 position) {
                                  position * worldSettings.scale, position.z())));
   }
 
+}
+VisualizedSimBot *VisualizedSimWorld::getRobot(const std::unique_ptr<SimBot> &robot) {
+  return dynamic_cast<VisualizedSimBot *>(robot.get());
 }
 

@@ -72,10 +72,7 @@ void TexturedGroundPlane::draw(QOpenGLShaderProgram *shader, QOpenGLFunctions *g
   QMatrix4x4 mat;
   mat.setToIdentity();
 
-  shader->setUniformValue("material.ambient",ground_material.ambient);
-  shader->setUniformValue("material.diffuse",ground_material.diffuse);
-  shader->setUniformValue("material.specular",ground_material.specular);
-  shader->setUniformValue("material.shininess",ground_material.shininess);
+  ground_material.bind(shader);
   //ground_texture->bind();
   shader->setUniformValue("model",mat);
   gl->glDrawArrays(GL_TRIANGLES,0,vertices.size());

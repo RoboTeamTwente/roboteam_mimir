@@ -20,3 +20,10 @@ diffuse{diffuse},
 specular{specular},
 shininess{shininess}{
 }
+void Material::bind(QOpenGLShaderProgram *shader) const {
+  shader->setUniformValue("material.ambient",ambient);
+  shader->setUniformValue("material.diffuse",diffuse);
+  shader->setUniformValue("material.specular",specular);
+  shader->setUniformValue("material.shininess",shininess);
+}
+

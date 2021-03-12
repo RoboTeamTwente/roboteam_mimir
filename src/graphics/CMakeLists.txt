@@ -13,6 +13,7 @@ add_library(graphics
         TexturedGroundPlane.cpp
         Material.cpp
         Light.cpp
+        VisualizedRobotHull.cpp
         )
 
 target_link_libraries(graphics

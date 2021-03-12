@@ -54,10 +54,8 @@ void VisualizedSimField::init(QOpenGLShaderProgram *shader) {
 
 }
 void VisualizedSimField::draw(QOpenGLShaderProgram *shader, QOpenGLFunctions *gl) {
-  shader->setUniformValue("material.ambient",goal_material.ambient);
-  shader->setUniformValue("material.diffuse",goal_material.diffuse);
-  shader->setUniformValue("material.specular",goal_material.specular);
-  shader->setUniformValue("material.shininess",goal_material.shininess);
+  goal_material.bind(shader);
+
   for(const auto& back_transform : back_transforms){
     QMatrix4x4 mat = getGLTransform(back_transform,1.0/scale);
     back_box->draw(shader,gl,mat);
@@ -68,10 +66,8 @@ void VisualizedSimField::draw(QOpenGLShaderProgram *shader, QOpenGLFunctions *gl
     side_box->draw(shader,gl,mat);
   }
   ground_plane->draw(shader,gl);
-  shader->setUniformValue("material.ambient",wall_material.ambient);
-  shader->setUniformValue("material.diffuse",wall_material.diffuse);
-  shader->setUniformValue("material.specular",wall_material.specular);
-  shader->setUniformValue("material.shininess",wall_material.shininess);
+  wall_material.bind(shader);
+
   for(const auto& wall : field_walls){
     QMatrix4x4 mat = getGLTransform(wall.second,1.0);
     wall.first->draw(shader,gl,mat);

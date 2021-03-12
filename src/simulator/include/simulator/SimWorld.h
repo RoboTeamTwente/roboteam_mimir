@@ -61,6 +61,9 @@ class SimWorld {
   virtual void resetField();
   virtual void resetBall();
   virtual void resetBall(btVector3 initialPos, btVector3 initialVel);
+
+  virtual void addRobot(bool isBlue, unsigned int id, btVector3 position);
+
   std::shared_ptr<btMultiBodyDynamicsWorld> dynamicsWorld; //can be publicly
   WorldSettings worldSettings;
 
@@ -77,7 +80,6 @@ class SimWorld {
   unsigned int numBlueBots = 1;
   unsigned int numYellowBots = 1;
 
-  void addRobot(bool isBlue, unsigned int id, btVector3 position);
  private:
   void resetRobots();
   void addCommands(const std::vector<mimir_robotcommand> &commands, bool TeamIsYellow); //TODO: fix copying

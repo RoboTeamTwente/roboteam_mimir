@@ -13,9 +13,17 @@
 class RobotMesh {
 public:
     explicit RobotMesh(const RobotSettings& settings);
-    [[nodiscard]] const std::vector<btVector3> &hull() const;
+    btVector3 top() const;
+    btVector3 bottom() const;
+    std::vector<btVector3> topCircle() const;
+    std::vector<btVector3> bottomCircle() const;
+    [[nodiscard]] std::vector<btVector3> complete_hull() const;
+
 private:
-    std::vector<btVector3> mesh;
+  btVector3 topCenter;
+  std::vector<btVector3> top_points;
+  std::vector<btVector3> bottom_points;
+  btVector3 bottomCenter;
 
 };
 

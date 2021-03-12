@@ -21,12 +21,12 @@ class SimBotFrontEnd{
                  btTransform robotHullTransform, btRigidBody * robotBody);
   ~SimBotFrontEnd();
   bool ballCollisionCallback(SimBall * ball,btManifoldPoint& contactPoint);
+  btRigidBody * frontEndBody;
  private:
   btVector3 getLocalUp() const;
   const double SCALE;
   std::shared_ptr<btMultiBodyDynamicsWorld> dynamicsWorld;
   btBoxShape * boxShape;
-  btRigidBody * frontEndBody;
   btFixedConstraint * robotConstraint;
 
   double chargeKickTime = 1.0;
@@ -50,14 +50,17 @@ class SimBot : public BaseSimBot {
         unsigned int getId();
         SSL_DetectionRobot asDetection() const;
         void globalControl(btScalar xVel, btScalar yVel, btScalar angularVel);
+    protected:
+      btTransform kickerWorldTransform();
+      btRigidBody* wheels[4];
+      const double SCALE;
+      btRigidBody* body = nullptr;
     private:
         const unsigned int id;
-        const double SCALE;
         std::shared_ptr<btMultiBodyDynamicsWorld> dynamicsWorld;
         btAlignedObjectArray<btCollisionShape*> shapes;
-        btRigidBody* body = nullptr;
+
         btDefaultMotionState* motionState = nullptr;
-        btRigidBody* wheels[4];
         btHingeConstraint* wheelMotor[4];
         RobotSettings robSettings;
 

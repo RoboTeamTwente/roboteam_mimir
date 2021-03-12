@@ -39,7 +39,7 @@ SimBot::SimBot(unsigned int _id, std::shared_ptr<btMultiBodyDynamicsWorld> world
     RobotMesh mesh(robSettings);
     btConvexHullShape *convexHullShape = new btConvexHullShape();
     shapes.push_back(convexHullShape);
-    for (btVector3 point : mesh.hull()) {
+    for (btVector3 point : mesh.complete_hull()) {
         //note scaling is done here so we do not need to worry about it in mesh construction
         convexHullShape->addPoint(point * SCALE);
     }
@@ -301,6 +301,9 @@ btScalar SimBot::constrainAngle(btScalar angle){
     }
     return angle;
 }
+btTransform SimBot::kickerWorldTransform() {
+  return front_end->frontEndBody->getWorldTransform();
+}
 SimBotFrontEnd::SimBotFrontEnd(std::shared_ptr<btMultiBodyDynamicsWorld> world,const WorldSettings &worldSettings, const RobotSettings &settings,
                                btTransform robotHullTransform, btRigidBody * robotBody) :
 dynamicsWorld(world),
@@ -309,7 +312,7 @@ SCALE(worldSettings.scale){
   btScalar z,y,x;
   robotBody->getWorldTransform().getRotation().getEulerZYX(z,y,x);
   boxShape = new btBoxShape(
-      btVector3(0.01f, 0.07f, 0.02f) * SCALE);  //TODO: put constants in settings
+      btVector3(settings.kickerThickness, settings.kickerWidth, settings.kickerHeight) * SCALE);  //TODO: put constants in settings
   btVector3 dribblerCenter =
       btVector3(settings.radius - 0.015, 0, -0.04) * SCALE;
 

@@ -7,6 +7,7 @@
 #include <iostream>
 #include <QDir>
 #include <QApplication>
+#include <QOpenGLExtraFunctions>
 
 void Visualizer3D::keyPressEvent(QKeyEvent *event) {
     if (event->key()==Qt::Key_W){
@@ -100,7 +101,8 @@ void Visualizer3D::initializeGL() {
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glEnable(GL_DEPTH_TEST);//enable depth buffer
     glEnable(GL_CULL_FACE); //enable backface culling
-
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
     setupShader();
 
@@ -149,7 +151,9 @@ QString Visualizer3D::findShaderDir() {
 
 void Visualizer3D::paintGL() {
     shader->bind();
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the buffers from previous iteration
+    QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
+
+    f->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the buffers from previous iteration
     setupView();
 
   //every object needs to;
@@ -157,8 +161,7 @@ void Visualizer3D::paintGL() {
     //2. bind their own vbo's and vbo's
     //3. draw what they want to draw
     //4. unbind their buffers again
-    QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
-    debugDrawer->draw(shader,f);
+    //debugDrawer->draw(shader,f);
     visualWorld->draw(shader,f);
 
     shader->release();

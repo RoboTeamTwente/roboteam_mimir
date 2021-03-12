@@ -17,12 +17,13 @@ public:
     //creates a cylinder around the x-axis
     VisualizerCylinder(float height, float radius, float r, float g, float b);
     void init(QOpenGLShaderProgram * shader);
-    void draw(QOpenGLShaderProgram * shader, QOpenGLFunctions * gl);
+    void draw(QOpenGLShaderProgram * shader, QOpenGLFunctions * gl,QMatrix4x4 model);
 private:
 
     struct VertexData{
         float pos[3];
         float color[3];
+        float normal[3];
     };
 
     std::vector<VertexData> data;

@@ -11,6 +11,7 @@
 
 class VisualizedSimBall;
 class VisualizedSimField;
+class VisualizedSimBot;
 
 class VisualizedSimWorld : public SimWorld {
  public:
@@ -22,11 +23,12 @@ class VisualizedSimWorld : public SimWorld {
   void resetBall() override;
   void resetBall(btVector3 initialPos, btVector3 initialVel) override;
   void resetField() override;
-  void resetRobot(bool isBlue, int id, btVector3 position);
+  void addRobot(bool isBlue, unsigned int id, btVector3 position) override;
 
  private:
   VisualizedSimBall * getVisualBall();
   VisualizedSimField * getVisualField();
+  VisualizedSimBot * getRobot(const std::unique_ptr<SimBot>& robot);
 };
 
 #endif //ROBOTEAM_MIMIR_SRC_GRAPHICS_VISUALIZEDSIMWORLD_H_

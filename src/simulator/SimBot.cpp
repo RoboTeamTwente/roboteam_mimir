@@ -69,7 +69,7 @@ SimBot::SimBot(unsigned int _id, std::shared_ptr<btMultiBodyDynamicsWorld> world
     body->setCollisionFlags(btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK);
     worldTransform.setOrigin(btVector3(initialPos.x(), initialPos.y(), 0.0));
     addWheels(worldSettings, worldTransform);
-    front_end = new SimBotFrontEnd(world,worldSettings,robSettings,shapeTransform,body);
+    front_end = new SimBotFrontEnd(world,worldSettings,robSettings,shapeTransform,body,this);
 }
 void
 SimBot::addWheels(const WorldSettings& worldSettings,
@@ -156,7 +156,7 @@ SimBot::~SimBot() {
     delete motionState;
 
 }
-unsigned int SimBot::getId() {
+unsigned int SimBot::getId() const {
     return id;
 }
 
@@ -304,8 +304,14 @@ btScalar SimBot::constrainAngle(btScalar angle){
 btTransform SimBot::kickerWorldTransform() {
   return front_end->frontEndBody->getWorldTransform();
 }
+mimir_robotcommand SimBot::current_command() const {
+  return lastCommand;
+}
+bool SimBot::is_active() const {
+  return isActive;
+}
 SimBotFrontEnd::SimBotFrontEnd(std::shared_ptr<btMultiBodyDynamicsWorld> world,const WorldSettings &worldSettings, const RobotSettings &settings,
-                               btTransform robotHullTransform, btRigidBody * robotBody) :
+                               btTransform robotHullTransform, btRigidBody * robotBody, SimBot * robot) :
 dynamicsWorld(world),
 SCALE(worldSettings.scale){
   printVector(robotBody->getWorldTransform().getOrigin());
@@ -346,26 +352,33 @@ SCALE(worldSettings.scale){
 
 }
 bool SimBotFrontEnd::ballCollisionCallback(SimBall * ball, btManifoldPoint& contactPoint) {
-//TODO: also add reactionary forces onto robot
-btVector3 collisionNormal = contactPoint.m_normalWorldOnB;
-  //kick
-//  btScalar velocity = 3.0;
-//  btVector3 vec = collisionNormal.normalized()*velocity;
-//  ball->kick(vec);
-// return false; contact point not edited
-  //chip
-//  btScalar kickVelocity = 6.5;
-//  btScalar angle = 1.2*M_PI_4;
-//  btScalar upVelLength = collisionNormal.length()*tan(angle);
-//  btVector3 kickDir = collisionNormal + getLocalUp().normalized()*upVelLength;
-//  btVector3 kickVec = kickDir.normalized() * kickVelocity;
-//  ball->kick(kickVec);
-  //return false, contact point not edited
+//TODO: also add reactionary forces onto robot?
+
+ mimir_robotcommand command = robot->current_command();
+ btVector3 collisionNormal = contactPoint.m_normalWorldOnB;
+
+ //todo add charging
+ if(command.has_kicker() && command.kicker().kickchippower() > 0.0 ){
+   if(!command.kicker().chip()){
+     btScalar velocity = command.kicker().kickchippower();
+     btVector3 vec = collisionNormal.normalized()*velocity;
+     ball->kick(vec);
+     return false;
+   }else{
+     btScalar kickVelocity = command.kicker().kickchippower();
+     btScalar angle = 1.2*M_PI_4; //TODO: make robot setting or a model
+     btScalar upVelLength = collisionNormal.length()*tan(angle);
+     btVector3 kickDir = collisionNormal + getLocalUp().normalized()*upVelLength;
+     btVector3 kickVec = kickDir.normalized() * kickVelocity;
+     ball->kick(kickVec);
+     return false;
+   }
+ }
 
   //dribbling: add friction and simulate that the surface is moving down at a velocity
-  std::cout<<contactPoint.m_contactMotion1<<std::endl;
-  //btVector3 torqueVec = contactPoint.m_localPointA.cross();
-  ball->dribble(getLocalUp().normalized()*2);
+//  std::cout<<contactPoint.m_contactMotion1<<std::endl;
+//  //btVector3 torqueVec = contactPoint.m_localPointA.cross();
+//  ball->dribble(getLocalUp().normalized()*2);
   return false;
 }
 

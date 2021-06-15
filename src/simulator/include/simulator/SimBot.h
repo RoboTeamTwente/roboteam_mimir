@@ -14,21 +14,22 @@
 #include <proto/messages_robocup_ssl_detection.pb.h>
 #include <BulletDynamics/Featherstone/btMultiBodyDynamicsWorld.h>
 class SimBall;
+class SimBot;
 
 class SimBotFrontEnd{
  public:
   SimBotFrontEnd(std::shared_ptr<btMultiBodyDynamicsWorld> world,const WorldSettings &worldSettings, const RobotSettings &settings,
-                 btTransform robotHullTransform, btRigidBody * robotBody);
+                 btTransform robotHullTransform, btRigidBody * robotBody, SimBot * robot);
   ~SimBotFrontEnd();
   bool ballCollisionCallback(SimBall * ball,btManifoldPoint& contactPoint);
   btRigidBody * frontEndBody;
  private:
-  btVector3 getLocalUp() const;
+  [[nodiscard]] btVector3 getLocalUp() const;
   const double SCALE;
   std::shared_ptr<btMultiBodyDynamicsWorld> dynamicsWorld;
   btBoxShape * boxShape;
   btFixedConstraint * robotConstraint;
-
+  SimBot * robot;
   double chargeKickTime = 1.0;
   double lastKickTime = -1000.0;
 };
@@ -47,9 +48,11 @@ class SimBot : public BaseSimBot {
 
         void receiveCommand(const mimir_robotcommand &robotcommand, double time);
         void update(SimBall* ball, double time);
-        unsigned int getId();
+        unsigned int getId() const;
         SSL_DetectionRobot asDetection() const;
         void globalControl(btScalar xVel, btScalar yVel, btScalar angularVel);
+        mimir_robotcommand current_command() const;
+        bool is_active() const;
     protected:
       btTransform kickerWorldTransform();
       btRigidBody* wheels[4];
